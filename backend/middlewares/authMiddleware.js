@@ -1,7 +1,9 @@
 const { verifyToken } = require('../utils/jwt');
 
-exports.authMiddleware = (req, res, next) => {
+const authMiddleware = (req, res, next) => {
+  console.log("✅ authMiddleware 실행됨");
   const authHeader = req.headers.authorization;
+  
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
     return res.status(401).json({ message: '토큰이 없습니다.' });
   }
@@ -16,3 +18,10 @@ exports.authMiddleware = (req, res, next) => {
   req.user = decoded; // 사용자 정보 req에 저장
   next();
 };
+
+module.exports = authMiddleware;
+
+
+
+ 
+
