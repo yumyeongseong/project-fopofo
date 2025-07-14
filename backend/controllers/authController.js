@@ -40,8 +40,15 @@ exports.login = async (req, res) => {
 
 
 exports.logout = (req, res) => {
-  res.status(200).json({ message: "로그아웃 성공. 토큰 삭제하세요." });
+  req.logout(() => {
+    req.session.destroy(); // 세션 삭제
+    res.clearCookie('connect.sid'); // 브라우저 쿠키 삭제
+    res.status(200).json({ message: "로그아웃 완료. 세션이 삭제되었습니다." });
+    // 👉 로그아웃 후 프론트엔드 메인 페이지로 이동
+    res.redirect('http://localhost:3000');
+  });
 };
+
 
 exports.getMyPage = async (req, res) => {
   try {
