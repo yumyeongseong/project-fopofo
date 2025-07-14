@@ -11,8 +11,8 @@ exports.signup = async (req, res) => {
       return res.status(400).json({ message: "이미 사용 중인 ID입니다." });
     }
 
-    const hashed = await bcrypt.hash(password, 10);
-    const user = new User({ userId, password: hashed });
+    // 🔥 해싱 제거
+    const user = new User({ userId, password });
 
     await user.save();
     res.status(201).json({ message: "회원가입 완료" });
@@ -31,7 +31,10 @@ exports.login = async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ message: "비밀번호가 틀렸습니다." });
 
-    const token = generateToken({ userId: user.userId });
+    const token = generateToken({
+      userId: user.userId,
+      _id: user._id.toString()  // ObjectId도 넣어줌
+    });
     res.status(200).json({ message: "로그인 성공", token }); // 토큰 전달
   } catch (err) {
     res.status(500).json({ message: "로그인 실패", error: err.message });

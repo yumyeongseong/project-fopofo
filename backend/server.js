@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const session = require('express-session');
 const connectDB = require('./config/db');
 const cors = require('cors');
+const path = require('path');
 
 dotenv.config();
 connectDB();
@@ -15,6 +16,8 @@ app.use(session({
   resave: false,
   saveUninitialized: true,
 }));
+
+
 
 // ✅ passport 초기화 및 세션 연결
 const passport = require('./config/passport');
@@ -31,11 +34,18 @@ app.use(express.json());
 // ✅ 라우트 설정
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
-const googleAuthRoutes = require('./routes/googleAuthRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
+const userUploadRoutes = require('./routes/userUploadRoutes');
+
 
 app.use('/api/users', authRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/auth', googleAuthRoutes);
+// app.use('/api/auth', googleAuthRoutes);
+app.use('/uploads', express.static('uploads'));
+app.use('/api/upload', uploadRoutes);
+app.use('/api/user-upload', userUploadRoutes);
+
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
