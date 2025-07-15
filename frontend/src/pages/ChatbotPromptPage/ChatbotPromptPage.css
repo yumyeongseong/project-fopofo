@@ -1,0 +1,111 @@
+.prompt-wrapper {
+  background-color: #fff;
+  font-family: 'Noto Sans KR', sans-serif;
+  padding: 6rem 2rem 4rem;
+  position: relative;
+}
+
+/* 공통 헤더 스타일 */
+.logo {
+  position: fixed;
+  top: 3px;
+  left: 40px;
+  height: 160px;      /* ✅ 크기 키움 */
+  width: auto;       /* ✅ 비율 유지 */
+  opacity: 1;        /* ✅ 완전 불투명 */
+  filter: none;      /* ✅ 밝기 필터 제거 */
+  z-index: 20;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+
+.mypage {
+  position: fixed;
+  top: 24px;
+  right: 30px;
+  font-family: 'Courier New', serif;
+  font-size: 18px;
+  background-color: transparent;
+  color: #2b1e28;
+  border: 2px solid #f4c9d8;
+  padding: 8px 20px; /* ✔ 위아래 간격 줄임 */
+  border-radius: 6px;
+  box-shadow: 0 3px 5px rgba(0,0,0,0.15);
+  transition: all 0.3s ease;
+  text-shadow: 1px 1px 1px #ccc;
+  cursor: pointer;
+  z-index: 20;
+}
+
+.mypage:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25);
+}
+
+/* 본문 영역 */
+.prompt-container {
+  background-color: #fce8f1;
+  padding: 60px;
+  max-width: 900px;
+  margin: 80px auto;
+  border: 2px solid #d8aebd;
+  border-radius: 12px;
+  text-align: center;
+  font-family: 'Helvetica', sans-serif;
+}
+
+.prompt-container h1 {
+  font-size: 32px;
+  color: #cc6699;
+  font-weight: 600;
+  margin-bottom: 40px;
+}
+
+.qa-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+}
+
+.qa-block {
+  width: 100%;
+}
+
+.question {
+  text-align: left;
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: #555;
+}
+
+.answer-input {
+  width: 100%;
+  height: 42px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px 10px;
+  font-size: 14px;
+  background-color: white;
+  resize: none;
+}
+
+.create-button {
+  margin-top: 40px;
+  padding: 12px 50px;
+  font-size: 16px;
+  border: none;
+  border-radius: 24px;
+  background-color: #f8c8dc;
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: background-color 0.3s ease;
+}
+
+.create-button:hover {
+  background-color: #f3acc8;
+}

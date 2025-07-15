@@ -1,0 +1,109 @@
+.upload-container {
+  background-color: #fff;
+  font-family: 'Noto Sans KR', sans-serif;
+  text-align: center;
+  padding: 6rem 2rem 4rem; /* 상단 여백 확보 */
+}
+
+.upload-header {
+  display: none; /* header는 삭제했으므로 숨김 */
+}
+
+/* 로고 고정 */
+.logo {
+  position: fixed;
+  top: 20px;
+  left: 30px;
+  width: 160px;
+  filter: brightness(1);
+  opacity: 0.95;
+  z-index: 20;
+  transition: transform 0.3s ease;
+}
+
+/* 마이페이지 고정 */
+.mypage {
+  position: fixed;
+  top: 20px;
+  right: 30px;
+  font-family: 'Courier New', serif;
+  font-size: 22px;
+  background-color: transparent;
+  color: #2b1e28;
+  border: 2px solid #f4c9d8;
+  padding: 10px 20px;
+  border-radius: 6px;
+  box-shadow: 0 3px 5px rgba(0,0,0,0.15);
+  transition: all 0.3s ease;
+  text-shadow: 1px 1px 1px #ccc;
+  cursor: pointer;
+  z-index: 20;
+}
+
+.mypage:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25);
+}
+
+.upload-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.5rem;
+  color: #d4a5c2;
+  font-weight: 600;
+  margin: 4rem 0 2rem;
+  letter-spacing: 0.1rem;
+}
+
+.upload-box {
+  background-color: #ffeef5;
+  padding: 2rem;
+  width: 90%;
+  max-width: 800px;
+  margin: 0 auto;
+  border: 1px solid #aaa;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+  text-align: left;
+}
+
+.instruction {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+
+.subtext {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.file-input {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 2rem;
+}
+
+input[type="file"] {
+  border: none;
+  width: 100%;
+}
+
+.next-button {
+  background-color: #fbcce7;
+  border: none;
+  padding: 0.6rem 2.5rem;
+  border-radius: 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.15);
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
+}
