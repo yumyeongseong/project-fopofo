@@ -21,23 +21,15 @@ const ChatbotFileUpload = () => {
   return (
     <div className="upload-container">
       <header className="upload-header">
-        {/* ✅ 로고 (좌측 상단) */}
         <img
-          src="/images/logo.png"
+          src="/images/fopofo-logo.png"
           alt="포포포 로고"
-          className="logo"
+          className="upload-logo"
           onClick={goHome}
-          style={{ cursor: 'pointer' }}
         />
-
-        {/* ✅ 마이페이지 버튼 (우측 상단) */}
-        <div
-          className="mypage"
-          onClick={goToMyPage}
-          style={{ cursor: 'pointer' }}
-        >
+        <button className="mypage-button" onClick={goToMyPage}>
           my page
-        </div>
+        </button>
       </header>
 
       <h2 className="title">Upload files for Chatbot</h2>
