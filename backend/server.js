@@ -18,7 +18,6 @@ app.use(session({
 }));
 
 
-
 // ✅ passport 초기화 및 세션 연결
 const passport = require('./config/passport');
 app.use(passport.initialize());
