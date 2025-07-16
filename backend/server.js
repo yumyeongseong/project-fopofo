@@ -10,21 +10,18 @@ connectDB();
 
 const app = express();
 
-// ✅ 세션 먼저 설정
 app.use(session({
-  secret: 'my-secret', // 환경변수로 빼도 좋아
+  secret: 'my-secret',
   resave: false,
   saveUninitialized: true,
 }));
 
-
-// ✅ passport 초기화 및 세션 연결
 const passport = require('./config/passport');
 app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(cors({
-  origin: 'http://localhost:3000', // 프론트엔드 주소
+  origin: 'http://localhost:3000',
   credentials: true,
 }));
 
@@ -35,15 +32,14 @@ const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const userUploadRoutes = require('./routes/userUploadRoutes');
-
+const googleAuthRoutes = require('./routes/googleAuthRoutes'); // ✅ 수정된 부분: googleAuthRoutes 임포트 추가
 
 app.use('/api/users', authRoutes);
 app.use('/api/users', userRoutes);
-// app.use('/api/auth', googleAuthRoutes);
+app.use('/api/auth', googleAuthRoutes); // ✅ 수정된 부분: googleAuthRoutes 사용 설정
 app.use('/uploads', express.static('uploads'));
 app.use('/api/upload', uploadRoutes);
 app.use('/api/user-upload', userUploadRoutes);
-
 
 
 const PORT = process.env.PORT || 5000;
