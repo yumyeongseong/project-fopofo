@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+langchain
+langchain-community
+openai
+pinecone-client>=1.0.0
+python-dotenv
+unstructured
+pdfminer.six
+python-docx
