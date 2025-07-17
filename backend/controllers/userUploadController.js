@@ -74,6 +74,28 @@ exports.getDesigns = async (req, res) => {
 };
 
 
+// --- 자기소개서 조회(Read) API ---
+exports.getResume = async (req, res) => {
+  try {
+    const resume = await Upload.findOne({ user: req.user._id, fileType: 'resume' });
+    if (!resume) {
+      return res.status(404).json({ message: '업로드된 자기소개서가 없습니다.' });
+    }
+    
+    const presignedUrl = await generatePresignedUrl(resume.fileName);
+
+    const data = {
+      ...resume.toObject(),
+      presignedUrl,
+    };
+
+    res.status(200).json({ message: '자기소개서 조회 성공', data });
+  } catch (err) {
+    res.status(500).json({ message: '서버 오류', error: err.message });
+  }
+};
+
+
 // --- 삭제(Delete) API ---
 exports.deleteUpload = async (req, res) => {
     try {
