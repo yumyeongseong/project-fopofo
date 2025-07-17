@@ -5,19 +5,28 @@
     position: relative;
 }
 
+
 .home-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     padding: 30px 50px;
 }
 
 .home-logo {
-    width: 160px;
-    cursor: pointer;
+    position: fixed !important;
+    top: -30px !important;
+    left: -20px !important;
+    width: 230px !important;
+    padding: 24px 40px !important;
+    z-index: 999 !important;
 }
 
-.mypage-button {
+.home-logo:hover {
+    transform: scale(1.05);
+    /* ✅ 호버 시 약간 확대 애니메이션 */
+}
+.mypage-button-home {
     font-family: 'Courier New', serif;
     font-size: 22px;
     background-color: transparent;
@@ -29,9 +38,11 @@
     transition: all 0.3s ease;
     text-shadow: 1px 1px 1px #ccc;
     cursor: pointer;
+    margin-top: 30px;
+    margin-right: 15px;
 }
 
-.mypage-button:hover {
+.mypage-button-home:hover {
     transform: scale(1.05);
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25);
 }

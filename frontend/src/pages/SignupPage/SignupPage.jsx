@@ -21,9 +21,8 @@ function SignupPage() {
             alert('회원가입 실패! 이미 사용 중인 아이디일 수 있습니다.');
         }
     };
-
     const handleLogoClick = () => {
-        window.location.href = '/';
+        navigate('/mainpage'); // 👉 시작화면으로 이동
     };
 
     return (
@@ -31,7 +30,7 @@ function SignupPage() {
             <img
                 src="/images/fopofo-logo.png"
                 alt="fopofo-logo"
-                className="signup-logo-img"
+                className="login-logo-img"
                 onClick={handleLogoClick}
             />
 
