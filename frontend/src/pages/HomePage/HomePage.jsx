@@ -18,7 +18,7 @@ function HomePage() {
                 onClick={() => navigate('/mainpage')}
             />
             <header className="home-header">
-                <button className="mypage-button" onClick={handleMyPageClick}>
+                <button className="mypage-button-home" onClick={handleMyPageClick}>
                     my page
                 </button>
             </header>

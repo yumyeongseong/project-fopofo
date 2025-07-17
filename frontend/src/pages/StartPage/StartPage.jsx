@@ -13,7 +13,7 @@ function StartPage() {
         <div className="start-page">
             {/* 왼쪽 상단 로고 */}
             <img
-                src="/fopofo-logo.png"
+                src="/Fopofo-Logo.png"
                 alt="fopofo-logo"
                 className="logo"
                 onClick={() => navigate('/mainpage')}
