@@ -22,7 +22,7 @@ function App() {
         <Route path="/home" element={<HomePage />} />
         <Route path="/upload" element={<PortfolioUploadPage />} />
         <Route path="/upload/chatbot" element={<ChatbotFileUpload />} />
-        <Route path="/prompt/chatbot" element={<ChatbotPromptPage />} />
+        /  <Route path="/prompt/chatbot" element={<ChatbotPromptPage />} />
       </Routes>
     </Router>
   );
