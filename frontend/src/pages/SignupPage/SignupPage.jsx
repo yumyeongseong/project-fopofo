@@ -9,9 +9,8 @@ function SignupPage() {
         // 회원가입 성공 처리 후
         navigate('/home');
     };
-
     const handleLogoClick = () => {
-        window.location.href = '/';
+        navigate('/mainpage'); // 👉 시작화면으로 이동
     };
 
     return (
@@ -19,7 +18,7 @@ function SignupPage() {
             <img
                 src="/fopofo-logo.png"
                 alt="fopofo-logo"
-                className="signup-logo-img"
+                className="login-logo-img"
                 onClick={handleLogoClick}
             />
 
