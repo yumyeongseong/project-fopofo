@@ -1,97 +1,125 @@
 const Upload = require('../models/Upload');
-const fs = require('fs');
+const { S3Client, GetObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
+require('dotenv').config();
 
+// v3 방식의 S3 클라이언트 생성
+const s3Client = new S3Client({
+    credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    },
+    region: 'ap-southeast-2',
+});
 
-// 이미지 조회
+// Presigned URL 생성 헬퍼 함수 (v3 방식)
+const generatePresignedUrl = async (key) => {
+  if (!key) return null;
+  const command = new GetObjectCommand({
+    Bucket: process.env.S3_BUCKET_NAME,
+    Key: key,
+  });
+  // 5분 동안 유효
+  return getSignedUrl(s3Client, command, { expiresIn: 60 * 5 });
+};
+
+// --- 조회(Read) API ---
+// 각 조회 함수들을 async/await 와 Promise.all을 사용하도록 수정
+const createPresignedUrls = async (items) => {
+    const promises = items.map(async (item) => ({
+        ...item.toObject(),
+        presignedUrl: await generatePresignedUrl(item.fileName),
+    }));
+    return Promise.all(promises);
+};
+
 exports.getImages = async (req, res) => {
-    console.log('✅req.user._id:', req.user._id);
   try {
-    const userId = req.user._id;
-    const images = await Upload.find({ user: userId, fileType: 'image' });
-    res.status(200).json({ message: '이미지 조회 성공', data: images });
+    const images = await Upload.find({ user: req.user._id, fileType: 'image' });
+    const data = await createPresignedUrls(images);
+    res.status(200).json({ message: '이미지 조회 성공', data });
   } catch (err) {
     res.status(500).json({ message: '서버 오류', error: err.message });
   }
 };
 
-// 동영상 조회
 exports.getVideos = async (req, res) => {
   try {
-    const userId = req.user._id;
-    const videos = await Upload.find({ user: userId, fileType: 'video' });
-    res.status(200).json({ message: '동영상 조회 성공', data: videos });
+    const videos = await Upload.find({ user: req.user._id, fileType: 'video' });
+    const data = await createPresignedUrls(videos);
+    res.status(200).json({ message: '동영상 조회 성공', data });
   } catch (err) {
     res.status(500).json({ message: '서버 오류', error: err.message });
   }
 };
 
-// 문서 조회
 exports.getDocuments = async (req, res) => {
   try {
-    const userId = req.user._id;
-    const documents = await Upload.find({ user: userId, fileType: 'document' });
-    res.status(200).json({ message: '문서 조회 성공', data: documents });
+    const documents = await Upload.find({ user: req.user._id, fileType: 'document' });
+    const data = await createPresignedUrls(documents);
+    res.status(200).json({ message: '문서 조회 성공', data });
   } catch (err) {
     res.status(500).json({ message: '서버 오류', error: err.message });
   }
 };
 
-// 디자인 이미지 조회
 exports.getDesigns = async (req, res) => {
   try {
-    const userId = req.user._id;
-    const designs = await Upload.find({ user: userId, fileType: 'design' });
-    res.status(200).json({ message: '디자인 이미지 조회 성공', data: designs });
+    const designs = await Upload.find({ user: req.user._id, fileType: 'design' });
+    const data = await createPresignedUrls(designs);
+    res.status(200).json({ message: '디자인 이미지 조회 성공', data });
   } catch (err) {
     res.status(500).json({ message: '서버 오류', error: err.message });
   }
 };
 
+
+// --- 삭제(Delete) API ---
 exports.deleteUpload = async (req, res) => {
     try {
-      const uploadId = req.params.id;
-      const userId = req.user._id;
-  
-      const deleted = await Upload.findOneAndDelete({ _id: uploadId, user: userId });
-      if (!deleted) {
+      const uploadToDelete = await Upload.findOne({ _id: req.params.id, user: req.user._id });
+      if (!uploadToDelete) {
         return res.status(404).json({ message: "파일을 찾을 수 없습니다." });
       }
+
+      // v3 방식의 삭제 명령어
+      const command = new DeleteObjectCommand({
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: uploadToDelete.fileName,
+      });
+      await s3Client.send(command);
+
+      await Upload.findByIdAndDelete(req.params.id);
   
-      res.status(200).json({ message: "삭제 성공", data: deleted });
+      res.status(200).json({ message: "삭제 성공" });
     } catch (err) {
       res.status(500).json({ message: "서버 오류", error: err.message });
     }
   };
 
-
+// --- 수정(Update) API ---
 exports.updateUpload = async (req, res) => {
   try {
-    const uploadId = req.params.id;
-    const userId = req.user._id;
-
-    const existingUpload = await Upload.findById(uploadId);
-
-    if (!existingUpload) {
-      return res.status(404).json({ message: '업로드 항목을 찾을 수 없음' });
-    }
-
-    if (existingUpload.user.toString() !== userId.toString()) {
-      return res.status(403).json({ message: '권한이 없습니다' });
-    }
-
-    // ✅ 기존 파일 삭제
-    if (fs.existsSync(existingUpload.filePath)) {
-      fs.unlinkSync(existingUpload.filePath);
-    }
-
-    // ✅ 새 파일 정보로 덮어쓰기
     const newFile = req.file;
     if (!newFile) {
-      return res.status(400).json({ message: '새 파일이 존재하지 않습니다.' });
+        return res.status(400).json({ message: '수정할 새 파일이 없습니다.' });
     }
 
-    existingUpload.fileName = newFile.filename;
-    existingUpload.filePath = newFile.path;
+    const existingUpload = await Upload.findOne({ _id: req.params.id, user: req.user._id });
+    if (!existingUpload) {
+      const delCommand = new DeleteObjectCommand({ Bucket: process.env.S3_BUCKET_NAME, Key: newFile.key });
+      await s3Client.send(delCommand);
+      return res.status(404).json({ message: '수정할 원본 파일을 찾을 수 없습니다.' });
+    }
+
+    const delCommand = new DeleteObjectCommand({
+      Bucket: process.env.S3_BUCKET_NAME,
+      Key: existingUpload.fileName,
+    });
+    await s3Client.send(delCommand);
+
+    existingUpload.fileName = newFile.key;
+    existingUpload.filePath = newFile.location;
     existingUpload.originalName = newFile.originalname;
     existingUpload.updatedAt = new Date();
 
@@ -102,4 +130,3 @@ exports.updateUpload = async (req, res) => {
     res.status(500).json({ message: '수정 실패', error: err.message });
   }
 };
-
