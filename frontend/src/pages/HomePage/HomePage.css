@@ -5,18 +5,31 @@
     position: relative;
 }
 
+
 .home-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     padding: 30px 50px;
 }
 
 .home-logo {
+    position: fixed;
+    top: -40px;
+    left: -20px;
     width: 160px;
+    filter: brightness(1);
+    opacity: 0.95;
+    padding: 20px 40px;
+    z-index: 20;
+    transition: transform 0.3s ease;
     cursor: pointer;
 }
 
+.home-logo:hover {
+    transform: scale(1.05);
+    /* ✅ 호버 시 약간 확대 애니메이션 */
+}
 .mypage-button {
     font-family: 'Courier New', serif;
     font-size: 22px;

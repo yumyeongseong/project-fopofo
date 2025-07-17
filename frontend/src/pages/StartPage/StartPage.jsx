@@ -16,6 +16,7 @@ function StartPage() {
                 src="/fopofo-logo.png"
                 alt="fopofo-logo"
                 className="logo"
+                onClick={() => navigate('/mainpage')}
             />
 
             {/* 배경 이미지들 */}
