@@ -23,7 +23,7 @@ async def read_root():
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5000"],  
+    allow_origins=["http://localhost:3000"],  # ✅ 수정된 부분: 프런트엔드 주소로 변경 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
