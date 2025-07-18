@@ -34,7 +34,7 @@ function SignupPage() {
                     placeholder="PW: 비밀번호를 입력하세요"
                 />
 
-                {/* 여기 onClick 추가! */}
+                {/* onClick 추가 */}
                 <button className="signup-button" onClick={handleSignUp}>
                     회원 가입
                 </button>
