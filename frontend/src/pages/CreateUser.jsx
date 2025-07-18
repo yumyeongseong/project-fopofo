@@ -13,7 +13,7 @@ export default function CreateUser() {
             return;
         }
         setError(false); // 👈 에러 초기화
-        navigate("/portfolio/upload"); // 👈 업로드 페이지로 이동
+        navigate("/intro-upload"); // 👈 업로드 페이지로 이동
     };
 
     return (

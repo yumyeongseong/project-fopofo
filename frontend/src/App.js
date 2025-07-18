@@ -17,6 +17,7 @@ import ChatbotEditPage from "./pages/mypage/ChatbotEditPage";
 // 포트폴리오
 import PortfolioCreatedPage from "./pages/PortfolioCreatedPage/PortfolioCreatedPage";
 import PortfolioUploadPage from "./pages/PortfolioUploadPage/PortfolioUploadPage";
+import IntroUploadPage from "./pages/IntroUploadPage";
 
 //사용자용웹
 import UserMainPage from "./components/UserMainPage";
@@ -43,6 +44,7 @@ export default function App() {
         {/* 포트폴리오 관련 */}
         <Route path="/create" element={<PortfolioCreatedPage />} />
         <Route path="/portfolio/upload" element={<PortfolioUploadPage />} />
+        <Route path="/intro-upload" element={<IntroUploadPage />} />
 
 
         {/* 사용자용웹 */}

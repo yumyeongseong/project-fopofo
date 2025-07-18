@@ -13,8 +13,12 @@ function PortfolioUploadPage() {
         Photo: [],
     });
 
+    const handleMyPageClick = () => {
+        navigate('/mypage');
+    };
+
     const handleLogoClick = () => {
-        navigate('/mainpage');
+        navigate('/');
     };
 
     const handleFileDelete = (category, indexToRemove) => {
@@ -50,7 +54,12 @@ function PortfolioUploadPage() {
                     className="upload-logo"
                     onClick={handleLogoClick}
                 />
-                <button className="mypage-button-upload">my page</button>
+                <button
+                    className="mypage-button-upload"
+                    onClick={handleMyPageClick}
+                >
+                    my page
+                </button>
             </header>
 
             <main className="upload-main">

@@ -6,6 +6,7 @@ function HomePage() {
     const navigate = useNavigate();
 
     const handleMyPageClick = () => {
+        navigate('/mypage');
         console.log('마이페이지 이동 예정');
     };
 
@@ -18,7 +19,8 @@ function HomePage() {
                 onClick={() => navigate('/mainpage')}
             />
             <header className="home-header">
-                <button className="mypage-button-home" onClick={handleMyPageClick}>
+                <button
+                    className="mypage-button-home" onClick={handleMyPageClick}>
                     my page
                 </button>
             </header>
