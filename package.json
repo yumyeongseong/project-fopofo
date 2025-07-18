@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "lucide-react": "^0.525.0",
+    "pdfjs-dist": "^5.3.93",
     "react-qr-code": "^2.0.18",
     "web-vitals": "^5.0.3"
   },

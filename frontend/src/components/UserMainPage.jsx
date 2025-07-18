@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import CategoryButtons from "./CategoryButtons";
 import IntroSection from "./IntroSection";
 import PortfolioSection from "./PortfolioSection";
@@ -7,7 +8,8 @@ import ScrollToTopButton from "./ScrollToTopButton";
 import ThemePanel from "./ThemePanel";
 import { Paintbrush } from "lucide-react";
 
-export default function UserMainPage({ userName }) {
+export default function UserMainPage() {
+    const { userName } = useParams();
     const [activeSection, setActiveSection] = useState(null);
     const [font, setFont] = useState("font-serif");
     const [background, setBackground] = useState("bg-gradient-to-b from-blue-100 to-blue-200");
@@ -28,8 +30,7 @@ export default function UserMainPage({ userName }) {
             setShowIntro(true);
             setTimeout(() => setShowResume(true), 300);
 
-            // ✅ AWS S3로부터 백엔드에서 제공한 URL을 받아오기
-            fetch("/api/user/files")  // 실제 API 경로로 수정 필요
+            fetch("/api/user/files") // 실제 API 경로로 수정 필요
                 .then(res => res.json())
                 .then(data => {
                     setIntroUrl(data.introUrl);

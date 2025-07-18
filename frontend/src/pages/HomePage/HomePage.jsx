@@ -27,7 +27,7 @@ function HomePage() {
                 <div className="main-title-box">
                     <div
                         className="create-button"
-                        onClick={() => navigate('/upload')}
+                        onClick={() => navigate('/create-user')}
                     >
                         Create Your Own Web Portfolio
                     </div>
