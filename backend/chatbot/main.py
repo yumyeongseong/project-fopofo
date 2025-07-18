@@ -61,3 +61,15 @@ class ChatRequest(BaseModel):
 async def chat(request: ChatRequest, user_id: str = Depends(get_current_user)):
     response = get_chatbot_response(request.query, user_id)
     return {"response": response}
+
+@app.post("/generate-portfolio-url")
+async def generate_portfolio_url(user_id: str = Depends(get_current_user)):
+    # user_id는 JWT에서 가져온 것이므로 이미 ASCII 안전한 값입니다.
+    # 이전 단계에서 user_id를 SHA256 해싱해서 사용하기로 했으므로,
+    # 여기서는 해싱된 user_id를 URL에 바로 사용할 수 있습니다.
+    base_frontend_url = "http://localhost:3000/user" # UserPage를 렌더링할 기본 경로
+    
+    # user_id를 URL 경로에 포함하여 고유한 사용자 페이지를 나타냅니다.
+    portfolio_display_url = f"{base_frontend_url}/{user_id}" 
+    
+    return {"portfolio_url": portfolio_display_url}

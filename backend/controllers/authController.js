@@ -22,20 +22,33 @@ exports.signup = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
-  const { userId, password } = req.body;
+  const { userId, password } = req.body; // 👈 참고: 현재 email이 아닌 userId로 로그인하고 계십니다.
 
   try {
     const user = await User.findOne({ userId });
     if (!user) return res.status(401).json({ message: "존재하지 않는 ID입니다." });
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    // comparePassword 메서드를 사용하고 계시다면 아래 코드를 사용하세요.
+    // const isMatch = await user.comparePassword(password);
+    const isMatch = await bcrypt.compare(password, user.password); // User 모델에 comparePassword가 없다면 이 코드 사용
     if (!isMatch) return res.status(401).json({ message: "비밀번호가 틀렸습니다." });
 
     const token = generateToken({
       userId: user.userId,
-      _id: user._id.toString()  // ObjectId도 넣어줌
+      _id: user._id.toString()
     });
-    res.status(200).json({ message: "로그인 성공", token }); // 토큰 전달
+
+    // ✅ user 객체를 응답에 추가하여 닉네임(userId) 유무를 전달
+    res.status(200).json({ 
+        message: "로그인 성공", 
+        token,
+        user: {
+            _id: user._id.toString(),
+            userId: user.userId, // 닉네임 필드
+            nickname: user.nickname // 👈 새로 추가된 닉네임 필드
+        }
+    });
+
   } catch (err) {
     res.status(500).json({ message: "로그인 실패", error: err.message });
   }

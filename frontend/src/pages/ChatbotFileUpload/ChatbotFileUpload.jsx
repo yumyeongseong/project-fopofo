@@ -2,14 +2,15 @@
 import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ChatbotFileUpload.css';
-import axios from 'axios'; // ✅ axios 임포트 추가
+// 👇 1. 기존 axios 대신 새로 만든 pythonApi를 가져옵니다.
+import { pythonApi } from '../../services/api';
 
 const ChatbotFileUpload = () => {
   const navigate = useNavigate();
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
 
-  // 파일 추가 로직 (재사용을 위해 useCallback 사용)
+  // ... (파일 추가, 드래그앤드롭 관련 핸들러 함수들은 기존과 동일) ...
   const addFiles = useCallback((newFiles) => {
     const filesArray = Array.from(newFiles);
     setSelectedFiles(prevFiles => {
@@ -18,14 +19,12 @@ const ChatbotFileUpload = () => {
       );
       return [...prevFiles, ...uniqueFiles];
     });
-  }, [selectedFiles]); // ✅ 수정된 부분: selectedFiles를 의존성 배열에 추가하여 최신 상태 반영
+  }, []);
 
-  // input type="file" 변경 핸들러
   const handleFileChange = (e) => {
     addFiles(e.target.files);
   };
 
-  // 드래그앤드롭 이벤트 핸들러
   const handleDragOver = useCallback((e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -48,34 +47,11 @@ const ChatbotFileUpload = () => {
     }
   }, [addFiles]);
 
-  // 파일 삭제 핸들러
   const handleRemoveFile = (fileName) => {
     setSelectedFiles(prevFiles => prevFiles.filter(file => file.name !== fileName));
   };
 
-  // 파일 프리뷰 렌더링 함수 (자기소개서/이력서이므로 아이콘/파일명 위주)
-  const renderFilePreview = (file) => {
-    const fileName = file.name;
-    const fileExtension = fileName.split('.').pop().toLowerCase();
-    let icon = '📄'; // 기본 문서 아이콘
-
-    if (fileExtension === 'pdf') {
-      icon = '📄';
-    } else if (fileExtension === 'docx' || fileExtension === 'doc') {
-      icon = '📝';
-    } else if (fileExtension === 'txt') {
-      icon = '📃';
-    }
-
-    return (
-      <div className="file-preview-item">
-        <span className="file-icon">{icon}</span>
-        <span className="file-name">{fileName}</span>
-      </div>
-    );
-  };
-
-  // ✅ 수정된 부분: 백엔드로 파일 전송 로직
+  // 👇 2. 파일 업로드 핸들러(handleUploadFiles)를 수정합니다.
   const handleUploadFiles = async () => {
     if (selectedFiles.length === 0) {
       alert('자기소개서 및 이력서 파일을 업로드해주세요.');
@@ -84,40 +60,35 @@ const ChatbotFileUpload = () => {
 
     const formData = new FormData();
     selectedFiles.forEach(file => {
-      formData.append('file', file); // 'file'은 백엔드 FastAPI의 @app.post("/upload")의 파라미터 이름과 일치해야 함
+      formData.append('file', file);
     });
 
     try {
-      // ✅ JWT 토큰을 Authorization 헤더에 포함하여 요청
-      const token = localStorage.getItem('token'); // 로그인 시 저장된 토큰
-      if (!token) {
-        alert('로그인이 필요합니다.');
-        navigate('/login');
-        return;
-      }
-
-      // FastAPI 백엔드 URL: http://localhost:8000
-      const response = await axios.post('http://localhost:8000/upload', formData, {
+      // 이제 pythonApi를 사용하므로, 전체 주소 대신 '/upload'만 적어줍니다.
+      const response = await pythonApi.post('/upload', formData, {
         headers: {
-          'Content-Type': 'multipart/form-data', // 파일 업로드 시 필수
-          'Authorization': `Bearer ${token}` // JWT 토큰 첨부
+          'Content-Type': 'multipart/form-data',
+          // 'Authorization' 헤더는 api.js에서 자동으로 추가되므로 여기서 삭제합니다.
         }
       });
 
       console.log('파일 업로드 및 벡터 저장 완료:', response.data);
       alert('파일 업로드 및 챗봇 학습 준비 완료!');
-      setSelectedFiles([]); // 업로드 후 파일 목록 초기화
-      navigate('/prompt/chatbot'); // 다음 프롬프트 페이지로 이동
+      setSelectedFiles([]);
+      navigate('/prompt/chatbot');
     } catch (error) {
-      console.error('파일 업로드 실패:', error.response?.data || error.message);
-      alert('파일 업로드에 실패했습니다. 다시 시도해주세요.');
-      if (error.response?.data) {
-        console.error('FastAPI Error Detail:', error.response.data.detail);
+      // 👇 에러 처리 시 토큰이 없는 경우를 더 명확하게 확인합니다.
+      if (error.response?.status === 401) {
+        alert('인증 정보가 유효하지 않습니다. 다시 로그인해주세요.');
+        navigate('/login');
+      } else {
+        console.error('파일 업로드 실패:', error.response?.data || error.message);
+        alert('파일 업로드에 실패했습니다. 다시 시도해주세요.');
       }
     }
   };
 
-
+  // ... (나머지 렌더링 부분은 기존과 동일합니다.) ...
   const goHome = () => {
     navigate('/');
   };
@@ -142,7 +113,6 @@ const ChatbotFileUpload = () => {
 
       <h2 className="title">Upload files for Chatbot</h2>
 
-      {/* 드래그앤드롭 영역 및 파일 선택 input */}
       <div
         className={`upload-box ${isDragging ? 'dragging' : ''}`}
         onDragOver={handleDragOver}
@@ -158,7 +128,6 @@ const ChatbotFileUpload = () => {
           </span>
         </p>
 
-        {/* 파일 선택 버튼 (기존 input을 숨기고 label로 클릭 유도) */}
         <label htmlFor="file-upload" className="file-upload-label">
           파일 선택
         </label>
@@ -174,7 +143,6 @@ const ChatbotFileUpload = () => {
           {selectedFiles.length > 0 ? `${selectedFiles.length}개 파일 선택됨` : '선택된 파일 없음'}
         </span>
 
-        {/* 선택된 파일 목록 표시 */}
         {selectedFiles.length > 0 && (
           <ul className="file-list">
             {selectedFiles.map((file, index) => (
@@ -192,7 +160,7 @@ const ChatbotFileUpload = () => {
           </ul>
         )}
 
-        <button className="next-button" onClick={handleUploadFiles}> {/* ✅ 수정된 부분: handleNext 대신 handleUploadFiles 호출 */}
+        <button className="next-button" onClick={handleUploadFiles}>
           Next
         </button>
       </div>
