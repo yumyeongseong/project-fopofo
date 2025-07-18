@@ -1,21 +1,18 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import StartPage from './pages/StartPage/StartPage';
-import LoginPage from './pages/LoginPage/LoginPage';
-import SignupPage from './pages/SignupPage/SignupPage';
-import HomePage from './pages/HomePage/HomePage';
-import PortfolioUploadPage from './pages/PortfolioUploadPage/PortfolioUploadPage';
-import PortfolioCreatedPage from './pages/PortfolioCreatedPage/PortfolioCreatedPage';
-import UserPage from './pages/UserPage'; // ✅ 요기만 수정!
-import './index.css';
 
 import StartPage from './pages/StartPage/StartPage';
 import LoginPage from './pages/LoginPage/LoginPage';
 import SignupPage from './pages/SignupPage/SignupPage';
 import HomePage from './pages/HomePage/HomePage';
 import PortfolioUploadPage from './pages/PortfolioUploadPage/PortfolioUploadPage';
+import PortfolioCreatedPage from './pages/PortfolioCreatedPage/PortfolioCreatedPage';
 import ChatbotFileUpload from './pages/ChatbotFileUpload/ChatbotFileUpload';
 import ChatbotPromptPage from './pages/ChatbotPromptPage/ChatbotPromptPage';
+
+import UserPage from './pages/UserPage'; 
+import CreateUser from "./pages/CreateUser";
+import './index.css';
 
 function App() {
   return (
@@ -27,10 +24,11 @@ function App() {
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/upload" element={<PortfolioUploadPage />} />
-        <Route path="/test-url" element={<PortfolioCreatedPage />} />
-        <Route path="/user/:id" element={<UserPage />} />
+        <Route path="/portfolio-created" element={<PortfolioCreatedPage />} />
         <Route path="/upload/chatbot" element={<ChatbotFileUpload />} />
-        /  <Route path="/prompt/chatbot" element={<ChatbotPromptPage />} />
+        <Route path="/prompt/chatbot" element={<ChatbotPromptPage />} />
+        <Route path="/create" element={<CreateUser />} />
+        <Route path="/user/:userName" element={<UserPage />} />
       </Routes>
     </Router>
   );

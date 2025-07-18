@@ -1,8 +1,20 @@
-export default function IntroSection() {
+export default function IntroSection({ type, fileUrl }) {
+    if (!fileUrl) {
+        return (
+            <div className="bg-white rounded-xl shadow-md p-6 text-gray-400 text-center">
+                파일이 업로드되지 않았습니다 😥
+            </div>
+        );
+    }
+
     return (
-        <div className="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-md border mt-10">
-            <h2 className="text-xl font-semibold mb-4">자기소개서</h2>
-            <p>안녕하세요! 홍길동입니다. 열심히 노력하고 있습니다 😄</p>
+        <div className="bg-white rounded-xl shadow-md p-6">
+            <h2 className="text-xl font-bold mb-4">{type === "intro" ? "자기소개서" : "이력서"}</h2>
+            <iframe
+                src={fileUrl}
+                title={type}
+                className="w-full h-[600px] rounded border"
+            />
         </div>
     );
 }

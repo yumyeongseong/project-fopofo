@@ -2,6 +2,7 @@ import os
 from typing import Optional
 
 from fastapi import APIRouter, HTTPException, Depends
+from user_answers import delete_user_answers, save_user_answers, get_user_answers
 from pydantic import BaseModel
 from pinecone import Pinecone
 
@@ -61,6 +62,18 @@ def get_my_chatbot(user_id: str = Depends(get_current_user)):
     
     chatbot_data["_id"] = str(chatbot_data["_id"])
     return chatbot_data
+
+
+@router.get("/get-answers")
+async def get_answers_api(user_id: str = Depends(get_current_user)):
+    """
+    현재 로그인된 사용자의 저장된 질문 목록을 반환하는 API
+    """
+    questions = get_user_answers(user_id)
+    if not questions:
+        # 질문이 없는 경우 빈 리스트를 반환하거나, 에러를 발생시킬 수 있습니다.
+        return []
+    return questions
 
 
 ### 챗봇/개발자가 질문한 사용자 답변 삭제
