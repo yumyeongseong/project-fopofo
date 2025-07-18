@@ -20,6 +20,15 @@ def save_user_answers(user_id: str, answers: list): # ✅ answers 타입을 list
         upsert=True
     )
 
+def get_user_qa_pairs(user_id: str) -> list:
+    """
+    특정 사용자의 질문-답변 데이터를 {'question': ..., 'answer': ...} 형태의 리스트로 반환합니다.
+    """
+    doc = answers_collection.find_one({"user_id": user_id})
+    if doc and "answers" in doc:
+        return doc['answers']
+    return []
+
 def get_user_answers(user_id: str) -> list: # ✅ 반환 타입을 list로 명시
     # ✅ 변수 이름을 answers_collection으로 수정
     doc = answers_collection.find_one({"user_id": user_id})
