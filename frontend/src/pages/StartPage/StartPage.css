@@ -108,7 +108,7 @@
     transform: translate(-50%, -50%);
     font-family: 'DM Serif Display', serif;
     font-size: 4.5rem;
-    /* ✅ 기존 6rem → 줄여서 한 줄에 들어오게! */
+    /* 기존 6rem → 줄여서 한 줄에 들어오게! */
     font-weight: bold;
     text-align: center;
     white-space: nowrap;

@@ -6,7 +6,8 @@ import SignupPage from './pages/SignupPage/SignupPage';
 import HomePage from './pages/HomePage/HomePage';
 import PortfolioUploadPage from './pages/PortfolioUploadPage/PortfolioUploadPage';
 import PortfolioCreatedPage from './pages/PortfolioCreatedPage/PortfolioCreatedPage';
-import UserPage from './pages/UserPage'; // ✅ 요기만 수정!
+import UserPage from './pages/UserPage'; 
+import CreateUser from "./pages/CreateUser";
 import './index.css';
 
 function App() {
@@ -20,7 +21,8 @@ function App() {
         <Route path="/home" element={<HomePage />} />
         <Route path="/upload" element={<PortfolioUploadPage />} />
         <Route path="/test-url" element={<PortfolioCreatedPage />} />
-        <Route path="/user/:id" element={<UserPage />} />
+        <Route path="/create" element={<CreateUser />} />
+        <Route path="/user/:userName" element={<UserPage />} />
       </Routes>
     </Router>
   );
