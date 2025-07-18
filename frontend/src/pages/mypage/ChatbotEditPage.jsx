@@ -114,10 +114,9 @@ export default function IntroEditPage() {
             <MypageHeader />
 
             {showMessage && (
-                <div className="fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-white text-black px-6 py-2 rounded-full shadow-md z-50 transition-opacity duration-300">
-                    저장되었습니다.
+                <div className="absolute bottom-[80px] left-1/2 transform -translate-x-1/2 bg-white text-black px-6 py-2 rounded-full shadow-md z-50 transition-opacity duration-300">
+                    {showMessage}
                 </div>
-
             )}
 
             <div className="flex flex-1 mt-6">
@@ -214,7 +213,6 @@ export default function IntroEditPage() {
         </div>
     );
 }
-
 
 
 
