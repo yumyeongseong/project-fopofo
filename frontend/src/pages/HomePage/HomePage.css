@@ -1,3 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
+
+
+/* ---------------------------------- */
+/* 2. CSS 초기화 (Reset) 코드 추가     */
+/* ---------------------------------- */
+* {
+    /* 모든 요소에 박스 크기 계산법을 통일시켜 레이아웃이 틀어지는 것을 방지합니다. */
+    box-sizing: border-box;
+    margin: 0;
+    /* 브라우저가 기본으로 주는 마진을 제거합니다. */
+    padding: 0;
+    /* 브라우저가 기본으로 주는 패딩을 제거합니다. */
+}
+
+
+
+
 .home-container {
     background-color: #fff;
     min-height: 100vh;
@@ -5,16 +23,26 @@
     position: relative;
 }
 
+
 .home-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     padding: 30px 50px;
 }
 
 .home-logo {
-    width: 160px;
-    cursor: pointer;
+    position: fixed !important;
+    top: -30px !important;
+    left: -20px !important;
+    width: 230px !important;
+    padding: 24px 40px !important;
+    z-index: 999 !important;
+}
+
+.home-logo:hover {
+    transform: scale(1.05);
+    /* ✅ 호버 시 약간 확대 애니메이션 */
 }
 
 .mypage-button {

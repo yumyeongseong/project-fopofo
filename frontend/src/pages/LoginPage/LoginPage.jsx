@@ -1,35 +1,35 @@
-import React, { useState, useEffect } from 'react'; // ✅ 수정된 부분: useEffect 임포트 추가
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
-import api from '../../services/api'; // ✅ axios 인스턴스 import
+// 👇 1. 기존 api 대신 새로 만든 nodeApi를 가져옵니다.
+import { nodeApi } from '../../services/api';
 
 function LoginPage() {
   const navigate = useNavigate();
-
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
 
-  // ✅ 수정된 부분: 컴포넌트 마운트 시 URL 파싱 로직 추가
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get('token'); // URL에서 'token' 파라미터 추출
+    const token = urlParams.get('token');
 
     if (token) {
-      localStorage.setItem('token', token); // 추출한 토큰을 localStorage에 저장
+      localStorage.setItem('token', token);
       alert('구글 로그인 성공!');
-      // URL에서 토큰 파라미터 제거 (선택 사항, 깔끔한 URL 유지를 위함)
       window.history.replaceState({}, document.title, window.location.pathname);
-      navigate('/home'); // 로그인 후 홈 페이지로 이동
+      navigate('/home');
     }
-  }, [navigate]); // navigate가 변경될 때마다 useEffect가 다시 실행되지 않도록 의존성 배열에 추가
+  }, [navigate]);
 
+  // 👇 2. 로그인 핸들러 내부의 API 호출을 nodeApi로 수정합니다.
   const handleLogin = async () => {
     try {
-      const response = await api.post('/users/login', { userId, password });
-
+      // nodeApi를 사용하고, 기본 URL 뒷부분인 '/users/login'만 적어줍니다.
+      const response = await nodeApi.post('/users/login', { userId, password });
       const token = response.data.token;
+
       if (token) {
-        localStorage.setItem('token', token); // ✅ 토큰 저장
+        localStorage.setItem('token', token);
         alert('로그인 성공!');
         navigate('/home');
       } else {
@@ -45,15 +45,16 @@ function LoginPage() {
     navigate('/mainpage');
   };
 
-  // ✅ 수정된 부분: Google 로그인 버튼 클릭 시 백엔드 URL로 리다이렉트
+  // Google 로그인 URL은 그대로 유지합니다.
   const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:5000/api/auth/google'; // 백엔드의 Google 로그인 시작 URL
+    window.location.href = 'http://localhost:5000/api/auth/google';
   };
 
   const handleSignupClick = () => {
     navigate('/signup');
   };
 
+  // --- 이 아래의 JSX 반환 부분은 기존과 동일합니다. ---
   return (
     <div className="login-container">
       <img
@@ -81,7 +82,7 @@ function LoginPage() {
 
         <div
           className="gsi-material-button"
-          onClick={handleGoogleLogin} // ✅ 수정된 부분: handleGoogleLogin 함수 연결
+          onClick={handleGoogleLogin}
         >
           <div className="gsi-material-button-state"></div>
           <div className="gsi-material-button-content-wrapper">

@@ -11,13 +11,14 @@ function PortfolioUploadPage() {
   };
 
   const handleNextClick = () => {
-    // ✅ 기본 이동 기능 추가
+    // ✅ 기존 코드의 페이지 이동 기능 반영
     navigate('/upload/chatbot');
   };
 
   return (
     <div className="upload-container">
       <header className="upload-header">
+        {/* ✅ 새로운 코드의 이미지 경로 스타일 반영 */}
         <img
           src="/images/fopofo-logo.png"
           alt="logo"
