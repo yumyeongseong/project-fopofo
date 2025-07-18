@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, Depends
+from fastapi import FastAPI, UploadFile, File, Depends, HTTPException
 from user_answers import save_user_answers, get_user_answers
 from llm import store_document_vectors
 from rag_chatbot import get_chatbot_response
@@ -33,11 +33,21 @@ app.add_middleware(
 @app.post("/upload")
 async def upload(file: UploadFile = File(...), user_id: str = Depends(get_current_user)):
     file_path = f"user_files/{user_id}_{file.filename}"
-    with open(file_path, "wb") as f:
-        f.write(await file.read())
-    store_document_vectors(file_path, user_id)
-    return {"message": "문서 업로드 및 벡터 저장 완료"}
+    try:
+        with open(file_path, "wb") as f:
+            f.write(await file.read())
+        
+        # ✅ 반복문 없이 바로 함수를 호출합니다.
+        store_document_vectors(file_path, user_id)
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"'{file.filename}' 처리 중 오류 발생: {str(e)}")
+    
+    finally:
+        if os.path.exists(file_path):
+            os.remove(file_path)
 
+    return {"message": "문서 업로드 및 벡터 저장 완료"}
 
 ### 개발자 질문 답변 저장 기능
 @app.post("/save-answers")

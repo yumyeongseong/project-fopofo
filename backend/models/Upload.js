@@ -8,7 +8,7 @@ const uploadSchema = new mongoose.Schema({
   },
   fileType: {
     type: String,
-    enum: ['image', 'video', 'document', 'design', 'resume'],
+    enum: ['image', 'video', 'document', 'design', 'resume', 'photo'],
     required: true
   },
   fileName: String,

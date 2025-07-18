@@ -19,6 +19,12 @@ const upload = multer({
     acl: 'private',
     contentType: multerS3.AUTO_CONTENT_TYPE,
     key: function (req, file, cb) {
+
+      // req.user가 없을 경우를 대비한 방어 코드
+      if (!req.user || !req.user.userId) {
+        // user 정보가 없으면 에러를 콜백으로 전달하여 업로드를 중단시킵니다.
+        return cb(new Error('인증 정보가 올바르지 않아 파일 키를 생성할 수 없습니다.'));
+      }
       const userId = req.user.userId;
       const fileType = req.params.type;
       const uniqueName = `${Date.now()}-${file.originalname}`;
