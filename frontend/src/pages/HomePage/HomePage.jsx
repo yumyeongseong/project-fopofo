@@ -5,23 +5,20 @@ import './HomePage.css';
 function HomePage() {
   const navigate = useNavigate();
 
-  const handleLogoClick = () => {
-    navigate('/mainpage'); // 👉 시작화면으로 이동
-  };
-
   const handleMyPageClick = () => {
     console.log('마이페이지 이동 예정');
   };
 
   return (
     <div className="home-container">
+      {/* ✅ [구조/스타일 유지] 새로운 코드의 구조와 이미지 경로를 채택합니다. */}
+      <img
+        src="/images/fopofo-logo.png"
+        alt="fopofo-logo"
+        className="home-logo"
+        onClick={() => navigate('/mainpage')}
+      />
       <header className="home-header">
-        <img
-          src="/images/fopofo-logo.png"
-          alt="fopofo-logo"
-          className="home-logo"
-          onClick={handleLogoClick}
-        />
         <button className="mypage-button" onClick={handleMyPageClick}>
           my page
         </button>

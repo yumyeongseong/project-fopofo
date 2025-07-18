@@ -1,7 +1,9 @@
+// src/pages/ChatbotPromptPage/ChatbotPromptPage.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ChatbotPromptPage.css';
-import axios from 'axios'; // ✅ axios 임포트 추가
+// 👇 1. 기존 axios 대신 새로 만든 pythonApi를 가져옵니다.
+import { pythonApi } from '../../services/api';
 
 const ChatbotPromptPage = () => {
   const [answers, setAnswers] = useState(Array(4).fill(''));
@@ -13,28 +15,19 @@ const ChatbotPromptPage = () => {
     setAnswers(newAnswers);
   };
 
-  // ✅ 수정된 부분: handleSubmit 함수에 백엔드 API 연동 로직 추가
+  // 👇 2. handleSubmit 함수 내부의 API 호출을 수정합니다.
   const handleSubmit = async () => {
-    // 모든 질문에 답변했는지 확인 (필요시)
     const allAnswered = answers.every(answer => answer.trim() !== '');
     if (!allAnswered) {
       alert('모든 질문에 답변해주세요!');
       return;
     }
 
-    console.log('프롬프트 응답:', answers); // 로컬 콘솔 로그 유지
-
     try {
-      const token = localStorage.getItem('token'); // JWT 토큰 가져오기
-      if (!token) {
-        alert('로그인이 필요합니다.');
-        navigate('/login');
-        return;
-      }
+      // 이제 api.js에서 토큰을 자동으로 확인하고 넣어주므로, 
+      // 이 컴포넌트에서 토큰을 직접 가져오고 확인하는 로직은 삭제해도 됩니다.
 
-      // 백엔드로 전송할 데이터 형식 (질문과 답변을 매핑)
-      // questions 배열과 answers 배열을 합쳐 객체로 만듭니다.
-      const questions = [ // ChatbotPromptPage.jsx의 questions 배열과 동일
+      const questions = [
         '자신의 강점이 잘 드러난 경험 하나를 소개해주세요.',
         '가장 자신 있는 프로젝트 또는 작업 경험은 무엇인가요?',
         '협업 중 기억에 남는 순간이나 갈등 해결 사례가 있다면요?',
@@ -42,33 +35,40 @@ const ChatbotPromptPage = () => {
       ];
       const answersData = {};
       questions.forEach((q, i) => {
-        answersData[`question_${i + 1}`] = q; // 질문 자체도 저장
-        answersData[`answer_${i + 1}`] = answers[i]; // 사용자 답변 저장
+        answersData[`question_${i + 1}`] = q;
+        answersData[`answer_${i + 1}`] = answers[i];
       });
 
-      // FastAPI 백엔드 URL: http://localhost:8000
-      const response = await axios.post('http://localhost:8000/save-answers', {
-        answers: answersData // FastAPI의 AnswersRequest 모델과 일치
-      }, {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}` // JWT 토큰 첨부
-        }
+      // 1. 질문 답변 저장 API 호출 (pythonApi 사용)
+      const saveAnswersResponse = await pythonApi.post('/save-answers', {
+        answers: answersData
+        // 헤더는 이제 자동으로 추가됩니다.
       });
 
-      console.log('질문 답변 MongoDB 저장 완료:', response.data);
+      console.log('질문 답변 MongoDB 저장 완료:', saveAnswersResponse.data);
       alert('질문 답변이 성공적으로 저장되었습니다!');
-      // 다음 페이지로 이동 (예: 최종 포트폴리오 생성 확인 페이지)
-      // navigate('/portfolio-generation-summary');
+
+      // 2. 포트폴리오 URL 생성 API 호출 (pythonApi 사용)
+      const generateUrlResponse = await pythonApi.post('/generate-portfolio-url', {}); // body는 비워둠
+
+      const portfolioUrl = generateUrlResponse.data.portfolio_url;
+      console.log('생성된 포트폴리오 URL:', portfolioUrl);
+
+      // 3. PortfolioCreatedPage로 URL을 state로 전달하며 이동
+      navigate('/portfolio-created', { state: { portfolioUrl: portfolioUrl } });
+
     } catch (error) {
-      console.error('질문 답변 저장 실패:', error.response?.data || error.message);
-      alert('질문 답변 저장에 실패했습니다. 다시 시도해주세요.');
-      if (error.response?.data) {
-        console.error('FastAPI Error Detail:', error.response.data.detail);
+      if (error.response?.status === 401) {
+        alert('인증 정보가 유효하지 않습니다. 다시 로그인해주세요.');
+        navigate('/login');
+      } else {
+        console.error('API 호출 실패:', error.response?.data || error.message);
+        alert('데이터 저장 및 URL 생성에 실패했습니다. 다시 시도해주세요.');
       }
     }
   };
 
+  // ... (나머지 JSX 렌더링 부분은 기존과 동일합니다.) ...
   const questions = [
     '자신의 강점이 잘 드러난 경험 하나를 소개해주세요.',
     '가장 자신 있는 프로젝트 또는 작업 경험은 무엇인가요?',
@@ -78,23 +78,18 @@ const ChatbotPromptPage = () => {
 
   return (
     <div className="prompt-wrapper">
-      {/* ✅ 로고 */}
       <img
         src="/images/logo.png"
         alt="포포포 로고"
         className="logo"
-        onClick={() => navigate('/')}
+        onClick={() => navigate('/mainpage')}
       />
-
-      {/* ✅ my page */}
       <div
         className="mypage"
         onClick={() => navigate('/mypage')}
       >
         my page
       </div>
-
-      {/* ✅ 본문 */}
       <div className="prompt-container">
         <h1>Q / A For Chatbot</h1>
         <div className="qa-form">
@@ -117,4 +112,4 @@ const ChatbotPromptPage = () => {
   );
 };
 
-export default ChatbotPromptPage;
+export default ChatbotPromptPage; 

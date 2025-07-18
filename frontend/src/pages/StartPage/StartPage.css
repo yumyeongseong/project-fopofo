@@ -10,14 +10,16 @@
 /* 왼쪽 상단 고정 로고 */
 .logo {
     position: fixed;
-    top: 3px;
-    left: 40px;
+    top: -40px;
+    left: -20px;
     width: 160px;
     /* ✅ 기존보다 더 크게 */
     filter: brightness(1);
     /* ✅ 더 밝게 */
     opacity: 0.95;
     /* ✅ 거의 불투명하게 */
+    padding: 20px 40px;
+    /* ✅ 이 값을 시작화면과 동일하게 맞추기 */
     z-index: 20;
     transition: transform 0.3s ease;
 }
