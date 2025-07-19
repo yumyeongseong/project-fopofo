@@ -79,7 +79,7 @@ const ChatbotPromptPage = () => {
   return (
     <div className="prompt-wrapper">
       <img
-        src="/images/logo.png"
+        src="/fopofo-logo.png"
         alt="포포포 로고"
         className="logo"
         onClick={() => navigate('/mainpage')}

@@ -22,15 +22,20 @@ import IntroUploadPage from "./pages/IntroUploadPage";
 //사용자용웹
 import UserMainPage from "./components/UserMainPage";
 
-// 기타
+// 챗봇
 import ChatbotFileUpload from './pages/ChatbotFileUpload/ChatbotFileUpload';
 import ChatbotPromptPage from './pages/ChatbotPromptPage/ChatbotPromptPage';
+
+
+// 기타
+import { AuthProvider } from './contexts/AuthContext';
 
 import UserPage from './pages/UserPage'; 
 import './index.css';
 
 function App() {
   return (
+  <AuthProvider>
     <Router>
       <Routes>
         {/* 시작/로그인/회원가입 */}
@@ -57,12 +62,15 @@ function App() {
          {/* 사용자용웹 */}
         <Route path="/user/:userName" element={<UserMainPage />} />
 
-        {/* 기타 */}
+        {/* 챗봇 */}
         <Route path="/upload/chatbot" element={<ChatbotFileUpload />} />
         <Route path="/prompt/chatbot" element={<ChatbotPromptPage />} />
+
+        {/* 챗봇 */}
         <Route path="/user/:userName" element={<UserPage />} />
       </Routes>
     </Router>
+  </AuthProvider>
   );
 }
 

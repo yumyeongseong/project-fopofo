@@ -8,8 +8,10 @@ import ScrollToTopButton from "./ScrollToTopButton";
 import ThemePanel from "./ThemePanel";
 import { Paintbrush } from "lucide-react";
 import { nodeApi } from '../services/api'; // ✅ api.js import
+import { useAuth } from '../contexts/AuthContext';
 
 export default function UserMainPage({ userName }) {
+    const { user } = useAuth();
     const navigate = useNavigate(); // ✅ navigate 함수 추가
     const [activeSection, setActiveSection] = useState(null);
     const [font, setFont] = useState("font-serif");
@@ -89,7 +91,7 @@ export default function UserMainPage({ userName }) {
                 <div className="flex flex-col items-center justify-center mt-40 animate-fade-in">
                     <h1 className="text-3xl sm:text-5xl tracking-widest text-gray-800 text-center leading-snug">
                         Portfolio web<br />
-                        for <span className="font-bold">{userName}</span>
+                        for <span className="font-bold">{user ? user.nickname : '...'}</span>
                     </h1>
                 </div>
             )}

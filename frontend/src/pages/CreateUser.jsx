@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { nodeApi } from "../services/api"; // ✅ api.js import
+import { nodeApi } from "../services/api"; 
+import { useAuth } from '../contexts/AuthContext';
 
 export default function CreateUser() {
     // ✅ name -> nickname 으로 변수명 변경 (백엔드와 통일)
     const [nickname, setNickname] = useState("");
     const navigate = useNavigate();
+    const { updateUserNickname } = useAuth();
 
     // ✅ 닉네임 설정 API를 호출하는 로직으로 전체 수정
     const handleSubmit = async (e) => {
@@ -15,6 +17,8 @@ export default function CreateUser() {
         try {
             // 백엔드의 닉네임 설정 API 호출
             await nodeApi.put('/users/set-nickname', { nickname });
+
+            updateUserNickname(nickname);
             
             alert('닉네임이 설정되었습니다. 포트폴리오 업로드 페이지로 이동합니다.');
             navigate(`/intro-upload`); // 성공 시 업로드 페이지로 이동
