@@ -101,7 +101,7 @@ const ChatbotFileUpload = () => {
     <div className="upload-container">
       <header className="upload-header">
         <img
-          src="/images/fopofo-logo.png"
+          src="/fopofo-logo.png"
           alt="포포포 로고"
           className="upload-logo"
           onClick={goHome}

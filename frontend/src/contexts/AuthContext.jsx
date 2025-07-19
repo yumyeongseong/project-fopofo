@@ -44,9 +44,19 @@ export const AuthProvider = ({ children }) => {
     };
 
     // 로그아웃 시 호출할 함수
-    const logout = () => {
-        localStorage.removeItem('token');
-        setUser(null);
+    const logout = async () => {
+        try {
+            // 백엔드에 로그아웃 요청을 보냅니다.
+            await nodeApi.post('/users/logout');
+        } catch (error) {
+            // 백엔드 요청 실패 시에도 클라이언트에서는 로그아웃 처리를 계속 진행합니다.
+            console.error("서버 로그아웃 실패:", error);
+        } finally {
+            // 로컬 스토리지에서 토큰을 제거합니다.
+            localStorage.removeItem('token');
+            // 전역 user 상태를 null로 만들어 로그아웃 상태로 변경합니다.
+            setUser(null);
+        }
     };
 
     // 사용자 정보를 불러오는 동안에는 잠시 로딩 상태를 표시 (선택 사항)

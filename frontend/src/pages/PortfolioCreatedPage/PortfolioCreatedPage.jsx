@@ -60,6 +60,12 @@ function PortfolioCreatedPage() {
                 className="logo"
                 onClick={() => window.location.href = '/mainpage'}
             />
+            <button
+                className="mypage-button-created"
+                onClick={() => navigate('/mypage')}
+            >
+                my page
+            </button>
 
             {/* ✅ 웹 생성 완료된 후에만 마우스 효과 및 이동 */}
             <div

@@ -1,7 +1,14 @@
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function MypageHeader() {
     const navigate = useNavigate();
+    const { logout } = useAuth();
+
+    const handleLogout = async () => {
+        await logout();
+        navigate("/");
+    };
 
     return (
         <header className="flex justify-between items-center px-6 py-4">
@@ -20,7 +27,7 @@ export default function MypageHeader() {
             </button>
 
             <button
-                onClick={() => navigate("/")} // ✅ 로그아웃
+                onClick={handleLogout}
                 className="text-sm text-gray-600 underline hover:text-gray-800"
             >
                 로그아웃

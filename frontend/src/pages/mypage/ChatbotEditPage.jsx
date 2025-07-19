@@ -3,6 +3,7 @@ import { X, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import MypageHeader from "../../components/MypageHeader";
 import { pythonApi } from "../../services/api";
+import { useAuth } from "../../contexts/AuthContext"; 
 
 // PDF.js 관련 import 및 설정은 현재 기능과 직접적인 관련이 없으므로,
 // 코드의 복잡성을 줄이기 위해 우선 제외합니다. 필요 시 다시 추가할 수 있습니다.
@@ -19,6 +20,7 @@ export default function ChatbotEditPage() {
     const [showMessage, setShowMessage] = useState("");
     const [isProcessing, setIsProcessing] = useState(false);
     const navigate = useNavigate();
+    const { logout } = useAuth();
 
     const handleFiles = (incomingFiles) => {
         const validFiles = Array.from(incomingFiles).filter(
@@ -130,7 +132,7 @@ export default function ChatbotEditPage() {
 
     return (
         <div className="min-h-screen bg-pink-100 flex flex-col relative">
-            <MypageHeader />
+            <MypageHeader/>
 
             {showMessage && (
                 <div className="absolute bottom-[80px] left-1/2 transform -translate-x-1/2 bg-white text-black px-6 py-2 rounded-full shadow-md z-50 transition-opacity duration-300">
