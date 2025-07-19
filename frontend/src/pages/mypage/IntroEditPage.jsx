@@ -92,13 +92,11 @@ export default function IntroEditPage() {
 
      const handleEdit = async () => {
         if (selectedFiles.length === 0) {
-            alert("대체할 파일을 하나 선택해주세요.");
+            alert("대체할 파일을 하나 이상 선택해주세요.");
             return;
         }
-
         setIsProcessing(true);
-        setShowMessage("기존 파일 삭제 및 새 파일 업로드 중...");
-
+        setShowMessage("자기소개서를 업데이트하는 중입니다...");
         try {
             // 1단계: 백엔드에 기존 resume 파일 전체 삭제를 요청
             await nodeApi.delete('/user-upload/resume/all');
@@ -109,17 +107,17 @@ export default function IntroEditPage() {
                 formData.append('file', file);
                 return nodeApi.post('/upload/resume', formData);
             });
-
             await Promise.all(uploadPromises);
 
-            setShowMessage("수정되었습니다.");
+            setShowMessage("성공적으로 업데이트되었습니다!");
             setTimeout(() => {
                 setShowMessage("");
-                navigate('/mypage'); // 성공 후 마이페이지로 이동
+                // 3단계: 요청하신 대로 /mypage 경로로 이동
+                navigate('/mypage');
             }, 2000);
 
         } catch (error) {
-            console.error("수정 중 오류 발생:", error);
+            console.error("업데이트 중 오류 발생:", error);
             setShowMessage("오류가 발생했습니다. 다시 시도해주세요.");
             setTimeout(() => setShowMessage(""), 3000);
         } finally {

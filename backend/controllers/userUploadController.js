@@ -74,25 +74,36 @@ exports.getDesigns = async (req, res) => {
 };
 
 
-// --- 자기소개서 조회(Read) API ---
+// --- 자기소개서/이력서(resume) 파일 조회 ---
 exports.getResume = async (req, res) => {
-  try {
-    const resume = await Upload.findOne({ user: req.user._id, fileType: 'resume' });
-    if (!resume) {
-      return res.status(404).json({ message: '업로드된 자기소개서가 없습니다.' });
+    try {
+        // ▼▼▼▼▼ 여기가 핵심 수정 부분입니다 ▼▼▼▼▼
+        // findOne을 사용하고, uploadedAt을 기준으로 내림차순 정렬하여 가장 최신 파일 하나만 찾습니다.
+        const file = await Upload.findOne({ user: req.user._id, fileType: 'resume' }).sort({ uploadedAt: -1 });
+        // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
+
+        if (!file) {
+            return res.status(404).json({ message: "업로드된 자기소개서가 없습니다." });
+        }
+
+        const command = new GetObjectCommand({
+            Bucket: process.env.S3_BUCKET_NAME,
+            Key: file.fileName,
+        });
+        const presignedUrl = await getSignedUrl(s3Client, command, { expiresIn: 3600 });
+
+        res.status(200).json({
+            message: "최신 자기소개서 불러오기 성공",
+            data: {
+                _id: file._id,
+                fileName: file.fileName,
+                originalName: file.originalName,
+                presignedUrl: presignedUrl,
+            },
+        });
+    } catch (err) {
+        res.status(500).json({ message: "파일 불러오기 중 서버 오류 발생", error: err.message });
     }
-    
-    const presignedUrl = await generatePresignedUrl(resume.fileName);
-
-    const data = {
-      ...resume.toObject(),
-      presignedUrl,
-    };
-
-    res.status(200).json({ message: '자기소개서 조회 성공', data });
-  } catch (err) {
-    res.status(500).json({ message: '서버 오류', error: err.message });
-  }
 };
 
 

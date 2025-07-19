@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // ✅ useNavigate 추가
+import { useNavigate } from "react-router-dom";
 import CategoryButtons from "./CategoryButtons";
 import IntroSection from "./IntroSection";
 import PortfolioSection from "./PortfolioSection";
@@ -7,73 +7,54 @@ import ChatbotSection from "./ChatbotSection";
 import ScrollToTopButton from "./ScrollToTopButton";
 import ThemePanel from "./ThemePanel";
 import { Paintbrush } from "lucide-react";
-import { nodeApi } from '../services/api'; // ✅ api.js import
+import { nodeApi } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 
-export default function UserMainPage({ userName }) {
+export default function UserMainPage() {
     const { user } = useAuth();
-    const navigate = useNavigate(); // ✅ navigate 함수 추가
+    const navigate = useNavigate();
     const [activeSection, setActiveSection] = useState(null);
     const [font, setFont] = useState("font-serif");
     const [background, setBackground] = useState("bg-gradient-to-b from-blue-100 to-blue-200");
     const [isPanelOpen, setIsPanelOpen] = useState(false);
+    
+    // ✅ 1. '이력서' 관련 상태 변수(showResume, resumeUrl)를 삭제합니다.
+    const [showIntro, setShowIntro] = useState(false);
+    const [introUrl, setIntroUrl] = useState(null);
 
     const toggleSection = (sectionName) => {
-        // 현재 활성화된 섹션과 같은 버튼을 누르면 닫고(null),
-        // 다른 버튼을 누르면 그 섹션을 엽니다.
         setActiveSection((prevSection) => (prevSection === sectionName ? null : sectionName));
     };
 
-    // ✅ --- 이 아랫부분의 로직을 백엔드 연동을 위해 수정합니다. ---
-    const [showIntro, setShowIntro] = useState(false);
-    const [showResume, setShowResume] = useState(false);
-    
-    // ✅ 자기소개서, 이력서 파일 URL을 저장할 상태
-    const [introUrl, setIntroUrl] = useState(null);
-    const [resumeUrl, setResumeUrl] = useState(null);
-
-    // ✅ 'intro' 섹션이 활성화될 때 실행되는 로직
+    // ✅ 2. '자기소개서' 파일만 불러오도록 로직을 단순화합니다.
     useEffect(() => {
         if (activeSection === "intro") {
             setShowIntro(true);
-            setTimeout(() => setShowResume(true), 300);
 
-            // ✅ 백엔드에서 이력서(resume) 파일 URL을 가져오는 함수 호출
-            const fetchResume = async () => {
+            const fetchIntroFile = async () => {
                 try {
-                    // nodeApi가 자동으로 토큰을 포함하여 요청을 보냅니다.
+                    // 자기소개서/이력서는 현재 'resume' 타입으로 저장되므로 그대로 호출합니다.
                     const response = await nodeApi.get('/user-upload/resume');
-                    
-                    // 응답 데이터에서 presignedUrl을 꺼내 상태에 저장합니다.
                     if (response.data && response.data.data.presignedUrl) {
-                        setResumeUrl(response.data.data.presignedUrl);
+                        setIntroUrl(response.data.data.presignedUrl);
                     }
                 } catch (err) {
-                    // 404 에러는 파일이 없는 경우이므로 정상 처리합니다.
                     if (err.response?.status === 404) {
-                        console.log("업로드된 이력서가 없습니다.");
+                        console.log("업로드된 자기소개서가 없습니다.");
                     } else {
-                        console.error("이력서 URL 불러오기 실패:", err);
+                        console.error("자기소개서 URL 불러오기 실패:", err);
                     }
-                    setResumeUrl(null); // 파일이 없거나 에러 시 null로 설정
+                    setIntroUrl(null);
                 }
             };
 
-            // ✅ 자기소개서(intro) 파일 URL을 가져오는 로직 (API가 준비되면 추가)
-            // 현재는 이력서(resume)와 동일한 URL을 임시로 사용합니다.
-            // 실제 자기소개서 API가 있다면 아래 로직을 수정해야 합니다.
-            fetchResume(); // 자기소개서용 fetch 함수도 동일하게 호출
-            setIntroUrl(resumeUrl); // 임시로 resumeUrl을 introUrl에도 설정
+            fetchIntroFile();
 
         } else {
             setShowIntro(false);
-            setShowResume(false);
         }
-    }, [activeSection, resumeUrl]); // ✅ resumeUrl이 변경될 때도 useEffect를 다시 실행
+    }, [activeSection]);
 
-    // ✅ --- 로직 수정 끝 ---
-
-    // 👇 이 아래의 JSX 부분은 기존 코드와 100% 동일합니다. UI 구조 변경 없음.
     return (
         <div className={`min-h-screen pt-[96px] ${background} ${font} relative transition-all duration-300 overflow-x-hidden`}>
             <ThemePanel
@@ -109,13 +90,12 @@ export default function UserMainPage({ userName }) {
             )}
 
             {activeSection === "intro" && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 px-6 mt-10">
-                    <div className={`transition-opacity duration-500 ${showIntro ? 'opacity-100' : 'opacity-0'}`}>
+                // ✅ 3. 남은 '자기소개서' 섹션이 중앙에 오도록 그리드 설정을 수정합니다.
+                <div className="grid grid-cols-1 justify-items-center gap-6 px-6 mt-10">
+                    <div className={`transition-opacity duration-500 w-full max-w-2xl ${showIntro ? 'opacity-100' : 'opacity-0'}`}>
                         <IntroSection type="intro" fileUrl={introUrl} />
                     </div>
-                    <div className={`transition-opacity duration-500 delay-300 ${showResume ? 'opacity-100' : 'opacity-0'}`}>
-                        <IntroSection type="resume" fileUrl={resumeUrl} />
-                    </div>
+                    {/* ✅ 4. '이력서' 섹션을 렌더링하는 div를 완전히 삭제합니다. */}
                 </div>
             )}
 
