@@ -98,3 +98,24 @@ def delete_chatbot(user_id: str = Depends(get_current_user)):
     delete_user_answers(user_id)
 
     return {"message": "챗봇이 성공적으로 삭제되었습니다."}
+
+
+### 챗봇 삭제 
+@router.delete("/pinecone-vectors")
+def delete_pinecone_vectors(user_id: str = Depends(get_current_user)):
+    """현재 로그인된 사용자의 Pinecone 벡터 데이터만 삭제합니다."""
+    try:
+        if INDEX_NAME in pc.list_indexes().names():
+            index = pc.Index(INDEX_NAME)
+            # delete_all=True와 namespace를 함께 사용하면 해당 네임스페이스의 모든 벡터가 삭제됩니다.
+            index.delete(delete_all=True, namespace=user_id)
+            print(f"--- Pinecone 네임스페이스 '{user_id}'의 벡터 삭제 완료 ---")
+            return {"message": f"사용자 '{user_id}'의 Pinecone 문서 벡터가 성공적으로 삭제되었습니다."}
+        else:
+            # 인덱스 자체가 없는 경우, 삭제할 것도 없으므로 성공으로 간주합니다.
+            print(f"--- Pinecone 인덱스 '{INDEX_NAME}'가 존재하지 않아 삭제를 건너뜁니다. ---")
+            return {"message": "삭제할 Pinecone 인덱스가 없습니다."}
+    except Exception as e:
+        print(f"!!!!!!!! ERROR: Pinecone 데이터 삭제 중 오류 발생 !!!!!!!!!!")
+        print(e)
+        raise HTTPException(status_code=500, detail=f"Pinecone 데이터 삭제 중 오류 발생: {e}")
