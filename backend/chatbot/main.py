@@ -5,6 +5,7 @@ from rag_chatbot import get_chatbot_response
 from auth import get_current_user
 from typing import Dict
 from pydantic import BaseModel
+from utils import get_predefined_questions
 from fastapi.middleware.cors import CORSMiddleware
 from chatbot_manager import router as chatbot_router
 import os
@@ -15,12 +16,6 @@ class AnswersRequest(BaseModel):
 
 app = FastAPI()
 
-app.include_router(chatbot_router)
-
-@app.get("/")
-async def read_root():
-    return {"message": "안녕하세요! 챗봇 API 서버입니다."}
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],  # ✅ 수정된 부분: 프런트엔드 주소로 변경 
@@ -28,6 +23,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(chatbot_router)
+
+@app.get("/")
+async def read_root():
+    return {"message": "안녕하세요! 챗봇 API 서버입니다."}
+
 
 ### 챗봇 문서 업로드
 @app.post("/upload")
@@ -52,7 +54,31 @@ async def upload(file: UploadFile = File(...), user_id: str = Depends(get_curren
 ### 개발자 질문 답변 저장 기능
 @app.post("/save-answers")
 async def save_answers_api(request: AnswersRequest, user_id: str = Depends(get_current_user)):
-    save_user_answers(user_id, request.answers)
+    # ▼▼▼▼▼ 여기가 핵심 수정 부분입니다 ▼▼▼▼▼
+    # 프론트에서 받은 데이터: { 'question_1': '전체질문1', 'answer_1': '답변1', ... }
+    received_data = request.answers
+    
+    # utils.py에서 정의한 원본 질문 목록을 가져옵니다.
+    predefined_questions = get_predefined_questions()
+    
+    answers_list_to_save = []
+    for i, q_map in enumerate(predefined_questions):
+        # 프론트에서 받은 데이터의 키를 조합합니다. (question_1, answer_1 등)
+        question_key = f"question_{i + 1}"
+        answer_key = f"answer_{i + 1}"
+
+        # DB에 저장할 객체를 생성합니다.
+        # 질문은 '축약형(short_text)'으로, 답변은 받은 그대로 저장합니다.
+        if question_key in received_data and answer_key in received_data:
+            answers_list_to_save.append({
+                "question": q_map["short_text"], 
+                "answer": received_data[answer_key]
+            })
+
+    # 최종적으로 변환된 리스트를 DB에 저장합니다.
+    save_user_answers(user_id, answers_list_to_save)
+    # ▲▲▲▲▲ 수정 완료 ▲▲▲▲▲
+    
     return {"message": "질문 답변 저장 완료"}
 
 
