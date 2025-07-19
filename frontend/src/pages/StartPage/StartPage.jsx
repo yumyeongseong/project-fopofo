@@ -9,6 +9,7 @@ function StartPage() {
     navigate('/login');
   };
 
+  // ✅ 이미지 경로를 '/images/'로 통일한 HEAD 버전을 채택합니다.
   return (
     <div className="start-page">
       {/* 왼쪽 상단 로고 */}

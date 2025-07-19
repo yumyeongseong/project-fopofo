@@ -2,9 +2,14 @@ fastapi
 uvicorn
 langchain
 langchain-community
+langchain-openai
+langchain-pinecone
 openai
-pinecone-client>=1.0.0
+pinecone-client>=3.0.0
 python-dotenv
 unstructured
 pdfminer.six
 python-docx
+pymongo
+scikit-learn
+numpy
