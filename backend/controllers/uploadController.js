@@ -5,7 +5,7 @@ exports.uploadFile = async (req, res) => {
     try {
       const file = req.file;
       const fileType = req.params.type;
-      const userId = req.user.userId;  // ✅ 여기가 핵심 수정!
+      const userId = req.user.userId; 
   
       if (!file) {
         return res.status(400).json({ message: '파일이 없습니다.' });
@@ -17,10 +17,10 @@ exports.uploadFile = async (req, res) => {
     }
   
       const uploadData = new Upload({
-        user: user._id,                  // ✅ 여기에도 반영
+        user: user._id,
         fileType,
-        fileName: file.filename,
-        filePath: file.path,
+        fileName: file.key,          // ✅ 수정: S3의 파일 key (경로 포함)
+        filePath: file.location,     // ✅ 수정: S3 파일의 전체 URL
         originalName: file.originalname,
       });
   
@@ -31,53 +31,3 @@ exports.uploadFile = async (req, res) => {
       res.status(500).json({ message: '서버 오류', error: err.message });
     }
   };
-  
-
-exports.deleteUpload = async (req, res) => {
-    try {
-      const uploadId = req.params.id;
-      const userId = req.user._id;
-  
-      const deleted = await Upload.findOneAndDelete({ _id: uploadId, user: userId });
-      if (!deleted) {
-        return res.status(404).json({ message: "파일을 찾을 수 없습니다." });
-      }
-  
-      res.status(200).json({ message: "삭제 성공", data: deleted });
-    } catch (err) {
-      res.status(500).json({ message: "서버 오류", error: err.message });
-    }
-  };
-
-
-exports.updateUpload = async (req, res) => {
-    try {
-      const uploadId = req.params.id;
-      const userId = req.user._id;
-      const file = req.file;
-  
-      if (!file) return res.status(400).json({ message: "파일이 없습니다." });
-  
-      const updated = await Upload.findOneAndUpdate(
-        { _id: uploadId, user: userId },
-        {
-          fileName: file.filename,
-          filePath: file.path,
-          originalName: file.originalname,
-          uploadedAt: Date.now()
-        },
-        { new: true }
-      );
-  
-      if (!updated) {
-        return res.status(404).json({ message: "파일을 찾을 수 없습니다." });
-      }
-  
-      res.status(200).json({ message: "업데이트 성공", data: updated });
-    } catch (err) {
-      res.status(500).json({ message: "서버 오류", error: err.message });
-    }
-  };
-
-
-

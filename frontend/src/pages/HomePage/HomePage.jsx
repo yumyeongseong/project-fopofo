@@ -6,12 +6,12 @@ function HomePage() {
   const navigate = useNavigate();
 
   const handleMyPageClick = () => {
-    console.log('마이페이지 이동 예정');
+    navigate('/mypage');
   };
 
   return (
     <div className="home-container">
-      {/* ✅ [구조/스타일 유지] 새로운 코드의 구조와 이미지 경로를 채택합니다. */}
+      {/* ✅ 1. 결정에 따라 로고 이미지 경로를 수정했습니다. */}
       <img
         src="/images/fopofo-logo.png"
         alt="fopofo-logo"
@@ -19,7 +19,8 @@ function HomePage() {
         onClick={() => navigate('/mainpage')}
       />
       <header className="home-header">
-        <button className="mypage-button" onClick={handleMyPageClick}>
+        {/* CSS 파일과의 일관성을 위해 클래스명을 'mypage-button-home'으로 통일합니다. */}
+        <button className="mypage-button-home" onClick={handleMyPageClick}>
           my page
         </button>
       </header>
@@ -28,7 +29,8 @@ function HomePage() {
         <div className="main-title-box">
           <div
             className="create-button"
-            onClick={() => navigate('/upload')}
+            // ✅ 2. 결정에 따라 '/create' 경로로 이동하도록 수정했습니다.
+            onClick={() => navigate('/create')}
           >
             Create Your Own Web Portfolio
           </div>

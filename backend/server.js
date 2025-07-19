@@ -32,14 +32,16 @@ const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const userUploadRoutes = require('./routes/userUploadRoutes');
-const googleAuthRoutes = require('./routes/googleAuthRoutes'); // ✅ 수정된 부분: googleAuthRoutes 임포트 추가
+const googleAuthRoutes = require('./routes/googleAuthRoutes'); 
+const publicRoutes = require('./routes/publicRoutes');  
 
 app.use('/api/users', authRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/auth', googleAuthRoutes); // ✅ 수정된 부분: googleAuthRoutes 사용 설정
+app.use('/api/auth', googleAuthRoutes); 
 app.use('/uploads', express.static('uploads'));
 app.use('/api/upload', uploadRoutes);
 app.use('/api/user-upload', userUploadRoutes);
+app.use('/api/public', publicRoutes); 
 
 
 const PORT = process.env.PORT || 5000;

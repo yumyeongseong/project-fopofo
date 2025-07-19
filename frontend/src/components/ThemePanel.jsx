@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { Paintbrush } from "lucide-react";
 
 export default function ThemePanel({ isOpen, onClose, setFont, setBackground }) {
     const fonts = ["font-serif", "font-sans", "font-mono"];
@@ -8,46 +9,83 @@ export default function ThemePanel({ isOpen, onClose, setFont, setBackground }) 
         "bg-gray-100"
     ];
 
+    const [selectedFont, setSelectedFont] = useState(fonts[0]);
+    const [selectedBg, setSelectedBg] = useState(backgrounds[0]);
+
     return (
         <div
-            className={`fixed top-0 right-0 h-full w-64 bg-white shadow-2xl transform transition-transform duration-300 z-50 ${isOpen ? "translate-x-0" : "translate-x-full"
-                }`}
+            className={`fixed top-0 right-0 h-full w-72 bg-white transform transition-transform duration-300 z-50 
+      ${isOpen ? "translate-x-0" : "translate-x-full"}`}
         >
-            <div className="p-6">
-                <h2 className="text-xl font-bold mb-6">🎨 테마 설정</h2>
+            <div className="p-6 h-full bg-gray-50 shadow-xl space-y-8 rounded-l-xl">
 
-                <div className="mb-6">
-                    <p className="font-semibold mb-2 text-gray-700">폰트 선택</p>
-                    {fonts.map((f) => (
-                        <button
-                            key={f}
-                            className="block w-full text-left px-4 py-2 mb-2 bg-blue-100 rounded-lg shadow hover:bg-blue-200 transition"
-                            onClick={() => setFont(f)}
-                        >
-                            {f}
-                        </button>
-                    ))}
+                {/* 헤더 */}
+                <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                        <span className="p-1.5 bg-gray-100 rounded-md">
+                            <Paintbrush className="w-5 h-5 text-blue-500" />
+                        </span>
+                        <span>테마 설정</span>
+                    </h2>
+                    <button
+                        onClick={onClose}
+                        className="text-2xl text-gray-400 hover:text-black"
+                    >
+                        ×
+                    </button>
                 </div>
 
-                <div>
-                    <p className="font-semibold mb-2 text-gray-700">배경 선택</p>
-                    {backgrounds.map((bg, index) => (
-                        <button
-                            key={index}
-                            className="block w-full text-left px-4 py-2 mb-2 bg-green-100 rounded-lg shadow hover:bg-green-200 transition"
-                            onClick={() => setBackground(bg)}
-                        >
-                            {bg}
-                        </button>
-                    ))}
+                {/* 📌 폰트 선택 영역 */}
+                <div className="bg-blue-50 rounded-xl p-4 shadow-sm space-y-3">
+                    <p className="font-semibold text-gray-700">폰트 선택</p>
+                    <div className="space-y-2">
+                        {fonts.map((f) => (
+                            <button
+                                key={f}
+                                onClick={() => {
+                                    setSelectedFont(f);
+                                    setFont(f);
+                                }}
+                                className={`w-full text-center text-sm px-4 py-2 rounded-xl border shadow-sm transition
+                ${selectedFont === f
+                                        ? "bg-blue-500 text-white font-semibold"
+                                        : "bg-white text-gray-800 hover:bg-blue-100"}`}
+                            >
+                                {f}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
-                <button
-                    onClick={onClose}
-                    className="mt-8 w-full py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition"
-                >
-                    닫기
-                </button>
+                {/* 📌 배경 선택 영역 */}
+                <div className="bg-green-50 rounded-xl p-4 shadow-sm space-y-3">
+                    <p className="font-semibold text-gray-700">배경 선택</p>
+                    <div className="space-y-2">
+                        {backgrounds.map((bg, index) => (
+                            <button
+                                key={index}
+                                onClick={() => {
+                                    setSelectedBg(bg);
+                                    setBackground(bg);
+                                }}
+                                className={`w-full flex items-center justify-between px-4 py-2 rounded-xl border shadow-sm text-sm transition
+                ${selectedBg === bg
+                                        ? "bg-green-500 text-white font-semibold"
+                                        : "bg-white text-gray-800 hover:bg-green-100"}`}
+                            >
+                                <span>{bg}</span>
+                                <div
+                                    className={`w-5 h-5 rounded-full border border-gray-300 ${bg.includes("pink") ? "bg-pink-200"
+                                        : bg.includes("gray") ? "bg-gray-200"
+                                            : bg.includes("blue") ? "bg-blue-200"
+                                                : "bg-white"
+                                        }`}
+                                />
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
             </div>
         </div>
     );
