@@ -1,3 +1,6 @@
+import { GlobalWorkerOptions } from 'pdfjs-dist';
+GlobalWorkerOptions.workerSrc = `/pdf.worker.mjs`;
+
 export default function IntroSection({ type, fileUrl }) {
     if (!fileUrl) {
         return (

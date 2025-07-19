@@ -6,6 +6,7 @@ function HomePage() {
     const navigate = useNavigate();
 
     const handleMyPageClick = () => {
+        navigate('/mypage')
         console.log('마이페이지 이동 예정');
     };
 

@@ -152,3 +152,33 @@ exports.updateUpload = async (req, res) => {
     res.status(500).json({ message: '수정 실패', error: err.message });
   }
 };
+
+// --- 특정 유저의 모든 이력서/자기소개서(resume) 파일 삭제 API ---
+exports.deleteAllResumes = async (req, res) => {
+    try {
+      // 1. 현재 로그인된 유저의 모든 'resume' 타입 파일을 DB에서 찾습니다.
+      const resumesToDelete = await Upload.find({ user: req.user._id, fileType: 'resume' });
+  
+      // 삭제할 파일이 없는 경우
+      if (!resumesToDelete || resumesToDelete.length === 0) {
+        return res.status(200).json({ message: "삭제할 기존 파일이 없습니다." });
+      }
+  
+      // 2. S3에서 모든 파일을 동시에 삭제합니다.
+      const deleteS3Promises = resumesToDelete.map(file => {
+        const command = new DeleteObjectCommand({
+          Bucket: process.env.S3_BUCKET_NAME,
+          Key: file.fileName,
+        });
+        return s3Client.send(command);
+      });
+      await Promise.all(deleteS3Promises);
+  
+      // 3. MongoDB에서 모든 파일 정보를 한 번에 삭제합니다.
+      await Upload.deleteMany({ user: req.user._id, fileType: 'resume' });
+  
+      res.status(200).json({ message: "기존 이력서/자기소개서 파일 모두 삭제 성공" });
+    } catch (err) {
+      res.status(500).json({ message: "파일 삭제 중 서버 오류 발생", error: err.message });
+    }
+  };
