@@ -8,7 +8,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ✨ 커스텀 애니메이션 추가 (팀원 버전 채택) */
+/* ✨ 커스텀 애니메이션 추가 */
 @keyframes fadeIn {
   from {
     opacity: 0;
