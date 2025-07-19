@@ -1,130 +1,84 @@
-import { useState } from "react";
-import {
-  BadgeCheck,
-  FolderKanban,
-  UsersRound,
-  TrendingUp,
-  Send,
-} from "lucide-react";
-import TypingIntro from "./TypingIntro";
-import TypingAnswer from "./TypingAnswer";
-import axios from 'axios'; // 1. axios 라이브러리를 가져옵니다.
+import React, { useState } from 'react';
+import { pythonApi } from "../services/api"; // ✅ api.js에서 pythonApi 가져오기
+import TypingAnswer from './TypingAnswer'; // 타이핑 효과 컴포넌트
 
-export default function ChatbotSection() {
+// 👇 [수정] function ChatbotSection() { ... } 으로 전체를 감싸줍니다.
+function ChatbotSection() {
+  // 👇 [추가] 챗봇에 필요한 상태들을 정의합니다.
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showButtons, setShowButtons] = useState(true);
 
-  // 2. handleSend 함수를 실제 API를 호출하도록 수정합니다.
+  const predefinedQuestions = [
+    "자신의 강점이 잘 드러난 경험 하나를 소개해주세요.",
+    "가장 자신 있는 프로젝트 혹은 작업 경험은 무엇인가요?",
+    "협업 중, 기억에 남은 순간이나 갈등 해결 사례가 있나요?",
+  ];
+
+  // 👇 이전에 개선 제안했던 handleSend 함수를 컴포넌트 안으로 이동시킵니다.
   const handleSend = async (q) => {
     const userInput = q || question.trim();
-    if (!userInput) return;
+    if (!userInput || isLoading) return;
 
     setIsLoading(true);
     setShowButtons(false);
-    setAnswer("");
+    setAnswer(""); // 답변 초기화
 
     try {
-      // 로컬 스토리지에서 JWT 토큰을 가져옵니다.
-      const token = localStorage.getItem('token');
-      if (!token) {
-        alert('인증 정보가 없습니다. 다시 로그인해주세요.');
-        setIsLoading(false);
-        setShowButtons(true);
-        // navigate('/login'); // 필요하다면 로그인 페이지로 이동시킬 수 있습니다.
-        return;
-      }
-
-      // Python 서버의 /chat 엔드포인트로 요청을 보냅니다.
-      const response = await axios.post(
-        'http://localhost:8000/chat', // Python 서버 주소
-        { query: userInput }, // 백엔드의 ChatRequest 모델 형식에 맞춤
-        {
-          headers: {
-            'Authorization': `Bearer ${token}` // 헤더에 JWT 인증 토큰 추가
-          }
-        }
-      );
-
-      // API 응답으로 받은 챗봇의 답변을 state에 저장합니다.
+      const response = await pythonApi.post('/chat', { query: userInput });
       setAnswer(response.data.response);
-
     } catch (error) {
       console.error("챗봇 응답 요청 실패:", error.response?.data || error.message);
-      setAnswer("죄송합니다. 답변을 가져오는 중 오류가 발생했습니다.");
+      if (error.response?.status === 401) {
+        setAnswer("인증 정보가 유효하지 않습니다. 다시 로그인해주세요.");
+      } else {
+        setAnswer("죄송합니다. 답변을 가져오는 중 오류가 발생했습니다.");
+      }
     } finally {
-      // 로딩 상태를 해제하고 버튼을 다시 표시합니다.
       setIsLoading(false);
       setShowButtons(true);
       setQuestion("");
     }
   };
 
-  // --- 이 아래의 JSX 반환 부분은 기존과 동일합니다. ---
+  // 👇 [추가] 사용자에게 보여줄 JSX 화면을 반환합니다.
   return (
-    <div className="w-full max-w-md mx-auto bg-white/90 backdrop-blur-md rounded-2xl px-8 pt-8 pb-12 shadow-2xl text-center space-y-6 font-sans text-[15px] tracking-tight">
-      <h2 className="text-2xl font-bold text-black tracking-wide">나만의 챗봇</h2>
+    <div className="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-md border mt-10">
+      <h2 className="text-xl font-semibold mb-4">🤖 나만의 챗봇</h2>
 
-      <TypingIntro
-        fullText={`안녕하세요 홍길동 챗봇에 오신 걸 환영합니다.\n궁금한 점을 선택하거나 아래에 입력해 주세요!`}
-      />
+      {/* 답변 영역 */}
+      {isLoading && <p>답변을 생성 중입니다...</p>}
+      {answer && <TypingAnswer fullText={answer} />}
 
+      {/* 추천 질문 버튼 */}
       {showButtons && (
-        <div className="flex flex-col gap-3 mb-12">
-          <button
-            className="flex items-center gap-2 justify-center w-full bg-pink-300 hover:bg-pink-400 text-white py-3 rounded-full shadow transition font-semibold"
-            onClick={() => handleSend("강점이 드러난 경험")}
-          >
-            <BadgeCheck className="w-5 h-5" />
-            강점이 드러난 경험
-          </button>
-
-          <button
-            className="flex items-center gap-2 justify-center w-full bg-pink-300 hover:bg-pink-400 text-white py-3 rounded-full shadow transition font-semibold"
-            onClick={() => handleSend("자신 있는 프로젝트")}
-          >
-            <FolderKanban className="w-5 h-5" />
-            자신 있는 프로젝트
-          </button>
-
-          <button
-            className="flex items-center gap-2 justify-center w-full bg-pink-300 hover:bg-pink-400 text-white py-3 rounded-full shadow transition font-semibold"
-            onClick={() => handleSend("협업 갈등 해결 사례")}
-          >
-            <UsersRound className="w-5 h-5" />
-            협업 갈등 해결 사례
-          </button>
-
-          <button
-            className="flex items-center gap-2 justify-center w-full bg-pink-300 hover:bg-pink-400 text-white py-3 rounded-full shadow transition font-semibold"
-            onClick={() => handleSend("가장 성장한 순간")}
-          >
-            <TrendingUp className="w-5 h-5" />
-            가장 성장한 순간
-          </button>
+        <div className="flex flex-wrap gap-2 mb-4">
+          {predefinedQuestions.map((q, i) => (
+            <button key={i} onClick={() => handleSend(q)} className="bg-gray-200 px-3 py-1 rounded-full text-sm">
+              {q}
+            </button>
+          ))}
         </div>
       )}
 
-      {answer && <TypingAnswer fullText={answer} />}
-
-      <div className="flex items-center border rounded-full px-4 py-2 shadow-inner bg-white">
+      {/* 질문 입력 영역 */}
+      <div className="flex gap-2">
         <input
           type="text"
-          placeholder="‘홍길동’에게 궁금한 점을 입력해주세요!"
-          className="flex-grow bg-transparent outline-none text-sm text-gray-700 placeholder-gray-400"
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSend()}
-        />
-        <button
-          className="text-blue-500 hover:text-blue-700 disabled:opacity-30"
+          onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+          placeholder="질문을 입력하세요..."
+          className="flex-1 p-2 border rounded"
           disabled={isLoading}
-          onClick={() => handleSend()}
-        >
-          <Send className="w-5 h-5" />
+        />
+        <button onClick={() => handleSend()} disabled={isLoading} className="bg-blue-500 text-white px-4 py-2 rounded">
+          전송
         </button>
       </div>
     </div>
   );
 }
+
+export default ChatbotSection;

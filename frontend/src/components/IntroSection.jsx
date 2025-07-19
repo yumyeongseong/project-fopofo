@@ -1,4 +1,3 @@
-// 팀원의 코드를 채택합니다.
 export default function IntroSection({ type, fileUrl }) {
   if (!fileUrl) {
     return (

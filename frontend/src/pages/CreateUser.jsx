@@ -1,42 +1,54 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { nodeApi } from "../services/api"; // ✅ api.js import
+import { nodeApi } from "../services/api";
 
 export default function CreateUser() {
-    // ✅ name -> nickname 으로 변수명 변경 (백엔드와 통일)
-    const [nickname, setNickname] = useState("");
-    const navigate = useNavigate();
+  // 👇 [병합] 백엔드와 일치하는 'nickname'과 에러 처리를 위한 'error' 상태를 사용합니다.
+  const [nickname, setNickname] = useState("");
+  const [error, setError] = useState(false);
+  const navigate = useNavigate();
 
-    // ✅ 닉네임 설정 API를 호출하는 로직으로 전체 수정
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!nickname) return;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    // 👇 [병합] 팀원의 유효성 검사 로직을 추가합니다.
+    if (!nickname.trim()) {
+      setError(true);
+      return;
+    }
 
-        try {
-            // 백엔드의 닉네임 설정 API 호출
-            await nodeApi.put('/users/set-nickname', { nickname });
-            
-            alert('닉네임이 설정되었습니다. 포트폴리오 업로드 페이지로 이동합니다.');
-            navigate(`/upload`); // 성공 시 업로드 페이지로 이동
+    try {
+      // ✅ [연동] Node.js 서버의 닉네임 설정 API를 호출합니다.
+      await nodeApi.put('/users/set-nickname', { nickname });
 
-        } catch (error) {
-            // 중복된 닉네임 등의 에러 메시지를 사용자에게 보여줌
-            alert(error.response?.data?.message || '오류가 발생했습니다.');
-        }
-    };
+      alert('닉네임이 설정되었습니다. 포트폴리오 업로드 페이지로 이동합니다.');
+      navigate(`/intro-upload`);
 
-    return (
-        <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4 mt-40">
-            <input
-                type="text"
-                placeholder="사용할 닉네임을 입력하세요" // ✅ 문구 수정
-                className="px-4 py-2 rounded shadow"
-                value={nickname} // ✅ state와 연결
-                onChange={(e) => setNickname(e.target.value)} // ✅ state와 연결
-            />
-            <button type="submit" className="bg-blue-500 text-white px-6 py-2 rounded">
-                포트폴리오 생성하기
-            </button>
-        </form>
-    );
+    } catch (error) {
+      alert(error.response?.data?.message || '닉네임 설정 중 오류가 발생했습니다.');
+    }
+  };
+
+  return (
+    // 👇 [병합] 두 버전의 JSX를 통합하고, 에러 메시지 표시 로직을 추가합니다.
+    <form onSubmit={handleSubmit} className="flex flex-col items-center gap-4 mt-40">
+      <input
+        type="text"
+        placeholder="사용할 닉네임을 입력하세요"
+        className="px-4 py-2 rounded shadow border"
+        value={nickname}
+        onChange={(e) => {
+          setNickname(e.target.value);
+          if (e.target.value.trim()) setError(false);
+        }}
+      />
+      {error && (
+        <p className="text-red-500 text-sm mt-[-12px] mb-[-8px]">
+          닉네임을 입력해주세요.
+        </p>
+      )}
+      <button type="submit" className="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">
+        포트폴리오 생성하기
+      </button>
+    </form>
+  );
 }
