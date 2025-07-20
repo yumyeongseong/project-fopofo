@@ -30,47 +30,53 @@ import ChatbotPromptPage from './pages/ChatbotPromptPage/ChatbotPromptPage';
 // 기타
 import { AuthProvider } from './contexts/AuthContext';
 
-import UserPage from './pages/UserPage'; 
+import UserPage from './pages/UserPage';
 import './index.css';
+
+// 공유용 페이지
+import PublicPortfolioPage from './pages/PublicPortfolioPage';
 
 function App() {
   return (
-  <AuthProvider>
-    <Router>
-      <Routes>
-        {/* 시작/로그인/회원가입 */}
-        <Route path="/" element={<StartPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/mainpage" element={<StartPage />} />
+    <AuthProvider>
+      <Router>
+        <Routes>
+          {/* 시작/로그인/회원가입 */}
+          <Route path="/" element={<StartPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
+          <Route path="/mainpage" element={<StartPage />} />
 
-        {/* 홈 */}
-        <Route path="/home" element={<HomePage />} />
-        <Route path="/create" element={<CreateUser />} />
+          {/* 홈 */}
+          <Route path="/home" element={<HomePage />} />
+          <Route path="/create" element={<CreateUser />} />
 
-        {/* 마이페이지 */}
-        <Route path="/mypage" element={<MypageIntroSection />} />
-        <Route path="/mypage/intro" element={<IntroEditPage />} />
-        <Route path="/mypage/portfolio" element={<PortfolioEditPage />} />
-        <Route path="/mypage/chatbot" element={<ChatbotEditPage />} />
+          {/* 마이페이지 */}
+          <Route path="/mypage" element={<MypageIntroSection />} />
+          <Route path="/mypage/intro" element={<IntroEditPage />} />
+          <Route path="/mypage/portfolio" element={<PortfolioEditPage />} />
+          <Route path="/mypage/chatbot" element={<ChatbotEditPage />} />
 
-        {/* 포트폴리오 관련 */}
-        <Route path="/portfolio-created" element={<PortfolioCreatedPage />} />
-        <Route path="/upload" element={<PortfolioUploadPage />} />
-        <Route path="/intro-upload" element={<IntroUploadPage />} />
+          {/* 포트폴리오 관련 */}
+          <Route path="/portfolio-created" element={<PortfolioCreatedPage />} />
+          <Route path="/upload" element={<PortfolioUploadPage />} />
+          <Route path="/intro-upload" element={<IntroUploadPage />} />
 
-         {/* 사용자용웹 */}
-        <Route path="/user/:userName" element={<UserMainPage />} />
+          {/* 사용자용웹 */}
+          <Route path="/user/:userName" element={<UserMainPage />} />
 
-        {/* 챗봇 */}
-        <Route path="/upload/chatbot" element={<ChatbotFileUpload />} />
-        <Route path="/prompt/chatbot" element={<ChatbotPromptPage />} />
+          {/* 챗봇 */}
+          <Route path="/upload/chatbot" element={<ChatbotFileUpload />} />
+          <Route path="/prompt/chatbot" element={<ChatbotPromptPage />} />
 
-        {/* 챗봇 */}
-        <Route path="/user/:userName" element={<UserPage />} />
-      </Routes>
-    </Router>
-  </AuthProvider>
+          {/* 기타 */}
+          <Route path="/user/:userName" element={<UserPage />} />
+
+          {/* 공유용 페이지 */}
+          <Route path="/portfolio/:userId" element={<PublicPortfolioPage />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 

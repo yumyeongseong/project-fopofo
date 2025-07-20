@@ -18,7 +18,7 @@ export default function TypingAnswer({ fullText }) {
 
     return (
         <div className="bg-blue-100 text-left text-gray-800 text-sm p-4 rounded-lg shadow mb-6 whitespace-pre-line">
-            <strong>홍길동 챗봇의 답변:</strong>
+            <strong>챗봇의 답변:</strong>
             <p className="mt-2">{typedText}</p>
         </div>
     );

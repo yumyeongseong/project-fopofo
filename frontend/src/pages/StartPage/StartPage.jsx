@@ -11,27 +11,26 @@ function StartPage() {
 
     return (
         <div className="start-page">
-            {/* 왼쪽 상단 로고 */}
             <img
-                src="/Fopofo-Logo.png"
-                alt="fopofo-logo"
-                className="logo"
-                onClick={() => navigate('/mainpage')}
+                src="/startpage-img.png"
+                alt="배경"
+                className="bg-img"
             />
 
-            {/* 배경 이미지들 */}
-            <div className="background-images">
-                <img src="/cut2.png" alt="cut2" className="img img1" />
-                <img src="/cut2-2.png" alt="cut2-2" className="img img2" />
-                <img src="/cut3-1.png" alt="cut3-1" className="img img3" />
-                <img src="/cut3-3.png" alt="cut3" className="img img4" />
-                <img src="/cut7.png" alt="cut7" className="img img5" />
-            </div>
+            {/* 좌측 상단 로고 */}
+            <img
+                src="/fopofo-logo.png"
+                alt="fopofo-logo"
+                className="logo"
+                onClick={() => navigate('/')}
+            />
 
-            {/* 메인 타이틀 */}
-            <h1 className="start-title" onClick={handleClick}>
-                For Portfolio For People
-            </h1>
+            {/* 중앙 텍스트 + 구분선 */}
+            <div className="title-wrapper" onClick={handleClick}>
+                <h1 className="text-slide-up">For Portfolio</h1>
+                <div className="divider-line"></div>
+                <h1 className="text-slide-down">For People</h1>
+            </div>
         </div>
     );
 }

@@ -31,7 +31,7 @@ function SignupPage() {
   return (
     <div className="signup-container">
       <img
-        src="/images/fopofo-logo.png"
+        src="/fopofo-logo.png"
         alt="fopofo-logo"
         className="login-logo-img"
         onClick={handleLogoClick}

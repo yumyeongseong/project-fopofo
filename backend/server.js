@@ -32,16 +32,17 @@ const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const userUploadRoutes = require('./routes/userUploadRoutes');
-const googleAuthRoutes = require('./routes/googleAuthRoutes'); 
-const publicRoutes = require('./routes/publicRoutes');  
+const googleAuthRoutes = require('./routes/googleAuthRoutes');
+const publicRoutes = require('./routes/publicRoutes');
+
+app.use('/api/public', publicRoutes);
+app.use('/uploads', express.static('uploads'));
+app.use('/api/auth', googleAuthRoutes);
 
 app.use('/api/users', authRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/auth', googleAuthRoutes); 
-app.use('/uploads', express.static('uploads'));
 app.use('/api/upload', uploadRoutes);
 app.use('/api/user-upload', userUploadRoutes);
-app.use('/api/public', publicRoutes); 
 
 
 const PORT = process.env.PORT || 5000;

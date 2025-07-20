@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { pythonApi } from "../services/api";
 import {
   BadgeCheck,
   FolderKanban,
@@ -8,15 +10,33 @@ import {
 } from "lucide-react";
 import TypingIntro from "./TypingIntro";
 import TypingAnswer from "./TypingAnswer";
-import axios from 'axios'; // 1. axios 라이브러리를 가져옵니다.
 
-export default function ChatbotSection() {
+// ✅ 외부에서 publicUserId를 받을 수 있도록 props에 추가합니다.
+export default function ChatbotSection({ publicUserId }) {
+  const { user } = useAuth(); // 로그인한 사용자 정보
+
+  // ✅ 챗봇의 주인을 결정합니다.
+  // 공개 페이지라면 publicUserId를, 아니라면 로그인된 사용자의 ID를 사용합니다.
+  const chatbotOwnerId = publicUserId || user?.userId;
+
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showButtons, setShowButtons] = useState(true);
+  const [predefinedQuestions, setPredefinedQuestions] = useState([]);
 
-  // 2. handleSend 함수를 실제 API를 호출하도록 수정합니다.
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const response = await pythonApi.get('/predefined-questions');
+        setPredefinedQuestions(response.data.questions);
+      } catch (error) {
+        console.error("사전 정의된 질문 로딩 실패:", error);
+      }
+    };
+    fetchQuestions();
+  }, []);
+
   const handleSend = async (q) => {
     const userInput = q || question.trim();
     if (!userInput) return;
@@ -26,35 +46,19 @@ export default function ChatbotSection() {
     setAnswer("");
 
     try {
-      // 로컬 스토리지에서 JWT 토큰을 가져옵니다.
-      const token = localStorage.getItem('token');
-      if (!token) {
-        alert('인증 정보가 없습니다. 다시 로그인해주세요.');
-        setIsLoading(false);
-        setShowButtons(true);
-        // navigate('/login'); // 필요하다면 로그인 페이지로 이동시킬 수 있습니다.
-        return;
-      }
-
-      // Python 서버의 /chat 엔드포인트로 요청을 보냅니다.
-      const response = await axios.post(
-        'http://localhost:8000/chat', // Python 서버 주소
-        { query: userInput }, // 백엔드의 ChatRequest 모델 형식에 맞춤
+      // ✅ API 요청 시, 어떤 사용자의 챗봇과 대화할지 userId를 함께 보냅니다.
+      const response = await pythonApi.post(
+        '/chat',
         {
-          headers: {
-            'Authorization': `Bearer ${token}` // 헤더에 JWT 인증 토큰 추가
-          }
+          query: userInput,
+          user_id: chatbotOwnerId // 이 userId를 기준으로 Pinecone 네임스페이스를 찾습니다.
         }
       );
-
-      // API 응답으로 받은 챗봇의 답변을 state에 저장합니다.
       setAnswer(response.data.response);
-
     } catch (error) {
       console.error("챗봇 응답 요청 실패:", error.response?.data || error.message);
       setAnswer("죄송합니다. 답변을 가져오는 중 오류가 발생했습니다.");
     } finally {
-      // 로딩 상태를 해제하고 버튼을 다시 표시합니다.
       setIsLoading(false);
       setShowButtons(true);
       setQuestion("");
@@ -67,7 +71,7 @@ export default function ChatbotSection() {
       <h2 className="text-2xl font-bold text-black tracking-wide">나만의 챗봇</h2>
 
       <TypingIntro
-        fullText={`안녕하세요 홍길동 챗봇에 오신 걸 환영합니다.\n궁금한 점을 선택하거나 아래에 입력해 주세요!`}
+        fullText={`안녕하세요 챗봇에 오신 걸 환영합니다.\n궁금한 점을 선택하거나 아래에 입력해 주세요!`}
       />
 
       {showButtons && (
@@ -111,7 +115,7 @@ export default function ChatbotSection() {
       <div className="flex items-center border rounded-full px-4 py-2 shadow-inner bg-white">
         <input
           type="text"
-          placeholder="‘홍길동’에게 궁금한 점을 입력해주세요!"
+          placeholder="궁금한 점을 입력해주세요!"
           className="flex-grow bg-transparent outline-none text-sm text-gray-700 placeholder-gray-400"
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
