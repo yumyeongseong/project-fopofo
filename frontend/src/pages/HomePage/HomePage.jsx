@@ -16,7 +16,7 @@ function HomePage() {
                 src="/fopofo-logo.png"
                 alt="fopofo-logo"
                 className="home-logo"
-                onClick={() => navigate('/mainpage')}
+                onClick={() => navigate('/')}
             />
             <header className="home-header">
                 <button

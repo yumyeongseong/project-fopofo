@@ -1,81 +1,152 @@
 import { useState } from "react";
+import { Plus, Trash, CheckCircle, Circle } from "lucide-react";
+import * as pdfjsLib from "pdfjs-dist";
+import { GlobalWorkerOptions } from "pdfjs-dist/build/pdf";
+import { useNavigate } from "react-router-dom";
 import MypageHeader from "../../components/MypageHeader";
 
-const initialQA = [
-    { question: "자신의 강점이 잘 드러난 경험 하나를 소개해주세요.", answer: "" },
-    { question: "가장 자신 있는 프로젝트 또는 작업 경험은 무엇인가요?", answer: "" },
-    { question: "협업 중 기억에 남는 순간이나 갈등 해결 사례가 있다면요?", answer: "" },
-    { question: "가장 힘들었지만 성장했다고 느낀 순간은 언제였나요?", answer: "" },
-];
+GlobalWorkerOptions.workerSrc = `${process.env.PUBLIC_URL}/pdf.worker.js`;
 
-export default function ChatbotEditPage() {
-    const [activeSection, setActiveSection] = useState("intro");
-    const [pdfUrl, setPdfUrl] = useState(null);
-    const [qaList, setQaList] = useState(initialQA);
+export default function PortfolioEditPage() {
+    const [category, setCategory] = useState("Design");
+    const [items, setItems] = useState({ Design: [], Video: [], Document: [], Photo: [] });
+    const [selected, setSelected] = useState([]);
+    const navigate = useNavigate();
 
-    const handleFileUpload = (e) => {
-        const file = e.target.files[0];
-        if (file && file.type === "application/pdf") {
-            const fileUrl = URL.createObjectURL(file);
-            setPdfUrl(fileUrl);
-        }
+    const renderPDFThumbnail = async (file) => {
+        const reader = new FileReader();
+        return new Promise((resolve) => {
+            reader.onload = async () => {
+                const typedarray = new Uint8Array(reader.result);
+                const pdf = await pdfjsLib.getDocument({ data: typedarray }).promise;
+                const page = await pdf.getPage(1);
+                const viewport = page.getViewport({ scale: 1 });
+                const canvas = document.createElement("canvas");
+                const context = canvas.getContext("2d");
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+                await page.render({ canvasContext: context, viewport }).promise;
+                resolve(canvas.toDataURL("image/png"));
+            };
+            reader.readAsArrayBuffer(file);
+        });
     };
 
-    const handleAnswerChange = (index, value) => {
-        const updated = [...qaList];
-        updated[index].answer = value;
-        setQaList(updated);
+    const handleCategoryClick = (type) => {
+        setCategory(type);
+        setSelected([]);
+    };
+
+    const handleFileInput = async (e) => {
+        const newFiles = Array.from(e.target.files);
+        const processed = await Promise.all(
+            newFiles.map(async (file) => {
+                if (file.type === "application/pdf") {
+                    const thumbnail = await renderPDFThumbnail(file);
+                    return { file, thumbnail };
+                } else {
+                    return { file, thumbnail: URL.createObjectURL(file) };
+                }
+            })
+        );
+        setItems((prev) => ({ ...prev, [category]: [...prev[category], ...processed] }));
+    };
+
+    const handleDrop = async (e) => {
+        e.preventDefault();
+        const newFiles = Array.from(e.dataTransfer.files);
+        const processed = await Promise.all(
+            newFiles.map(async (file) => {
+                if (file.type === "application/pdf") {
+                    const thumbnail = await renderPDFThumbnail(file);
+                    return { file, thumbnail };
+                } else {
+                    return { file, thumbnail: URL.createObjectURL(file) };
+                }
+            })
+        );
+        setItems((prev) => ({ ...prev, [category]: [...prev[category], ...processed] }));
+    };
+
+    const handleSelect = (file) => {
+        setSelected((prev) =>
+            prev.includes(file) ? prev.filter((f) => f !== file) : [...prev, file]
+        );
+    };
+
+    const handleDelete = () => {
+        setItems((prev) => ({
+            ...prev,
+            [category]: prev[category].filter((f) => !selected.includes(f.file)),
+        }));
+        setSelected([]);
+    };
+
+    const handleEdit = () => {
+        console.log("최종 저장:", items[category]);
     };
 
     return (
         <div className="min-h-screen bg-pink-100 flex flex-col">
             <MypageHeader />
 
-            <div className="flex flex-1 mt-6">
-                {/* Sidebar */}
+
+            <div className="flex flex-1">
+                {/* 왼쪽 카테고리 */}
                 <div className="flex flex-col gap-4 p-6">
-                    <button onClick={() => setActiveSection("intro")} className="border px-4 py-2 font-serif bg-pink-50">자기소개서 편집</button>
-                    <button onClick={() => setActiveSection("resume")} className="border px-4 py-2 font-serif bg-pink-50">이력서 편집</button>
-                    <button onClick={() => setActiveSection("chatbot")} className="border px-4 py-2 font-serif bg-pink-50">Q/A 수정</button>
+                    {["Design", "Video", "Document", "Photo"].map((type) => (
+                        <button
+                            key={type}
+                            onClick={() => handleCategoryClick(type)}
+                            className={`border px-4 py-2 font-serif ${category === type ? "bg-white" : "bg-pink-50"}`}
+                        >
+                            {type}
+                        </button>
+                    ))}
+
+                    <label className="bg-pink-300 text-white text-center py-2 rounded-full cursor-pointer">
+                        <input type="file" multiple hidden onChange={handleFileInput} />
+                        Add
+                    </label>
+                    <button onClick={handleDelete} className="bg-pink-300 text-white text-center py-2 rounded-full">
+                        Delete
+                    </button>
+                    <button onClick={handleEdit} className="bg-pink-200 text-brown-700 text-center py-2 rounded-full shadow hover:shadow-md transition">
+                        Edit
+                    </button>
                 </div>
 
-                {/* Main Content */}
-                <div className="flex-1 p-8 bg-blue-100 rounded-lg">
-                    {activeSection === "chatbot" ? (
-                        <div className="bg-pink-50 p-6 rounded shadow">
-                            <h2 className="text-2xl font-serif mb-6 text-center">Q/A For Chatbot</h2>
-                            {qaList.map((qa, index) => (
-                                <div key={index} className="mb-6">
-                                    <p className="font-semibold">Q. {qa.question}</p>
-                                    <textarea
-                                        value={qa.answer}
-                                        onChange={(e) => handleAnswerChange(index, e.target.value)}
-                                        className="w-full mt-1 p-2 border rounded"
-                                        rows={3}
-                                    />
-                                </div>
-                            ))}
-                            <button className="bg-pink-300 text-white px-6 py-2 rounded-full mt-4 mx-auto block">Save</button>
-                        </div>
-                    ) : (
-                        <div className="flex gap-6">
-                            <div className="w-1/2 bg-pink-50 p-6 rounded">
-                                <label className="block mb-2 font-semibold">PDF 업로드</label>
-                                <input type="file" accept="application/pdf" onChange={handleFileUpload} />
-                            </div>
-                            <div className="w-1/2 bg-white p-6 rounded shadow">
-                                <p className="text-center font-bold mb-2">PREVIEW</p>
-                                {pdfUrl ? (
-                                    <iframe src={pdfUrl} className="w-full h-96 border" title="pdf-preview" />
+                {/* 오른쪽 미리보기 */}
+                <div
+                    onDrop={handleDrop}
+                    onDragOver={(e) => e.preventDefault()}
+                    className="flex-1 p-8 grid grid-cols-3 gap-4 bg-blue-100 rounded-lg"
+                >
+                    {items[category].map(({ file, thumbnail }, index) => (
+                        <div
+                            key={index}
+                            className="relative rounded overflow-hidden shadow-md cursor-pointer"
+                            onClick={() => handleSelect(file)}
+                        >
+                            <div className="absolute top-2 left-2 text-white">
+                                {selected.includes(file) ? (
+                                    <CheckCircle size={20} className="text-white bg-black rounded-full" />
                                 ) : (
-                                    <p className="text-center text-gray-500">업로드된 파일이 없습니다.</p>
+                                    <Circle size={20} className="text-white bg-black rounded-full" />
                                 )}
                             </div>
+                            {file.type.startsWith("video") ? (
+                                <video src={thumbnail} controls className="w-full h-[200px] object-contain" />
+                            ) : (
+                                <img src={thumbnail} alt={file.name} className="w-full h-[200px] object-contain" />
+                            )}
                         </div>
-                    )}
+                    ))}
                 </div>
             </div>
+
         </div>
     );
 }
+
 
