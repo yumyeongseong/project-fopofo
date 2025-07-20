@@ -1,0 +1,98 @@
+.home-container {
+    background-color: #fff;
+    min-height: 100vh;
+    font-family: 'Arial', sans-serif;
+    position: relative;
+}
+
+
+.home-header {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 30px 50px;
+}
+
+.home-logo {
+    position: fixed !important;
+    top: -30px !important;
+    left: -20px !important;
+    width: 230px !important;
+    padding: 24px 40px !important;
+    z-index: 999 !important;
+}
+
+.home-logo:hover {
+    transform: scale(1.05);
+    /* ✅ 호버 시 약간 확대 애니메이션 */
+}
+.mypage-button-home {
+    font-family: 'Courier New', serif;
+    font-size: 22px;
+    background-color: transparent;
+    color: #2b1e28;
+    border: 2px solid #f48ca2;
+    padding: 10px 20px;
+    border-radius: 6px;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    text-shadow: 1px 1px 1px #ccc;
+    cursor: pointer;
+    margin-top: 30px;
+    margin-right: 15px;
+}
+
+.mypage-button-home:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25);
+}
+
+.home-main {
+    display: flex;
+    justify-content: center;
+    margin-top: 80px;
+}
+
+.main-title-box {
+    background-color: #f48ca2;
+    padding: 20px 40px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.main-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    color: #333;
+    margin: 0;
+}
+
+.create-button {
+    text-decoration: none;
+    /* 기본 상태에서 밑줄 없음 */
+    position: relative;
+    color: #2d2d2d;
+    font-size: 28px;
+    font-weight: bold;
+    font-family: 'Georgia', serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.create-button::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    /* 텍스트 아래 간격 */
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #2d2d2d;
+    transition: width 0.3s ease;
+}
+
+.create-button:hover::after {
+    width: 100%;
+    /* 호버 시 전체 밑줄 */
+}
