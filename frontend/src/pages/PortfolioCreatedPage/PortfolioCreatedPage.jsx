@@ -10,19 +10,19 @@ function PortfolioCreatedPage() {
   const [isCreated, setIsCreated] = useState(false);
   const [portfolioUrl, setPortfolioUrl] = useState(''); // 초기값은 빈 문자열로 설정
 
-  const location = useLocation();
+  // const location = useLocation();
   const navigate = useNavigate();
 
-  // ✅ 팀원의 안정적인 URL 수신 및 예외 처리 로직을 채택합니다.
-  useEffect(() => {
-    if (location.state && location.state.portfolioUrl) {
-      setPortfolioUrl(location.state.portfolioUrl);
-    } else {
-      console.error("포트폴리오 URL이 전달되지 않았습니다.");
-      alert("잘못된 접근입니다. 메인 페이지로 이동합니다.");
-      navigate('/mainpage');
-    }
-  }, [location.state, navigate]);
+  // // ✅ 팀원의 안정적인 URL 수신 및 예외 처리 로직을 채택합니다.
+  // useEffect(() => {
+  //   if (location.state && location.state.portfolioUrl) {
+  //     setPortfolioUrl(location.state.portfolioUrl);
+  //   } else {
+  //     console.error("포트폴리오 URL이 전달되지 않았습니다.");
+  //     alert("잘못된 접근입니다. 메인 페이지로 이동합니다.");
+  //     navigate('/');
+  //   }
+  // }, [location.state, navigate]);
 
   // ✅ 내 버전의 Progress Bar 애니메이션 로직을 가져옵니다.
   useEffect(() => {

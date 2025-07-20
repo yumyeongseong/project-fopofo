@@ -11,7 +11,6 @@ function LoginPage() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
-
     if (token) {
       localStorage.setItem('token', token);
       alert('구글 로그인 성공!');
@@ -20,22 +19,15 @@ function LoginPage() {
     }
   }, [navigate]);
 
-  // ✅ 닉네임 유무에 따라 분기하는 팀원의 로직을 채택합니다.
   const handleLogin = async () => {
     try {
       const response = await nodeApi.post('/users/login', { userId, password });
-      // 백엔드 응답에서 token과 user 객체를 모두 받습니다.
       const { token, user } = response.data;
-
       localStorage.setItem('token', token);
       alert('로그인 성공!');
-
-      // 닉네임 유무에 따라 다른 페이지로 이동합니다.
       if (user && user.nickname) {
-        // 닉네임이 있으면 홈 페이지로 이동
         navigate('/home');
       } else {
-        // 닉네임이 없으면 닉네임 생성(/create) 페이지로 이동
         navigate('/create');
       }
     } catch (err) {
@@ -66,30 +58,29 @@ function LoginPage() {
       />
 
       <div className="login-box">
-        <input
-          type="text"
-          className="login-input id-input"
-          placeholder="ID: 아이디를 입력하세요"
-          value={userId}
-          onChange={(e) => setUserId(e.target.value)}
-        />
-        <input
-          type="password"
-          className="login-input"
-          placeholder="PW: 비밀번호를 입력하세요"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        <div
-          className="gsi-material-button"
-          onClick={handleGoogleLogin}
-        >
-          {/* ... (SVG 코드는 생략) ... */}
-          <span className="gsi-material-button-contents">Sign in with Google</span>
+        <div className="input-group">
+          <input
+            type="text"
+            className="login-input"
+            placeholder="ID: 아이디를 입력하세요"
+            value={userId}
+            onChange={(e) => setUserId(e.target.value)}
+          />
+          <input
+            type="password"
+            className="login-input"
+            placeholder="PW: 비밀번호를 입력하세요"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
         </div>
 
-        <p className="link-text" onClick={handleSignupClick} style={{ cursor: 'pointer' }}>
+        <button className="google-login-button" onClick={handleGoogleLogin}>
+          <img src="/google-icon.svg" alt="Google" className="google-icon" />
+          <span>Sign in with Google</span>
+        </button>
+
+        <p className="link-text" onClick={handleSignupClick}>
           회원 가입
         </p>
       </div>
@@ -102,3 +93,6 @@ function LoginPage() {
 }
 
 export default LoginPage;
+
+
+
