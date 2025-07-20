@@ -1,69 +1,132 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function PortfolioSection() {
+    const [portfolioItems, setPortfolioItems] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState("Design");
     const [selectedItem, setSelectedItem] = useState(null);
 
-    // ✅ 더미 데이터 (백에서 받아올 예정)
-    const portfolioItems = [
-        {
-            id: 1,
-            title: "UX 리디자인 프로젝트",
-            category: "디자인",
-            thumbnailUrl: "/uploads/thumb1.jpg",
-            fullImageUrl: "/uploads/full1.jpg",
-            description: "모바일 온보딩 UX 리디자인"
-        },
-        {
-            id: 2,
-            title: "모션그래픽 영상",
-            category: "비디오",
-            thumbnailUrl: "/uploads/thumb2.jpg",
-            fullImageUrl: "/uploads/full2.jpg",
-            description: "오프닝 모션 영상 제작"
-        }
-    ];
+    const categories = ["Design", "Video", "Document", "Photo"];
+
+    useEffect(() => {
+        const dummyData = [
+            {
+                id: 1,
+                title: "UX 리디자인 프로젝트",
+                category: "Design",
+                thumbnailUrl: "/design-img.jpg",
+                fullImageUrl: "/design-img.jpg",
+            },
+            {
+                id: 2,
+                title: "오프닝 모션그래픽 영상",
+                category: "Video",
+                thumbnailUrl: "/video-thumb.jpg", // 썸네일은 이미지
+                fullImageUrl: "/Mac Miller - Blue World.mp4", // 실제 영상 파일
+            },
+            {
+                id: 3,
+                title: "포트폴리오 PDF 문서",
+                category: "Document",
+                thumbnailUrl: "/document-thumb.jpg", // 썸네일 이미지
+                fullImageUrl: "/dummy.pdf", // 실제 PDF 파일
+            },
+            {
+                id: 4,
+                title: "제주 풍경 사진",
+                category: "Photo",
+                thumbnailUrl: "/Photo-img.jpeg",
+                fullImageUrl: "/Photo-img.jpeg",
+            },
+        ];
+        setPortfolioItems(dummyData);
+    }, []);
+
+    const filteredItems = portfolioItems.filter(
+        (item) => item.category === selectedCategory
+    );
 
     return (
         <div className="relative">
+            {/* 🗂 카테고리 버튼 */}
+            <div className="flex justify-center mb-6 flex-wrap gap-3">
+                {categories.map((category) => (
+                    <button
+                        key={category}
+                        onClick={() => setSelectedCategory(category)}
+                        className={`px-4 py-2 rounded-full shadow-sm font-medium transition ${selectedCategory === category
+                            ? "bg-[#f48ca2] text-white"
+                            : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-100"
+                            }`}
+                    >
+                        {category}
+                    </button>
+                ))}
+            </div>
 
-            {/* 🖼 카드 전시 */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                {portfolioItems.map((item) => (
+            {/* 🖼 포트폴리오 썸네일 카드 */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+                {filteredItems.map((item) => (
                     <div
                         key={item.id}
-                        className="bg-white rounded-lg shadow hover:shadow-lg transition cursor-pointer"
+                        className="cursor-pointer"
                         onClick={() => setSelectedItem(item)}
                     >
-                        <img
-                            src={item.thumbnailUrl}
-                            alt={item.title}
-                            className="w-full h-48 object-cover rounded-t-lg"
-                        />
-                        <div className="p-4">
-                            <h3 className="text-lg font-semibold">{item.title}</h3>
-                            <p className="text-sm text-gray-500">{item.category}</p>
-                        </div>
+                        {item.category === "Video" ? (
+                            <img
+                                src={item.thumbnailUrl}
+                                alt="비디오 썸네일"
+                                className="w-full h-auto object-cover rounded"
+                            />
+                        ) : item.category === "Document" ? (
+                            <img
+                                src={item.thumbnailUrl}
+                                alt="PDF 썸네일"
+                                className="w-full h-auto object-contain rounded"
+                            />
+                        ) : (
+                            <img
+                                src={item.thumbnailUrl}
+                                alt="썸네일"
+                                className="w-full h-auto object-contain rounded"
+                                onError={(e) => {
+                                    e.target.src = "/placeholder.png";
+                                }}
+                            />
+                        )}
                     </div>
                 ))}
             </div>
 
             {/* 🔍 전체보기 모달 */}
             {selectedItem && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white p-6 rounded-lg w-[90%] max-w-3xl relative shadow-xl">
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
+                    <div className="relative">
                         <button
                             onClick={() => setSelectedItem(null)}
-                            className="absolute top-2 right-2 text-gray-400 hover:text-black text-2xl"
+                            className="absolute top-[-30px] right-0 text-white text-3xl"
                         >
                             ×
                         </button>
-                        <img
-                            src={selectedItem.fullImageUrl}
-                            alt={selectedItem.title}
-                            className="w-full max-h-[70vh] object-contain rounded"
-                        />
-                        <h2 className="text-xl font-bold mt-4">{selectedItem.title}</h2>
-                        <p className="text-sm text-gray-600 mt-2">{selectedItem.description}</p>
+
+                        {selectedItem.fullImageUrl.endsWith(".mp4") ? (
+                            <video
+                                src={selectedItem.fullImageUrl}
+                                controls
+                                className="max-w-[90vw] max-h-[90vh] object-contain rounded"
+                            />
+                        ) : selectedItem.fullImageUrl.endsWith(".pdf") ? (
+                            <iframe
+                                src={selectedItem.fullImageUrl}
+                                title="PDF 미리보기"
+                                className="w-[90vw] h-[90vh] rounded bg-white"
+                            />
+                        ) : (
+                            <img
+                                src={selectedItem.fullImageUrl}
+                                alt="전체보기 이미지"
+                                className="max-w-[90vw] max-h-[90vh] object-contain rounded"
+                            />
+                        )}
                     </div>
                 </div>
             )}
