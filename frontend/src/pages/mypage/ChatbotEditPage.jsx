@@ -4,11 +4,9 @@ import { useNavigate } from "react-router-dom";
 import MypageHeader from "../../components/MypageHeader";
 import { pythonApi } from "../../services/api";
 import { useAuth } from "../../contexts/AuthContext";
-// ✅ 1. PDF 미리보기를 위해 필요한 라이브러리를 가져옵니다.
 import * as pdfjsLib from "pdfjs-dist";
 import { GlobalWorkerOptions } from "pdfjs-dist";
 
-// ✅ 2. PDF.js 워커 파일의 경로를 설정합니다. (public 폴더에 복사된 파일)
 GlobalWorkerOptions.workerSrc = `/pdf.worker.mjs`;
 
 export default function ChatbotEditPage() {
@@ -23,13 +21,11 @@ export default function ChatbotEditPage() {
     const [showMessage, setShowMessage] = useState("");
     const [isProcessing, setIsProcessing] = useState(false);
     const navigate = useNavigate();
-    const { logout } = useAuth(); // useAuth에서 logout을 가져옵니다.
+    const { logout } = useAuth();
 
-    // ✅ 3. 미리보기를 위한 상태 변수를 추가합니다.
-    const [previewUrl, setPreviewUrl] = useState(null); // PDF 썸네일 URL
-    const [previewFile, setPreviewFile] = useState(null); // 현재 미리보고 있는 파일 정보
+    const [previewUrl, setPreviewUrl] = useState(null);
+    const [previewFile, setPreviewFile] = useState(null);
 
-    // ✅ 4. PDF 파일의 첫 페이지를 이미지로 변환하는 함수
     const renderPDFPreview = async (file) => {
         const reader = new FileReader();
         return new Promise((resolve, reject) => {
@@ -54,7 +50,6 @@ export default function ChatbotEditPage() {
         });
     };
 
-    // ✅ 5. 파일 선택 시 미리보기를 설정하는 로직을 추가합니다.
     const handleFiles = async (incomingFiles) => {
         const validFiles = Array.from(incomingFiles).filter(
             (file) => file.type === "application/pdf" || file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -73,12 +68,8 @@ export default function ChatbotEditPage() {
                 try {
                     const url = await renderPDFPreview(latestFile);
                     setPreviewUrl(url);
-                } catch (error) {
-                    setPreviewUrl(null);
-                }
-            } else {
-                setPreviewUrl(null); // DOCX는 이미지 미리보기 없음
-            }
+                } catch (error) { setPreviewUrl(null); }
+            } else { setPreviewUrl(null); }
         }
     };
 
@@ -91,17 +82,13 @@ export default function ChatbotEditPage() {
         const updatedFiles = selectedFiles.filter(file => file !== fileToDelete);
         setSelectedFiles(updatedFiles);
 
-        // 파일을 삭제한 후 미리보기 초기화 또는 다음 파일로 업데이트
         if (previewFile === fileToDelete) {
             if (updatedFiles.length > 0) {
-                // 남은 파일 중 첫 번째 파일을 새 미리보기로 설정
                 const nextPreviewFile = updatedFiles[0];
                 setPreviewFile(nextPreviewFile);
                 if (nextPreviewFile.type === "application/pdf") {
                     renderPDFPreview(nextPreviewFile).then(setPreviewUrl).catch(() => setPreviewUrl(null));
-                } else {
-                    setPreviewUrl(null);
-                }
+                } else { setPreviewUrl(null); }
             } else {
                 setPreviewFile(null);
                 setPreviewUrl(null);
@@ -109,10 +96,69 @@ export default function ChatbotEditPage() {
         }
     };
 
-    // --- (handleAnswerChange, handleSaveQA, handleEdit 함수는 기존과 동일하게 유지) ---
-    const handleAnswerChange = (index, newAnswer) => { /* ... */ };
-    const handleSaveQA = async () => { /* ... */ };
-    const handleEdit = async () => { /* ... */ };
+    const handleAnswerChange = (index, newAnswer) => {
+        const updatedQaList = [...qaList];
+        updatedQaList[index].answer = newAnswer;
+        setQaList(updatedQaList);
+    };
+
+    const handleSaveQA = async () => {
+        const allAnswered = qaList.every(item => item.answer.trim() !== '');
+        if (!allAnswered) {
+            alert("모든 질문에 답변을 입력해주세요.");
+            return;
+        }
+        setIsProcessing(true);
+        setShowMessage("Q&A를 저장하는 중입니다...");
+        try {
+            const answersToSave = {};
+            qaList.forEach((item, index) => {
+                answersToSave[`question_${index + 1}`] = item.question;
+                answersToSave[`answer_${index + 1}`] = item.answer;
+            });
+            await pythonApi.post('/save-answers', { answers: answersToSave });
+            setShowMessage("성공적으로 저장되었습니다.");
+            setTimeout(() => {
+                setShowMessage("");
+                navigate('/mypage');
+            }, 2000);
+        } catch (error) {
+            console.error("Q&A 저장 중 오류 발생:", error);
+            setShowMessage("오류가 발생했습니다. 다시 시도해주세요.");
+            setTimeout(() => setShowMessage(""), 3000);
+        } finally {
+            setIsProcessing(false);
+        }
+    };
+
+    const handleEdit = async () => {
+        if (selectedFiles.length === 0) {
+            alert("대체할 파일을 하나 이상 선택해주세요.");
+            return;
+        }
+        setIsProcessing(true);
+        setShowMessage("챗봇을 업데이트하는 중입니다...");
+        try {
+            await pythonApi.delete('/pinecone-vectors');
+            const uploadPromises = selectedFiles.map(file => {
+                const formData = new FormData();
+                formData.append('file', file);
+                return pythonApi.post('/upload', formData);
+            });
+            await Promise.all(uploadPromises);
+            setShowMessage("챗봇이 성공적으로 업데이트되었습니다!");
+            setTimeout(() => {
+                setShowMessage("");
+                navigate('/mypage');
+            }, 2000);
+        } catch (error) {
+            console.error("챗봇 업데이트 중 오류 발생:", error);
+            setShowMessage("오류가 발생했습니다. 다시 시도해주세요.");
+            setTimeout(() => setShowMessage(""), 3000);
+        } finally {
+            setIsProcessing(false);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-pink-100 flex flex-col relative">
@@ -131,9 +177,30 @@ export default function ChatbotEditPage() {
                 </div>
 
                 {activeTab === "qa" ? (
+                    // ▼▼▼▼▼ 사라졌던 Q/A 수정 UI를 여기에 다시 추가합니다. ▼▼▼▼▼
                     <div className="flex-1 p-8">
-                        {/* ... Q/A 수정 UI (기존과 동일) ... */}
+                        <div className="bg-blue-100 rounded-lg p-8 w-full max-w-4xl mx-auto">
+                            {qaList.map((item, index) => (
+                                <div key={index} className="mb-6">
+                                    <p className="font-semibold mb-2">Q. {item.question}</p>
+                                    <textarea
+                                        value={item.answer}
+                                        onChange={(e) => handleAnswerChange(index, e.target.value)}
+                                        className="w-full border border-gray-300 rounded p-2 min-h-[80px]"
+                                        placeholder="A."
+                                    />
+                                </div>
+                            ))}
+                            <button
+                                onClick={handleSaveQA}
+                                disabled={isProcessing}
+                                className="bg-pink-300 text-white px-6 py-2 rounded-full mt-6 hover:bg-pink-400 transition disabled:bg-gray-300"
+                            >
+                                {isProcessing ? '저장 중...' : 'save'}
+                            </button>
+                        </div>
                     </div>
+                    // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
                 ) : (
                     <div className="flex-1 p-8 bg-blue-100 rounded-lg flex gap-6">
                         <div className="w-1/2 bg-pink-50 p-6 rounded flex flex-col items-center">
@@ -180,7 +247,6 @@ export default function ChatbotEditPage() {
                             </button>
                         </div>
 
-                        {/* ▼▼▼ 6. PREVIEW 영역을 수정하여 썸네일을 표시합니다. ▼▼▼ */}
                         <div className="w-1/2 bg-white p-6 rounded shadow">
                             <p className="text-center font-bold mb-2">PREVIEW</p>
                             <div className="text-center text-gray-500 border p-4 rounded min-h-[300px] flex items-center justify-center">
@@ -196,7 +262,6 @@ export default function ChatbotEditPage() {
                                 )}
                             </div>
                         </div>
-                        {/* ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲ */}
                     </div>
                 )}
             </div>
