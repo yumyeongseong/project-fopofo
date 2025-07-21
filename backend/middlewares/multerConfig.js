@@ -31,7 +31,11 @@ const upload = multer({
       cb(null, `${userId}/${fileType}/${uniqueName}`);
     },
   }),
+<<<<<<< HEAD
   limits: { fileSize: 50 * 1024 * 1024 },
+=======
+  limits: { fileSize: 500 * 1024 * 1024 },
+>>>>>>> upstream/main
 });
 
 module.exports = upload;

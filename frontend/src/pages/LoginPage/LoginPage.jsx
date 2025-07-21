@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
+
+// ✅ 연동 관련된 코드 (팀장 코드)
 import { nodeApi } from '../../services/api';
 
 function LoginPage() {
@@ -11,6 +13,7 @@ function LoginPage() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const token = urlParams.get('token');
+
     if (token) {
       localStorage.setItem('token', token);
       alert('구글 로그인 성공!');
@@ -19,12 +22,15 @@ function LoginPage() {
     }
   }, [navigate]);
 
+  // ✅ 로그인 로직 (팀장 코드 기반)
   const handleLogin = async () => {
     try {
       const response = await nodeApi.post('/users/login', { userId, password });
       const { token, user } = response.data;
+
       localStorage.setItem('token', token);
       alert('로그인 성공!');
+
       if (user && user.nickname) {
         navigate('/home');
       } else {
@@ -48,6 +54,7 @@ function LoginPage() {
     navigate('/signup');
   };
 
+  // ✅ UI 구조는 지현 코드 기준
   return (
     <div className="login-container">
       <img
@@ -93,6 +100,3 @@ function LoginPage() {
 }
 
 export default LoginPage;
-
-
-

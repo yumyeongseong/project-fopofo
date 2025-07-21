@@ -8,6 +8,8 @@
     padding-bottom: 100px;
     background-color: white;
     font-family: 'Playfair Display', serif;
+    position: relative;
+    /* mypage 버튼 절대 위치 기준 */
 }
 
 .logo {
@@ -205,4 +207,26 @@
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* --- mypage 버튼 스타일 추가 --- */
+.mypage-button-created {
+    position: absolute;
+    top: 40px;
+    right: 40px;
+    font-family: 'Courier New', serif;
+    font-size: 18px;
+    background-color: transparent;
+    color: #f48ca2;
+    border: 1.5px solid #f48ca2;
+    padding: 8px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 20;
+}
+
+.mypage-button-created:hover {
+    background-color: #f48ca2;
+    color: white;
 }

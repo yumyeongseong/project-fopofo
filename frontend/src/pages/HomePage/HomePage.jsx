@@ -24,11 +24,12 @@ function HomePage() {
   return (
     <div className="home-container">
       <img
-        src="/images/fopofo-logo.png"
+        src="/images/fopofo-logo.png" // ✅ 지현 디자인 반영
         alt="fopofo-logo"
         className="home-logo"
         onClick={() => navigate('/mainpage')}
       />
+
       <header className="home-header">
         <button className="mypage-button-home" onClick={handleMyPageClick}>
           my page

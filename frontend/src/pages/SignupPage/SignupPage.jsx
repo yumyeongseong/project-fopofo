@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './SignupPage.css';
+
+// ✅ 연동 관련 import
 import { nodeApi } from '../../services/api';
 
 function SignupPage() {
@@ -8,23 +10,24 @@ function SignupPage() {
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
 
+  // ✅ 연동 로직은 팀장 코드 사용
   const handleSignUp = async () => {
     try {
-      // ✅ [연동 확인] Node.js 서버의 회원가입 API로 정상적으로 요청됩니다.
-      await nodeApi.post('/users/signup', { userId, password });
+      const response = await nodeApi.post('/users/signup', { userId, password });
       alert('회원가입 성공!');
       navigate('/login');
     } catch (err) {
       console.error('회원가입 실패:', err.response?.data || err.message);
-      alert(err.response?.data?.message || '회원가입에 실패했습니다.');
+      alert('회원가입 실패! 이미 사용 중인 아이디일 수 있습니다.');
     }
   };
 
+  // ✅ 로고 클릭 시 경로는 지현 기준 유지
   const handleLogoClick = () => {
     navigate('/');
   };
 
-  // 👇 [병합] 완전한 형태의 JSX 코드를 채택합니다.
+  // ✅ UI 구성은 지현 기준 유지
   return (
     <div className="signup-container">
       <img
@@ -33,6 +36,7 @@ function SignupPage() {
         className="login-logo-img"
         onClick={handleLogoClick}
       />
+
       <div className="signup-box">
         <input
           type="text"

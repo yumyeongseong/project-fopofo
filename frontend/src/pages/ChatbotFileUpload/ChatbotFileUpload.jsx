@@ -2,7 +2,6 @@
 import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ChatbotFileUpload.css';
-// 👇 1. 기존 axios 대신 새로 만든 pythonApi를 가져옵니다.
 import { pythonApi } from '../../services/api';
 
 const ChatbotFileUpload = () => {
@@ -10,7 +9,6 @@ const ChatbotFileUpload = () => {
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [isDragging, setIsDragging] = useState(false);
 
-  // ... (파일 추가, 드래그앤드롭 관련 핸들러 함수들은 기존과 동일) ...
   const addFiles = useCallback((newFiles) => {
     const filesArray = Array.from(newFiles);
     setSelectedFiles(prevFiles => {
@@ -51,7 +49,6 @@ const ChatbotFileUpload = () => {
     setSelectedFiles(prevFiles => prevFiles.filter(file => file.name !== fileName));
   };
 
-  // 👇 2. 파일 업로드 핸들러(handleUploadFiles)를 수정합니다.
   const handleUploadFiles = async () => {
     if (selectedFiles.length === 0) {
       alert('자기소개서 및 이력서 파일을 업로드해주세요.');
@@ -64,11 +61,9 @@ const ChatbotFileUpload = () => {
     });
 
     try {
-      // 이제 pythonApi를 사용하므로, 전체 주소 대신 '/upload'만 적어줍니다.
       const response = await pythonApi.post('/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          // 'Authorization' 헤더는 api.js에서 자동으로 추가되므로 여기서 삭제합니다.
         }
       });
 
@@ -77,7 +72,6 @@ const ChatbotFileUpload = () => {
       setSelectedFiles([]);
       navigate('/prompt/chatbot');
     } catch (error) {
-      // 👇 에러 처리 시 토큰이 없는 경우를 더 명확하게 확인합니다.
       if (error.response?.status === 401) {
         alert('인증 정보가 유효하지 않습니다. 다시 로그인해주세요.');
         navigate('/login');
@@ -88,7 +82,6 @@ const ChatbotFileUpload = () => {
     }
   };
 
-  // ... (나머지 렌더링 부분은 기존과 동일합니다.) ...
   const goHome = () => {
     navigate('/');
   };

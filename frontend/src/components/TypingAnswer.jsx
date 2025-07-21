@@ -4,18 +4,14 @@ export default function TypingAnswer({ fullText }) {
     const [typedText, setTypedText] = useState("");
 
     useEffect(() => {
-        if (!fullText) return;
-        let index = 0;
-        const interval = setInterval(() => {
-            setTypedText((prev) => prev + fullText.charAt(index));
-            index++;
-            if (index >= fullText.length) {
-                clearInterval(interval);
-            }
-        }, 20);
+        if (!fullText || typedText === fullText) return;
 
-        return () => clearInterval(interval);
-    }, [fullText]);
+        const timeout = setTimeout(() => {
+            setTypedText(fullText.slice(0, typedText.length + 1));
+        }, 25); // 타이핑 속도 (적당히 중간값)
+
+        return () => clearTimeout(timeout);
+    }, [fullText, typedText]);
 
     return (
         <div className="bg-blue-100 text-left text-gray-800 text-sm p-4 rounded-lg shadow mb-6 whitespace-pre-line">

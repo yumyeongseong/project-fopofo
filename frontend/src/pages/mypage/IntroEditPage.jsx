@@ -1,17 +1,20 @@
 import { useState, useCallback } from "react";
 import * as pdfjsLib from "pdfjs-dist";
-import { GlobalWorkerOptions } from "pdfjs-dist/build/pdf";
+import { GlobalWorkerOptions } from "pdfjs-dist"; // 경로 통일
 import { X, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import MypageHeader from "../../components/MypageHeader";
+import { nodeApi } from "../../services/api"; // 백엔드 연동
 
-GlobalWorkerOptions.workerSrc = `${process.env.PUBLIC_URL}/pdf.worker.js`;
+GlobalWorkerOptions.workerSrc = `/pdf.worker.mjs`;
 
 export default function IntroEditPage() {
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [previewFile, setPreviewFile] = useState(null);
     const [previewUrl, setPreviewUrl] = useState(null);
     const [showMessage, setShowMessage] = useState("");
+    const [isProcessing, setIsProcessing] = useState(false);
+    const navigate = useNavigate();
 
     const renderPDFPreview = async (file) => {
         const reader = new FileReader();
@@ -35,8 +38,6 @@ export default function IntroEditPage() {
             reader.readAsArrayBuffer(file);
         });
     };
-
-    const navigate = useNavigate();
 
     const handleFiles = async (incomingFiles) => {
         const validFiles = Array.from(incomingFiles).filter(
@@ -86,10 +87,37 @@ export default function IntroEditPage() {
         }
     };
 
-    const handleEdit = () => {
-        console.log("업로드할 파일들:", selectedFiles);
-        setShowMessage("업로드되었습니다.");
-        setTimeout(() => setShowMessage(""), 2000);
+    const handleEdit = async () => {
+        if (selectedFiles.length === 0) {
+            alert("대체할 파일을 하나 이상 선택해주세요.");
+            return;
+        }
+        setIsProcessing(true);
+        setShowMessage("자기소개서를 업데이트하는 중입니다...");
+
+        try {
+            await nodeApi.delete('/user-upload/resume/all');
+
+            const uploadPromises = selectedFiles.map(file => {
+                const formData = new FormData();
+                formData.append('file', file);
+                return nodeApi.post('/upload/resume', formData);
+            });
+
+            await Promise.all(uploadPromises);
+
+            setShowMessage("성공적으로 업데이트되었습니다!");
+            setTimeout(() => {
+                setShowMessage("");
+                navigate('/mypage');
+            }, 2000);
+        } catch (error) {
+            console.error("업데이트 중 오류 발생:", error);
+            setShowMessage("오류가 발생했습니다. 다시 시도해주세요.");
+            setTimeout(() => setShowMessage(""), 3000);
+        } finally {
+            setIsProcessing(false);
+        }
     };
 
     return (
@@ -164,9 +192,10 @@ export default function IntroEditPage() {
 
                     <button
                         onClick={handleEdit}
-                        className="mt-6 bg-pink-200 text-brown-700 px-6 py-2 rounded-full shadow-sm hover:shadow-md transition"
+                        disabled={isProcessing}
+                        className="mt-6 bg-pink-200 text-brown-700 px-6 py-2 rounded-full shadow-sm hover:shadow-md transition disabled:opacity-50"
                     >
-                        Edit
+                        {isProcessing ? "처리 중..." : "Edit"}
                     </button>
                 </div>
             </main>

@@ -1,29 +1,22 @@
 from fastapi import FastAPI, UploadFile, File, Depends, HTTPException
-from user_answers import save_user_answers, get_user_answers
-from llm import store_document_vectors
-from rag_chatbot import get_chatbot_response
-from auth import get_current_user
-# 👇 1. List 타입을 사용하기 위해 추가합니다.
-from typing import Dict, List
-from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
-from chatbot_manager import router as chatbot_router
-import os
-import json
-import uuid
 
-# 👇 2. AnswersRequest 모델이 이제 객체들의 '리스트'를 받도록 수정합니다.
-class AnswersRequest(BaseModel):
-    answers: List[Dict[str, str]]
+from typing import Dict
+from pydantic import BaseModel
+
+# ✅ 상대경로 import 그대로 유지
+from .user_answers import save_user_answers, get_user_answers
+from .llm import store_document_vectors
+from .rag_chatbot import get_chatbot_response
+from .auth import get_current_user
+from .chatbot_manager import router as chatbot_router
+from .utils import get_predefined_questions
+
+import os
 
 app = FastAPI()
 
-app.include_router(chatbot_router)
-
-@app.get("/")
-async def read_root():
-    return {"message": "안녕하세요! 챗봇 API 서버입니다."}
-
+# ✅ CORS 설정 (프론트엔드에서 요청 허용)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],
@@ -32,53 +25,75 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-### 챗봇 문서 업로드
+# ✅ 라우터 등록
+app.include_router(chatbot_router)
+
+
+@app.get("/")
+async def read_root():
+    return {"message": "안녕하세요! 챗봇 API 서버입니다."}
+
+
+# ✅ 파일 업로드 후 Pinecone 벡터 저장
 @app.post("/upload")
 async def upload(file: UploadFile = File(...), user_id: str = Depends(get_current_user)):
     file_path = f"user_files/{user_id}_{file.filename}"
     try:
         with open(file_path, "wb") as f:
             f.write(await file.read())
-        
         store_document_vectors(file_path, user_id)
-    
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"'{file.filename}' 처리 중 오류 발생: {str(e)}")
-    
     finally:
         if os.path.exists(file_path):
             os.remove(file_path)
-
     return {"message": "문서 업로드 및 벡터 저장 완료"}
 
-### 개발자 질문 답변 저장 기능
+
+# ✅ 질문 답변 저장용 모델
+class AnswersRequest(BaseModel):
+    answers: Dict[str, str]
+
+
 @app.post("/save-answers")
 async def save_answers_api(request: AnswersRequest, user_id: str = Depends(get_current_user)):
-    # request.answers가 이미 올바른 리스트 형태이므로, 변환 없이 바로 전달합니다.
-    save_user_answers(user_id, request.answers)
+    received_data = request.answers
+    predefined_questions = get_predefined_questions()
+
+    answers_list_to_save = []
+    for i, q_map in enumerate(predefined_questions):
+        q_key = f"question_{i + 1}"
+        a_key = f"answer_{i + 1}"
+        if q_key in received_data and a_key in received_data:
+            answers_list_to_save.append({
+                "question": q_map["short_text"],
+                "answer": received_data[a_key]
+            })
+
+    save_user_answers(user_id, answers_list_to_save)
     return {"message": "질문 답변 저장 완료"}
 
 
-### 내 질문 답변 확인
 @app.get("/get-answers/{user_id}")
 async def get_answers_api(user_id: str):
     answers = get_user_answers(user_id)
     return {"user_id": user_id, "answers": answers}
 
+
+# ✅ 챗봇 질의 응답 모델
 class ChatRequest(BaseModel):
     query: str
 
 
-### 챗봇과 대화
 @app.post("/chat")
 async def chat(request: ChatRequest, user_id: str = Depends(get_current_user)):
     response = get_chatbot_response(request.query, user_id)
     return {"response": response}
 
-### 포트폴리오 URL 생성
+
+# ✅ 포트폴리오 URL 생성
 @app.post("/generate-portfolio-url")
 async def generate_portfolio_url(user_id: str = Depends(get_current_user)):
     base_frontend_url = "http://localhost:3000/user"
-    portfolio_display_url = f"{base_frontend_url}/{user_id}" 
-    
+    portfolio_display_url = f"{base_frontend_url}/{user_id}"
     return {"portfolio_url": portfolio_display_url}
