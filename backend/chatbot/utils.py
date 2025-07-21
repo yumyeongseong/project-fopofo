@@ -1,3 +1,5 @@
+# 연동 과정에서 계속 importerror 생김.
+
 import os
 from docx import Document
 from PyPDF2 import PdfReader # type: ignore
