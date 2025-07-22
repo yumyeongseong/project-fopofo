@@ -6,9 +6,11 @@ export const nodeApi = axios.create({
 });
 
 // 👇 2. Python(FastAPI) 서버와 통신하는 axios 인스턴스 (주로 AI 챗봇 기능)
+// 수정된 코드
 export const pythonApi = axios.create({
-  baseURL: 'http://localhost:8000', // Python 서버 기본 URL
+  baseURL: 'https://fopofo-backend-env.eba-xxxxxx.ap-northeast-2.elasticbeanstalk.com', // AWS 배포 주소
 });
+
 
 // 👇 3. 요청을 보내기 전 토큰을 헤더에 담아주는 공통 함수
 const addAuthToken = (config) => {

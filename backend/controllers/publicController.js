@@ -7,10 +7,10 @@ require('dotenv').config();
 // S3 클라이언트 설정 (userUploadController와 동일)
 const s3Client = new S3Client({
     credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        accessKeyId: process.env.MY_AWS_ACCESS_KEY_ID, // 변경됨
+        secretAccessKey: process.env.MY_AWS_SECRET_ACCESS_KEY, // 변경됨
     },
-    region: 'ap-southeast-2', 
+    region: 'ap-southeast-2',
 });
 
 // Presigned URL 생성 헬퍼 함수
@@ -47,7 +47,7 @@ exports.getPublicPortfolio = async (req, res) => {
                 presignedUrl,
             });
         }
-        
+
         res.status(200).json({ message: '포트폴리오 조회 성공', data: portfolioData });
     } catch (err) {
         res.status(500).json({ message: '서버 오류', error: err.message });

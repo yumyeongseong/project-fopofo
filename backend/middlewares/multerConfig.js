@@ -6,8 +6,8 @@ require('dotenv').config();
 // v3 방식의 S3 클라이언트 생성
 const s3 = new S3Client({
   credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    accessKeyId: process.env.MY_AWS_ACCESS_KEY_ID, // 변경됨
+    secretAccessKey: process.env.MY_AWS_SECRET_ACCESS_KEY, // 변경됨
   },
   region: 'ap-southeast-2',
 });

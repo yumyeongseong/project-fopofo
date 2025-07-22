@@ -13,6 +13,7 @@ router.get('/google', passport.authenticate('google', {
 router.get('/google/callback',
   passport.authenticate('google', {
     failureRedirect: 'http://localhost:3000/login', // ✅ 수정된 부분: 로그인 실패 시 프런트엔드 경로로 리다이렉트
+    failureRedirect: `${process.env.CLIENT_URL}/login`,
     session: false, // ✅ 수정된 부분: 세션 사용 안 함 (JWT 기반으로 변경)
   }),
   (req, res) => {
@@ -34,6 +35,8 @@ router.get('/google/callback',
 router.get('/logout', (req, res) => {
   // ✅ 수정된 부분: JWT 기반에서는 서버 측 세션 관리 불필요
   // 기존 코드 (req.logout(() => { ... })) 주석 처리 또는 삭제 가능
+  res.redirect(`https://main.d2oba511izbg7k.amplifyapp.com/home?token=${token}`);
+
   res.status(200).json({ message: '로그아웃 성공! (클라이언트에서 토큰 삭제 필요)' });
 });
 
