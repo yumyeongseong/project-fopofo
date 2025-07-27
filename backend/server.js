@@ -53,17 +53,17 @@ app.use('/api/user-upload', userUploadRoutes);
 app.use('/api/public', publicRoutes);
 
 // ✅ 정적 파일 서빙 (프론트엔드 빌드된 파일)
-if (process.env.NODE_ENV === 'production') {
-  const buildPath = path.join(__dirname, '../frontend/build'); // 👉 필요에 따라 경로 수정
+// if (process.env.NODE_ENV === 'production') {
+//   const buildPath = path.join(__dirname, '../frontend/build'); // 👉 필요에 따라 경로 수정
 
-  console.log(`✅ 정적 파일 서빙 경로: ${buildPath}`);
-  app.use(express.static(buildPath));
+//   console.log(`✅ 정적 파일 서빙 경로: ${buildPath}`);
+//   app.use(express.static(buildPath));
 
-  // ✅ API 외의 모든 요청은 React index.html로 응답
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(buildPath, 'index.html'));
-  });
-}
+//   // ✅ API 외의 모든 요청은 React index.html로 응답
+//   app.get('*', (req, res) => {
+//     res.sendFile(path.join(buildPath, 'index.html'));
+//   });
+// }
 
 // ✅ 서버 실행
 const PORT = process.env.PORT || 5000;
