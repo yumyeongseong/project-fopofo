@@ -81,7 +81,7 @@ function LoginPage() {
 
   // Google 로그인 URL은 그대로 유지합니다.
   const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:5000/api/auth/google';
+    window.location.href = `${process.env.REACT_APP_BACKEND_URL}/api/auth/google`;
   };
 
   const handleSignupClick = () => {
