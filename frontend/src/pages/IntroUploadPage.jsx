@@ -67,7 +67,7 @@ const IntroUploadPage = () => {
       {/* 상단 로고 & my page 버튼 (기존과 동일) */}
       <div className="flex justify-between items-center mb-12">
         <img
-          src="/Fopofo-Logo.png"
+          src="/fopofo-logo.png"
           alt="FoPoFo Logo"
           className="w-[140px] cursor-pointer"
           onClick={() => navigate('/')}
