@@ -10,7 +10,7 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from pinecone import Pinecone
 from langchain.chains import RetrievalQA
 from langchain.prompts import PromptTemplate
-from user_answers import get_user_qa_pairs # ✅ MongoDB 답변 조회를 위해 import
+from chatbot.user_answers import get_user_qa_pairs # ✅ MongoDB 답변 조회를 위해 import
 
 # ✅ 유사도 계산을 위해 추가
 from sklearn.metrics.pairwise import cosine_similarity
