@@ -1,7 +1,7 @@
 # main.py
 
 from fastapi import FastAPI, UploadFile, File, Depends, HTTPException
-from chatbot.user_answers import save_user_answers, get_user_answers
+from chatbot.user_answers import delete_user_answers, save_user_answers, get_user_answers
 from chatbot.llm import store_document_vectors
 from chatbot.rag_chatbot import get_chatbot_response
 from chatbot.auth import get_current_user, get_current_user_optional # ✅ get_current_user_optional을 함께 import
