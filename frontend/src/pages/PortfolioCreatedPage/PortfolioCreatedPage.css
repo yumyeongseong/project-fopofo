@@ -1,0 +1,238 @@
+.url-page-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+    min-height: 100vh;
+    padding-top: 200px;
+    padding-bottom: 100px;
+    background-color: white;
+    font-family: 'Playfair Display', serif;
+}
+
+.logo {
+    position: fixed;
+    top: -40px;
+    left: -20px;
+    width: 160px;
+    filter: brightness(1);
+    opacity: 0.95;
+    padding: 20px 40px;
+    z-index: 20;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
+.final-banner {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
+
+.url-title-box {
+    background-color: #fce1ec;
+    padding: 40px 60px;
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    margin-bottom: 0;
+    text-align: center;
+}
+
+.url-title-box h1 {
+    font-size: 84px;
+    line-height: 1.2;
+    margin: 0;
+    position: relative;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.final-banner.hoverable:hover .url-title-box h1 {
+    color: #f48ca2;
+    transform: scale(1.04);
+    transition: all 0.3s ease;
+}
+
+.final-banner.hoverable .url-title-box h1::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background-color: #f48ca2;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+}
+
+.final-banner.hoverable:hover .url-title-box h1::after {
+    transform: scaleX(1);
+}
+
+.url-box-custom {
+    position: relative;
+    background-color: white;
+    width: 634px;
+    height: 76px;
+    border-radius: 0 0 20px 20px;
+    margin-top: -5px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    padding: 0 32px;
+    gap: 18px;
+}
+
+.url-label {
+    background-color: #f48ca2;
+    color: white;
+    padding: 8px 18px;
+    border-radius: 14px;
+    font-weight: bold;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.15);
+    margin-right: 16px;
+    font-size: 15px;
+}
+
+.url-display {
+    color: #333;
+    font-size: 15px;
+    font-family: 'Pretendard', sans-serif;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+}
+
+.copy-button-custom {
+    position: absolute;
+    right: 24px;
+    bottom: 12px;
+    padding: 10px 16px;
+    background-color: #f48ca2;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    box-shadow: 2px 3px 6px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.copy-button-custom:hover {
+    transform: scale(1.05);
+    background-color: #e76b94;
+}
+
+.copy-feedback {
+    display: block;
+    margin-top: 18px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 600;
+    color: #000000;
+    font-family: 'Pretendard', sans-serif;
+    animation: fadeInOut 2s ease;
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+.progress-container {
+    width: 80%;
+    max-width: 600px;
+    height: 20px;
+    background-color: #fff;
+    border: 2px solid #ddd;
+    border-radius: 50px;
+    margin-top: 60px;
+    overflow: hidden;
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.05);
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #f6a9d1;
+    transition: width 0.3s ease;
+    border-radius: inherit;
+}
+
+.qr-wrapper {
+    margin-top: 50px;
+    padding: 10px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.qr-label {
+    margin-top: 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #444;
+    text-align: center;
+    font-family: 'Pretendard', sans-serif;
+    opacity: 0.85;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- mypage 버튼 스타일 및 위치 추가 --- */
+
+/* 버튼을 오른쪽 상단에 배치하기 위한 기준점입니다. */
+.url-page-wrapper {
+  position: relative;
+}
+
+/* mypage 버튼 스타일 */
+.mypage-button-created {
+  position: absolute;
+  top: 40px;   /* 상단으로부터의 거리 */
+  right: 40px; /* 우측으로부터의 거리 */
+  
+  font-family: 'Courier New', serif;
+  font-size: 18px;
+  background-color: transparent;
+  color: #f48ca2; /* 핑크색 텍스트 */
+  border: 1.5px solid #f48ca2; /* 핑크색 테두리 */
+  padding: 8px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 20; /* 로고와 겹치지 않도록 z-index 추가 */
+}
+
+.mypage-button-created:hover {
+  background-color: #f48ca2; /* 마우스를 올리면 핑크색 배경 */
+  color: white; /* 마우스를 올리면 흰색 텍스트 */
+}

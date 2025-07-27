@@ -1,0 +1,148 @@
+.start-page {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: rgba(244, 140, 162, 0.55);
+    /* 연핑크 */
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-blend-mode: darken;
+    animation: bgFadeZoom 1.4s ease-out forwards;
+    z-index: 0;
+}
+
+/* ✅ 배경 진입 애니메이션 다시 추가 */
+@keyframes bgFadeZoom {
+    0% {
+        opacity: 0;
+        transform: scale(1.03);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* 배경 이미지 */
+.bg-img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 55% center;
+    filter: brightness(1) contrast(0.8) saturate(0.2);
+    opacity: 0.18;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* 로고 */
+.logo {
+    position: absolute !important;
+    top: -0.5rem !important;
+    left: 0.5rem !important;
+    width: 140px !important;
+    padding: 0 !important;
+    z-index: 10 !important;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: scale(1.05);
+}
+
+/* 중앙 텍스트 그룹 */
+.title-wrapper {
+    position: absolute;
+    top: 48%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    cursor: pointer;
+    z-index: 20;
+}
+
+/* 공통 텍스트 스타일 */
+.text-slide-up,
+.text-slide-down {
+    font-family: 'Playfair Display', serif;
+    font-size: 4rem;
+    font-weight: 600;
+    color: #572411;
+    opacity: 0;
+    animation-delay: 0.6s;
+    /* ✅ 통일된 시작 시간 */
+    text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* 위 → 아래 */
+.text-slide-down {
+    animation: slideDown 1.2s ease-out forwards;
+}
+
+@keyframes slideDown {
+    0% {
+        transform: translateY(-40px);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* 아래 → 위 */
+.text-slide-up {
+    animation: slideUp 1.2s ease-out forwards;
+}
+
+@keyframes slideUp {
+    0% {
+        transform: translateY(40px);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* 구분선 */
+.divider-line {
+    height: 2px;
+    background-color: #572411;
+    margin: 0.4rem auto;
+    width: 0;
+    opacity: 0;
+    animation: expandLine 1s ease-out forwards;
+    animation-delay: 0.6s;
+    /* ✅ 텍스트와 동기화 */
+}
+
+@keyframes expandLine {
+    0% {
+        width: 0;
+        opacity: 0;
+    }
+
+    100% {
+        width: 500px;
+        opacity: 0.5;
+    }
+}
+
+/* hover */
+.title-wrapper:hover h1 {
+    color: #f48ca2;
+}
+
+.title-wrapper:hover .divider-line {
+    background-color: #f48ca2;
+}

@@ -1,0 +1,212 @@
+/* 전체 컨테이너 */
+.upload-container {
+    font-family: 'Pretendard', sans-serif;
+    background-color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 40px 20px 40px;
+    box-sizing: border-box;
+    margin-top: -60px;
+}
+
+/* 헤더 영역 */
+.upload-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    box-sizing: border-box;
+}
+
+/* 로고 스타일 */
+.upload-logo {
+    position: relative !important;
+    top: 10px !important;
+    left: -100px !important;
+    width: 230px !important;
+    padding: 24px 40px !important;
+    z-index: 999 !important;
+}
+
+.upload-logo:hover {
+    transform: scale(1.05);
+}
+
+/* my page 버튼 */
+.mypage-button-upload {
+    font-family: 'Courier New', serif;
+    font-size: 22px;
+    background-color: transparent;
+    color: #2b1e28;
+    border: 2px solid #f48ca2;
+    padding: 10px 20px;
+    border-radius: 6px;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+    text-shadow: 1px 1px 1px #ccc;
+    margin-top: -60px;
+    margin-right: -30px;
+    cursor: pointer;
+}
+
+.mypage-button-upload:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25);
+}
+
+.mypage-button-upload:focus {
+    outline: none;
+    border: 2px solid #f48ca2;
+    /* ✅ 파란 테두리 방지 */
+}
+
+/* 제목 */
+.upload-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 50px;
+    color: white;
+    /* ✅ 안쪽 색상 */
+    -webkit-text-stroke: 0.5px #f48ca2;
+    /* ✅ 외곽 테두리 색상 */
+    text-align: center;
+    margin: 20px 0 10px;
+    border-bottom: none;
+}
+
+
+/* 새로 추가 */
+.upload-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+    justify-items: center;
+    margin-bottom: 40px;
+    max-width: 1100px;
+    width: 100%;
+}
+
+.upload-card {
+    background-color: #fce1ec;
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    width: 230px;
+    /* ✅ 가로 줄임 */
+    height: 380px;
+    /* ✅ 세로 늘림 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.upload-label {
+    background: #f9cadd;
+    padding: 8px 20px;
+    font-size: 16px;
+    font-family: 'Playfair Display', serif;
+    border-radius: 20px;
+    margin-bottom: 12px;
+    box-shadow: 1px 2px 3px rgba(0, 0, 0, 0.2);
+}
+
+.file-list {
+    margin-top: 10px;
+    padding-left: 8px;
+    font-size: 10px;
+    color: #333;
+    list-style-type: disc;
+    position: relative;
+}
+
+.file-list li {
+    margin-bottom: 9px;
+    word-break: break-all;
+    position: relative;
+    padding-right: 28px;
+    /* 버튼 들어갈 공간 확보 */
+}
+
+/* 파일 input */
+.file-input {
+    display: block;
+    width: 90%;
+    font-size: 13px;
+    /* ✅ 가로 너비 줄임 */
+    margin: 0 auto 12px auto;
+    /* ✅ 가운데 정렬 + 하단 여백 */
+    padding: 8px;
+    background-color: white;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 2px 2px 5px #ccc;
+    cursor: pointer;
+}
+
+/* 하단 버튼 */
+.upload-footer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.next-button {
+    font-family: 'Times New Roman', serif;
+    font-size: 20px;
+    background-color: #f48ca2;
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 50px;
+    box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.next-button:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+}
+
+.upload-main {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 30px;
+}
+
+.delete-button {
+    position: absolute;
+    right: 0;
+    top: -10%;
+    margin-left: 10px;
+    background-color: #f48ca2;
+    color: white;
+    border: none;
+    border-radius: 34%;
+    font-size: 14px;
+    width: 17px;
+    height: 17px;
+    line-height: 22px;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.2s ease;
+
+    display: flex;
+    /* ✅ 텍스트 중앙 정렬 핵심 */
+    align-items: center;
+    /* 세로 중앙 */
+    justify-content: center;
+    /* 가로 중앙 */
+    padding: 0;
+}
+
+.delete-button:hover {
+    background-color: #e63963;
+}

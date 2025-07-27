@@ -1,0 +1,157 @@
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #fff;
+    font-family: 'Pretendard', sans-serif;
+}
+
+.logo-img {
+    width: 160px;
+    /* 로고 크게 */
+    margin-bottom: 36px;
+}
+
+.login-box {
+    background-color: #ffeef3;
+    padding: 80px 30px 60px;
+    /* 위 padding을 80px로 늘림 */
+    border-radius: 50px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    width: 360px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.login-input {
+    width: 100%;
+    padding: 18px;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+}
+
+/* ID 입력창에만 적용할 여백 */
+.login-input.id-input {
+    margin-bottom: 14px;
+}
+
+.link-text {
+    margin: 0;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: color 0.3s;
+    font-size: 20px;
+}
+
+.link-text:hover {
+    color: #d45575;
+}
+
+.login-button {
+    margin-top: 32px;
+    background-color: #f48ca2;
+    color: white;
+    font-weight: bold;
+    padding: 16px 48px;
+    font-size: 16px;
+    border-radius: 50px;
+    border: none;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.login-button:hover {
+    background-color: #e76b85;
+    transform: scale(1.05);
+}
+
+.login-logo-img {
+    width: 250px;
+    /* ✅ 크기 조금 키움 */
+    margin-top: 20px;
+    /* ✅ 위 여백 줄임 */
+    margin-bottom: -10px;
+    /* ✅ 박스랑 더 가깝게 */
+    height: auto;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.login-logo-img:hover {
+    transform: scale(1.1);
+    /* 커서 올리면 커지기 */
+}
+
+.google-login-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px 20px;
+    border: 1px solid #dadce0;
+    border-radius: 20px;
+    background-color: white;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    box-shadow: 0 1px 3px rgba(60, 64, 67, 0.3);
+    transition: box-shadow 0.2s ease;
+}
+
+.google-login-button:hover {
+    box-shadow: 0 2px 4px rgba(60, 64, 67, 0.3);
+}
+
+.google-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.google-login-text {
+    font-family: 'Arial', sans-serif;
+}
+
+.gsi-material-button {
+    background-color: white;
+    border: 1px solid #dadce0;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: 'Roboto', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 1px 3px rgba(60, 64, 67, 0.3);
+    padding: 10px 16px;
+    width: 180px;
+    margin: 40px auto 10;
+    transition: box-shadow 0.2s ease;
+}
+
+/* 핵심: 이 wrapper가 아이콘 + 텍스트를 가로 정렬해줌! */
+.gsi-material-button-content-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+/* 아이콘 크기 */
+.gsi-material-button-icon svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
+
+/* 텍스트 정렬 */
+.gsi-material-button-contents {
+    white-space: nowrap;
+    color: #000;
+}
