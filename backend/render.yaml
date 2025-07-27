@@ -3,5 +3,8 @@ services:
     name: fopofo-chabot
     env: python
     buildCommand: "pip install -r requirements.txt"
-    startCommand: "PYTHONPATH=. ./start.sh"
+    startCommand: "./start.sh"
+    envVars:
+      - key: PYTHONPATH
+        value: .
     plan: free
