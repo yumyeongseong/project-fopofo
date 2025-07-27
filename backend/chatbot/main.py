@@ -7,7 +7,7 @@ from chatbot.rag_chatbot import get_chatbot_response
 from chatbot.auth import get_current_user, get_current_user_optional # ✅ get_current_user_optional을 함께 import
 from typing import Dict, Optional
 from pydantic import BaseModel
-from .utils_function import get_predefined_questions
+from chatbot.utils_function import get_predefined_questions
 from fastapi.middleware.cors import CORSMiddleware
 from chatbot.chatbot_manager import router as chatbot_router
 import os
