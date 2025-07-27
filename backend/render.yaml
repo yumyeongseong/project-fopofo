@@ -1,0 +1,7 @@
+services:
+  - type: web
+    name: fopofo-chabot
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "PYTHONPATH=. ./start.sh"
+    plan: free
