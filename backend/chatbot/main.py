@@ -25,7 +25,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://main.d2oba511izbg7k.amplifyapp.com"], 
+    allow_origins=["https://main.d2oba511izbg7k.amplifyapp.com","https://fopofo-chabot.onrender.com"], 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
