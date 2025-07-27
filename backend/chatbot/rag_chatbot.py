@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 import unicodedata
 import re
-from utils import get_predefined_questions
+from utils_function import get_predefined_questions
 from langchain_pinecone import PineconeVectorStore
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from pinecone import Pinecone
