@@ -1,15 +1,15 @@
 # main.py
 
 from fastapi import FastAPI, UploadFile, File, Depends, HTTPException
-from user_answers import save_user_answers, get_user_answers
-from llm import store_document_vectors
-from rag_chatbot import get_chatbot_response
-from auth import get_current_user, get_current_user_optional # ✅ get_current_user_optional을 함께 import
+from .user_answers import save_user_answers, get_user_answers
+from chatbot.llm import store_document_vectors
+from chatbot.rag_chatbot import get_chatbot_response
+from chatbot.auth import get_current_user, get_current_user_optional # ✅ get_current_user_optional을 함께 import
 from typing import Dict, Optional
 from pydantic import BaseModel
-from utils import get_predefined_questions
+from chatbot.utils import get_predefined_questions
 from fastapi.middleware.cors import CORSMiddleware
-from chatbot_manager import router as chatbot_router
+from chatbot.chatbot_manager import router as chatbot_router
 import os
 
 # --- Pydantic 모델 정의 (한 곳에 모음) ---
