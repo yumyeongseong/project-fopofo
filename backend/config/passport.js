@@ -7,7 +7,7 @@ passport.use(new GoogleStrategy({
   clientID: process.env.GOOGLE_CLIENT_ID,
   clientSecret: process.env.GOOGLE_CLIENT_SECRET,
   callbackURL: process.env.GOOGLE_CALLBACK_URL,
-  passReqToCallback: true 
+  passReqToCallback: true
 },
   async (req, accessToken, refreshToken, profile, done) => {
     try {
@@ -17,7 +17,7 @@ passport.use(new GoogleStrategy({
         user = await User.create({
           googleId: profile.id,
           userId: userEmail,
-          password: 'google-oauth-placeholder', 
+          password: 'google-oauth-placeholder',
         });
       }
       return done(null, user);
