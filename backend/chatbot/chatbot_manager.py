@@ -1,18 +1,17 @@
 import os
 from typing import Optional
 
+# --- 외부 라이브러리 임포트 ---
 from fastapi import APIRouter, HTTPException, Depends
-from user_answers import delete_user_answers, save_user_answers, get_user_answers
 from pydantic import BaseModel
 from pinecone import Pinecone
-
-# --- MongoDB 연결을 위한 라이브러리 추가 ---
 from pymongo import MongoClient
 from dotenv import load_dotenv
 
-# --- 로컬 파일에서 함수 임포트 ---
-from auth import get_current_user
-from user_answers import delete_user_answers
+# --- 로컬 파일에서 함수 임포트 (같은 폴더에 있으므로 '.' 사용) ---
+from .auth import get_current_user
+from .user_answers import delete_user_answers, save_user_answers, get_user_answers
+
 
 # --- .env 파일 로드 ---
 load_dotenv()
