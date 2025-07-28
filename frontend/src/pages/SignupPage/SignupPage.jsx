@@ -27,7 +27,7 @@ function SignupPage() {
     navigate('/');
   };
 
-  // ✅ UI 구성은 지현 기준 유지
+  // ✅ UI 구성은 지현 기준 유지 + 엔터키 처리
   return (
     <div className="signup-container">
       <img
@@ -51,6 +51,12 @@ function SignupPage() {
           placeholder="PW: 비밀번호를 입력하세요"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              handleSignUp(); // ✅ 엔터로도 회원가입 가능
+            }
+          }}
         />
         <button className="signup-button" onClick={handleSignUp}>
           회원 가입

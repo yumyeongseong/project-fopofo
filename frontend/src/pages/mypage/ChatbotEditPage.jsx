@@ -1,10 +1,11 @@
+// ChatbotEditPage.jsx
 import { useState, useCallback } from "react";
 import { X, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import MypageHeader from "../../components/MypageHeader";
 import { pythonApi } from "../../services/api";
 import * as pdfjsLib from "pdfjs-dist";
 import { GlobalWorkerOptions } from "pdfjs-dist";
+import "./ChatbotEditPage.css";
 
 GlobalWorkerOptions.workerSrc = `/pdf.worker.mjs`;
 
@@ -52,26 +53,21 @@ export default function ChatbotEditPage() {
 
   const handleFiles = async (incomingFiles) => {
     const validFiles = Array.from(incomingFiles).filter(
-      (file) =>
-        file.type === "application/pdf" ||
-        file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      (file) => file.type === "application/pdf"
     );
 
     if (validFiles.length !== incomingFiles.length) {
-      alert("PDF 또는 DOCX 형식의 파일만 업로드하실 수 있습니다.");
+      alert("PDF 형식의 파일만 업로드하실 수 있습니다.");
     }
 
     const newList = [...selectedFiles, ...validFiles];
     setSelectedFiles(newList);
 
     const latestFile = validFiles[validFiles.length - 1];
-    if (latestFile?.type === "application/pdf") {
+    if (latestFile) {
       const preview = await renderPDFPreviewFirstPage(latestFile);
       setPreviewFile(latestFile);
       setPreviewImage(preview);
-    } else {
-      setPreviewFile(latestFile);
-      setPreviewImage(null);
     }
   };
 
@@ -81,14 +77,9 @@ export default function ChatbotEditPage() {
   }, [selectedFiles]);
 
   const handleFileClick = async (file) => {
-    if (file.type === "application/pdf") {
-      const preview = await renderPDFPreviewFirstPage(file);
-      setPreviewFile(file);
-      setPreviewImage(preview);
-    } else {
-      setPreviewFile(file);
-      setPreviewImage(null);
-    }
+    const preview = await renderPDFPreviewFirstPage(file);
+    setPreviewFile(file);
+    setPreviewImage(preview);
   };
 
   const handleDelete = async (fileToDelete) => {
@@ -97,14 +88,9 @@ export default function ChatbotEditPage() {
 
     if (updatedFiles.length > 0) {
       const next = updatedFiles[0];
-      if (next.type === "application/pdf") {
-        const preview = await renderPDFPreviewFirstPage(next);
-        setPreviewFile(next);
-        setPreviewImage(preview);
-      } else {
-        setPreviewFile(next);
-        setPreviewImage(null);
-      }
+      const preview = await renderPDFPreviewFirstPage(next);
+      setPreviewFile(next);
+      setPreviewImage(preview);
     } else {
       setPreviewFile(null);
       setPreviewImage(null);
@@ -180,107 +166,82 @@ export default function ChatbotEditPage() {
   };
 
   return (
-    <div className="min-h-screen bg-pink-100 flex flex-col relative">
-      <MypageHeader />
+    <div className="chatbot-edit-page">
+      {/* ✅ 포포포 로고 & 버튼 영역 */}
+      <img
+        src="/Fopofo-Logo-v2.png"
+        alt="FoPoFo Logo"
+        className="intro-logo"
+        onClick={() => navigate("/")}
+      />
+      <div className="intro-buttons">
+        <button className="outline-btn" onClick={() => navigate("/mypage")}>←</button>
+        <button className="outline-btn" onClick={() => navigate("/")}>logout</button>
+        <button className="outline-btn" onClick={() => navigate("/home")}>home</button>
+      </div>
 
-      {showMessage && (
-        <div className="absolute bottom-[80px] left-1/2 transform -translate-x-1/2 bg-white text-black px-6 py-2 rounded-full shadow-md z-50 transition-opacity duration-300">
-          {showMessage}
+      {/* ✅ 상단 중앙 My Page 문구 */}
+      <h1 className="mpage-title fade-in">My Page</h1>
+
+      {showMessage && <div className="message-popup">{showMessage}</div>}
+
+      <div className="tab-sidebar fade-in">
+        <button onClick={() => setActiveTab("intro")} className={activeTab === "intro" ? "active" : ""}>챗봇 문서 편집</button>
+        <button onClick={() => setActiveTab("qa")} className={activeTab === "qa" ? "active" : ""}>Q/A 수정</button>
+      </div>
+
+      {activeTab === "qa" ? (
+        <div className="qa-section fade-in">
+          <div className="qa-box">
+            {qaList.map((item, index) => (
+              <div key={index} className="qa-item fade-in">
+                <p>Q. {item.question}</p>
+                <textarea
+                  value={item.answer}
+                  onChange={(e) => handleAnswerChange(index, e.target.value)}
+                  placeholder="A. 여기에 답변을 입력해주세요"
+                />
+              </div>
+            ))}
+            <button onClick={handleSaveQA} disabled={isProcessing} className="save-button">
+              {isProcessing ? "저장 중..." : "Edit"}
+            </button>
+          </div>
         </div>
-      )}
-
-      <div className="flex flex-1 mt-6">
-        <div className="flex flex-col gap-4 p-6">
-          <button onClick={() => setActiveTab("intro")} className={`border px-4 py-2 font-serif ${activeTab === "intro" ? "bg-white" : "bg-pink-50"}`}>자기소개서 편집</button>
-          <button onClick={() => setActiveTab("qa")} className={`border px-4 py-2 font-serif ${activeTab === "qa" ? "bg-white" : "bg-pink-50"}`}>Q/A 수정</button>
-        </div>
-
-        {activeTab === "qa" ? (
-          <div className="flex-1 p-8">
-            <div className="bg-blue-100 rounded-lg p-8 w-full max-w-4xl mx-auto">
-              {qaList.map((item, index) => (
-                <div key={index} className="mb-6">
-                  <p className="font-semibold mb-2">Q. {item.question}</p>
-                  <textarea
-                    value={item.answer}
-                    onChange={(e) => handleAnswerChange(index, e.target.value)}
-                    className="w-full border border-gray-300 rounded p-2 min-h-[80px]"
-                    placeholder="A."
-                  />
+      ) : (
+        <div className="file-section fade-in" onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
+          <div className="file-upload-box fade-in">
+            <p className="file-label">📄 파일 선택 (PDF만 가능)</p>
+            <label htmlFor="fileUpload" className="upload-button">파일 선택</label>
+            <input id="fileUpload" type="file" accept=".pdf" multiple onChange={(e) => handleFiles(e.target.files)} className="hidden" />
+            <div className="file-list fade-in">
+              {selectedFiles.map((file, index) => (
+                <div key={index} className={`file-item ${previewFile?.name === file.name ? "active" : ""}`}>
+                  <span onClick={() => handleFileClick(file)} className="file-name fade-in">
+                    <FileText size={16} /> {file.name}
+                  </span>
+                  <button onClick={() => handleDelete(file)} className="delete-button">
+                    <X size={16} />
+                  </button>
                 </div>
               ))}
-              <button
-                onClick={handleSaveQA}
-                disabled={isProcessing}
-                className="bg-pink-300 text-white px-6 py-2 rounded-full mt-6 hover:bg-pink-400 transition disabled:bg-gray-300"
-              >
-                {isProcessing ? "저장 중..." : "Save"}
-              </button>
             </div>
+            <button onClick={handleEdit} disabled={isProcessing} className="edit-button">
+              {isProcessing ? "업데이트 중..." : "Edit"}
+            </button>
           </div>
-        ) : (
-          <div className="flex-1 p-8 bg-blue-100 rounded-lg flex gap-6">
-            <div className="w-1/2 bg-pink-50 p-6 rounded flex flex-col items-center">
-              <label className="block mb-2 font-semibold">PDF 또는 DOCX 업로드</label>
-              <label
-                htmlFor="fileUpload"
-                className="bg-pink-300 text-white px-4 py-2 rounded-md cursor-pointer hover:bg-pink-400 transition"
-              >
-                파일 선택
-              </label>
-              <input
-                id="fileUpload"
-                type="file"
-                accept=".pdf,.docx"
-                multiple
-                onChange={(e) => handleFiles(e.target.files)}
-                className="hidden"
-              />
-              <div className="mt-4 w-full space-y-2">
-                {selectedFiles.map((file, index) => (
-                  <div
-                    key={index}
-                    className={`flex justify-between items-center px-4 py-2 rounded-md transition text-sm cursor-pointer ${previewFile?.name === file.name ? "bg-white font-semibold shadow" : "text-gray-700 hover:bg-white hover:shadow"}`}
-                  >
-                    <span onClick={() => handleFileClick(file)} className="flex items-center gap-2 flex-1">
-                      <FileText size={16} className="text-gray-500" />
-                      {file.name}
-                    </span>
-                    <button
-                      onClick={() => handleDelete(file)}
-                      className="ml-4 text-gray-500 hover:text-red-500"
-                    >
-                      <X size={16} />
-                    </button>
-                  </div>
-                ))}
+          <div className="file-preview-box fade-in">
+            <p className="preview-title fade-in">PREVIEW</p>
+            {previewImage ? (
+              <img src={previewImage} alt={previewFile?.name} className="preview-image" />
+            ) : (
+              <div className="preview-placeholder fade-in">
+                선택한 파일의 첫 페이지 미리보기가 여기에 표시됩니다.
               </div>
-              <button
-                onClick={handleEdit}
-                disabled={isProcessing}
-                className="mt-6 bg-pink-200 text-brown-700 px-6 py-2 rounded-full shadow-sm hover:shadow-md transition disabled:opacity-50"
-              >
-                {isProcessing ? "업데이트 중..." : "Edit"}
-              </button>
-            </div>
-
-            <div className="w-1/2 bg-white p-6 rounded shadow">
-              <p className="text-center font-bold mb-2">PREVIEW</p>
-              {previewImage ? (
-                <img
-                  src={previewImage}
-                  alt={previewFile?.name}
-                  className="w-full max-h-[600px] mx-auto rounded-md shadow"
-                />
-              ) : (
-                <div className="text-center text-gray-500 border p-4 rounded">
-                  여기에 선택한 파일의 미리보기가 표시됩니다.
-                </div>
-              )}
-            </div>
+            )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }

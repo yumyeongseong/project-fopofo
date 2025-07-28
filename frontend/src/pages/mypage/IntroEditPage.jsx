@@ -1,10 +1,10 @@
 import { useState, useCallback } from "react";
-import * as pdfjsLib from "pdfjs-dist";
-import { GlobalWorkerOptions } from "pdfjs-dist"; // 경로 통일
 import { X, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import MypageHeader from "../../components/MypageHeader";
-import { nodeApi } from "../../services/api"; // 백엔드 연동
+import { nodeApi } from "../../services/api";
+import * as pdfjsLib from "pdfjs-dist";
+import { GlobalWorkerOptions } from "pdfjs-dist";
+import "./IntroEditPage.css";
 
 GlobalWorkerOptions.workerSrc = `/pdf.worker.mjs`;
 
@@ -27,7 +27,6 @@ export default function IntroEditPage() {
 
                 const canvas = document.createElement("canvas");
                 const context = canvas.getContext("2d");
-
                 canvas.width = viewport.width;
                 canvas.height = viewport.height;
 
@@ -59,13 +58,10 @@ export default function IntroEditPage() {
         }
     };
 
-    const handleDrop = useCallback(
-        (e) => {
-            e.preventDefault();
-            handleFiles(e.dataTransfer.files);
-        },
-        [selectedFiles]
-    );
+    const handleDrop = useCallback((e) => {
+        e.preventDefault();
+        handleFiles(e.dataTransfer.files);
+    }, [selectedFiles]);
 
     const handleFileClick = async (file) => {
         const preview = await renderPDFPreview(file);
@@ -92,27 +88,27 @@ export default function IntroEditPage() {
             alert("대체할 파일을 하나 이상 선택해주세요.");
             return;
         }
+
         setIsProcessing(true);
         setShowMessage("자기소개서를 업데이트하는 중입니다...");
 
         try {
-            await nodeApi.delete('/user-upload/resume/all');
+            await nodeApi.delete("/user-upload/resume/all");
 
-            const uploadPromises = selectedFiles.map(file => {
+            const uploadPromises = selectedFiles.map((file) => {
                 const formData = new FormData();
-                formData.append('file', file);
-                return nodeApi.post('/upload/resume', formData);
+                formData.append("file", file);
+                return nodeApi.post("/upload/resume", formData);
             });
 
             await Promise.all(uploadPromises);
-
             setShowMessage("성공적으로 업데이트되었습니다!");
             setTimeout(() => {
                 setShowMessage("");
-                navigate('/mypage');
+                navigate("/mypage");
             }, 2000);
         } catch (error) {
-            console.error("업데이트 중 오류 발생:", error);
+            console.error("업데이트 중 오류:", error);
             setShowMessage("오류가 발생했습니다. 다시 시도해주세요.");
             setTimeout(() => setShowMessage(""), 3000);
         } finally {
@@ -121,84 +117,75 @@ export default function IntroEditPage() {
     };
 
     return (
-        <div className="min-h-screen bg-pink-100 flex flex-col relative">
-            <MypageHeader />
+        <div className="intro-edit-container">
+            {/* ✅ 상단 고정 로고 / 버튼 */}
+            <img
+                src="/Fopofo-Logo-v2.png"
+                alt="FoPoFo Logo"
+                className="intro-logo"
+                onClick={() => navigate("/")}
+            />
+            <div className="intro-buttons">
+                <button className="outline-btn" onClick={() => navigate("/mypage")}>←</button>
+                <button className="outline-btn" onClick={() => navigate("/")}>logout</button>
+                <button className="outline-btn" onClick={() => navigate("/home")}>home</button>
+            </div>
 
             {showMessage && (
-                <div className="fixed top-8 left-1/2 transform -translate-x-1/2 bg-white text-black px-6 py-2 rounded-full shadow-lg transition-opacity duration-300 z-50">
+                <div className="global-alert">
                     {showMessage}
                 </div>
             )}
 
-            <main className="flex-grow flex justify-center items-center px-4 pb-8">
-                <div
-                    onDrop={handleDrop}
-                    onDragOver={(e) => e.preventDefault()}
-                    className="bg-gradient-to-b from-blue-100 to-blue-200 w-[95%] max-w-5xl min-h-[600px] px-6 py-10 rounded-xl shadow-md flex flex-col items-center"
-                >
-                    <div className="w-full max-w-3xl mb-6">
-                        {previewUrl ? (
-                            <img
-                                src={previewUrl}
-                                alt={previewFile?.name}
-                                className="max-w-[85%] max-h-[500px] mx-auto rounded-md shadow"
-                            />
-                        ) : (
-                            <div className="bg-white border border-gray-300 rounded-md p-4 text-center text-gray-500">
-                                여기에 선택한 자기소개서 미리보기가 표시됩니다 (PDF)
-                            </div>
-                        )}
-                    </div>
+            <h1 className="intro-title">My Page</h1>
 
-                    <div className="flex justify-center mb-4">
-                        <label
-                            htmlFor="fileUpload"
-                            className="bg-pink-300 text-white px-4 py-2 rounded-md cursor-pointer hover:bg-pink-400 transition"
-                        >
-                            파일 선택
-                        </label>
-                        <input
-                            id="fileUpload"
-                            type="file"
-                            accept="application/pdf"
-                            multiple
-                            onChange={(e) => handleFiles(e.target.files)}
-                            className="hidden"
-                        />
+            <div className="intro-box">
+                {previewUrl ? (
+                    <img
+                        src={previewUrl}
+                        alt={previewFile?.name}
+                        className="max-w-[85%] max-h-[500px] mx-auto rounded-md shadow"
+                    />
+                ) : (
+                    <div className="bg-white border border-gray-300 rounded-md p-4 text-center text-gray-500">
+                        여기에 선택한 자기소개서 미리보기가 표시됩니다 (PDF)
                     </div>
+                )}
 
-                    <div className="w-full max-w-3xl mt-4 space-y-2">
-                        {selectedFiles.map((file, index) => (
-                            <div
-                                key={index}
-                                className={`flex justify-between items-center px-4 py-2 rounded-md transition text-sm cursor-pointer ${previewFile?.name === file.name
-                                    ? "bg-white font-semibold shadow"
-                                    : "text-gray-700 hover:bg-white hover:shadow"
-                                    }`}
-                            >
-                                <span onClick={() => handleFileClick(file)} className="flex items-center gap-2 flex-1">
-                                    <FileText size={16} className="text-gray-500" />
-                                    {file.name}
-                                </span>
-                                <button
-                                    onClick={() => handleDelete(file)}
-                                    className="ml-4 text-gray-500 hover:text-red-500"
-                                >
-                                    <X size={16} />
-                                </button>
-                            </div>
-                        ))}
-                    </div>
+                <label htmlFor="fileUpload" className="upload-label">
+                    파일 선택 (PDF만 가능)
+                </label>
+                <input
+                    id="fileUpload"
+                    type="file"
+                    accept="application/pdf"
+                    multiple
+                    onChange={(e) => handleFiles(e.target.files)}
+                    className="hidden"
+                />
 
-                    <button
-                        onClick={handleEdit}
-                        disabled={isProcessing}
-                        className="mt-6 bg-pink-200 text-brown-700 px-6 py-2 rounded-full shadow-sm hover:shadow-md transition disabled:opacity-50"
-                    >
-                        {isProcessing ? "처리 중..." : "Edit"}
-                    </button>
+                <div className="file-list">
+                    {selectedFiles.map((file, index) => (
+                        <div key={index} className="file-item">
+                            <span onClick={() => handleFileClick(file)} className="flex items-center gap-2 flex-1 cursor-pointer">
+                                <FileText size={16} className="text-gray-500" />
+                                {file.name}
+                            </span>
+                            <button onClick={() => handleDelete(file)} className="delete-btn">
+                                <X size={16} />
+                            </button>
+                        </div>
+                    ))}
                 </div>
-            </main>
+
+                <button
+                    onClick={handleEdit}
+                    disabled={isProcessing}
+                    className="edit-btn"
+                >
+                    {isProcessing ? "처리 중..." : "Edit"}
+                </button>
+            </div>
         </div>
     );
 }

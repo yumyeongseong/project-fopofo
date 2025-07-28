@@ -1,0 +1,152 @@
+.mypage-container {
+    position: relative;
+    min-height: 100vh;
+    background-color: #fff0f5;
+    background-image: url("/Users/lifeiscabaret/project-fopofo/frontend/public/Grid.png");
+    background-repeat: repeat;
+    background-size: contain;
+    background-attachment: fixed;
+    overflow: hidden;
+    overflow-x: hidden;
+}
+
+/* 좌측 상단 로고 */
+.mypage-logo {
+    position: absolute;
+    top: -0.5rem;
+    left: 0.5rem;
+    width: 140px;
+    height: auto;
+    cursor: pointer;
+    z-index: 10;
+    transition: transform 0.25s cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+.mypage-logo:hover {
+    transform: scale(1.08);
+}
+
+/* 우측 상단 버튼 */
+.mypage-buttons {
+    position: absolute;
+    top: 2rem;
+    right: 2.5rem;
+    display: flex;
+    gap: 12px;
+    z-index: 10;
+}
+
+.outline-btn {
+    font-family: 'SUIT', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 0.45rem 1.2rem;
+    border-radius: 999px;
+    border: 1.5px solid #f48ca2;
+    background: white;
+    color: #f48ca2;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.outline-btn:hover {
+    background-color: #f48ca2;
+    color: white;
+}
+
+/* 본문 박스 */
+.mypage-intro-container {
+    padding-top: 8rem;
+    padding-bottom: 4rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    animation: fadeInUp 1s ease both;
+    will-change: opacity, transform;
+    transform: translateZ(0);
+    z-index: 1;
+}
+
+.mypage-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 3rem;
+  font-weight: bold;
+  color: #222;
+  letter-spacing: 0.5px;
+  margin-top: -0.5rem; /* ✅ 위에 공간 줘서 아래로 내림 */
+  margin-bottom: 4rem;
+  animation: fadeInUp 1s ease both;
+  animation-delay: 0.3s;
+}
+
+
+/* 카테고리 버튼 영역 */
+.mypage-category-grid {
+    display: flex;
+    justify-content: center;
+    gap: 3.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 3rem;
+}
+
+/* 버튼 하나하나 */
+.mypage-category-btn {
+    padding: 1.1rem 2rem;
+    border: 2px solid #333;
+    border-radius: 12px;
+    background: white;
+    font-family: 'SUIT', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #222;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: 0.25s ease;
+    will-change: opacity, transform;
+    transform: translateZ(0);
+}
+
+.mypage-category-btn:hover {
+    background-color: #f48ca2;
+    color: white;
+    transform: translateY(-3px);
+}
+
+.category-icon {
+    margin-bottom: 1px;
+}
+
+/* 애니메이션 */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(24px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 순차 등장 */
+.mypage-category-btn:nth-child(1) {
+    animation: fadeInUp 1s ease both;
+    animation-delay: 0.8s;
+}
+
+.mypage-category-btn:nth-child(2) {
+    animation: fadeInUp 1s ease both;
+    animation-delay: 1s;
+}
+
+.mypage-category-btn:nth-child(3) {
+    animation: fadeInUp 1s ease both;
+    animation-delay: 1.2s;
+}

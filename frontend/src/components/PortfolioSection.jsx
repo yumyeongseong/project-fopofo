@@ -1,125 +1,120 @@
-import { useEffect, useState } from "react";
-import * as pdfjsLib from "pdfjs-dist";
-import { GlobalWorkerOptions } from "pdfjs-dist";
+import { useState } from "react";
+import { LayoutGrid, ImageIcon, VideoIcon, FileText, X } from "lucide-react";
 
-GlobalWorkerOptions.workerSrc = `/pdf.worker.mjs`;
+export default function PortfolioSection({ portfolio = [] }) {
+    const [selectedCategory, setSelectedCategory] = useState("design");
+    const [selectedFile, setSelectedFile] = useState(null);
 
-const PdfThumbnail = ({ fileUrl, alt }) => {
-    const [thumbUrl, setThumbUrl] = useState(null);
+    const categories = [
+        { key: "design", label: "Design", icon: <LayoutGrid className="w-4 h-4 mr-1" /> },
+        { key: "photo", label: "Photo", icon: <ImageIcon className="w-4 h-4 mr-1" /> },
+        { key: "video", label: "Video", icon: <VideoIcon className="w-4 h-4 mr-1" /> },
+        { key: "documents", label: "Documents", icon: <FileText className="w-4 h-4 mr-1" /> },
+    ];
 
-    useEffect(() => {
-        const generateThumb = async () => {
-            try {
-                const pdf = await pdfjsLib.getDocument(fileUrl).promise;
-                const page = await pdf.getPage(1);
-                const viewport = page.getViewport({ scale: 0.8 });
-                const canvas = document.createElement("canvas");
-                const context = canvas.getContext("2d");
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-                await page.render({ canvasContext: context, viewport }).promise;
-                setThumbUrl(canvas.toDataURL());
-            } catch (error) {
-                console.error("PDF 썸네일 생성 실패:", error);
-            }
-        };
-        if (fileUrl) generateThumb();
-    }, [fileUrl]);
+    // 백엔드 없을 때 사용할 더미 포트폴리오
+    const dummyData = [
+        {
+            fileType: "design",
+            filePath: "https://picsum.photos/id/237/300/200",
+        },
+        {
+            fileType: "photo",
+            filePath: "https://images.unsplash.com/photo-1606787366850-de6330128bfc?ixlib=rb-4.0.3&auto=format&fit=crop&w=2400&q=80",
+        },
+        {
+            fileType: "video",
+            filePath: "https://www.w3schools.com/html/mov_bbb.mp4",
+        },
+        {
+            fileType: "documents",
+            filePath: "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf",
+            thumbnailPath: "https://mozilla.github.io/pdf.js/web/images/logo.png"
+        },
+    ];
 
-    return thumbUrl ? (
-        <img src={thumbUrl} alt={alt} className="w-full h-auto object-contain rounded" />
-    ) : (
-        <div className="w-full h-48 bg-gray-200 flex items-center justify-center rounded">
-            <p className="text-sm text-gray-500">PDF 미리보기 생성 중...</p>
-        </div>
-    );
-};
-
-export default function PortfolioSection({ portfolio }) {
-    const [selectedCategory, setSelectedCategory] = useState("Design");
-    const [selectedItem, setSelectedItem] = useState(null);
-
-    const categories = ["Design", "Video", "Document", "Photo"];
-
-    if (!portfolio || portfolio.length === 0) {
-        return (
-            <div className="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-md border mt-10">
-                <h2 className="text-xl font-semibold mb-4">📁 포트폴리오</h2>
-                <p>업로드된 포트폴리오 파일이 없습니다.</p>
-            </div>
-        );
-    }
-
-    const filteredItems = portfolio.filter(
-        (item) => item.fileType === selectedCategory.toLowerCase()
+    const filtered = (portfolio.length > 0 ? portfolio : dummyData).filter(
+        (item) => item.fileType === selectedCategory
     );
 
     return (
-        <div className="relative px-6 pb-20">
-            {/* 카테고리 버튼 */}
-            <div className="flex justify-center mb-8 flex-wrap gap-4">
-                {categories.map((category) => (
+        <div className="w-full max-w-[1400px] mx-auto px-6 py-12">
+            <div className="flex justify-center gap-6 mb-10 flex-wrap">
+                {categories.map((cat) => (
                     <button
-                        key={category}
-                        onClick={() => setSelectedCategory(category)}
-                        className={`px-5 py-2 rounded-full font-medium text-sm transition shadow-sm ${selectedCategory === category
-                            ? "bg-[#f48ca2] text-white"
-                            : "bg-white border border-gray-300 text-gray-700 hover:bg-gray-100"
+                        key={cat.key}
+                        onClick={() => setSelectedCategory(cat.key)}
+                        className={`flex items-center px-5 py-2 rounded-full text-sm font-medium transition-all ${selectedCategory === cat.key
+                            ? "bg-pink-500 text-white shadow"
+                            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                             }`}
                     >
-                        {category}
+                        {cat.icon}
+                        {cat.label}
                     </button>
                 ))}
             </div>
 
-            {/* 썸네일 목록 */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-                {filteredItems.map((item) => (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                {filtered.map((item, index) => (
                     <div
-                        key={item.filePath}
-                        onClick={() => setSelectedItem(item)}
-                        className="cursor-pointer group bg-white rounded-lg shadow hover:shadow-lg transition overflow-hidden"
+                        key={index}
+                        onClick={() => setSelectedFile(item)}
+                        className="cursor-pointer border rounded overflow-hidden shadow hover:shadow-lg transition"
                     >
                         {item.fileType === "video" ? (
-                            <video src={item.filePath} className="w-full h-48 object-cover" />
-                        ) : item.originalName.toLowerCase().endsWith(".pdf") ? (
-                            <PdfThumbnail fileUrl={item.filePath} alt={item.originalName} />
+                            <video src={item.filePath} className="w-full h-[200px] object-cover" muted />
+                        ) : item.fileType === "documents" ? (
+                            item.thumbnailPath ? (
+                                <img
+                                    src={item.thumbnailPath}
+                                    alt="pdf-thumbnail"
+                                    className="w-full h-[200px] object-cover"
+                                />
+                            ) : (
+                                <div className="w-full h-[200px] flex items-center justify-center bg-gray-100 text-sm text-gray-500">
+                                    PDF 미리보기 없음
+                                </div>
+                            )
                         ) : (
-                            <img src={item.filePath} alt={item.originalName} className="w-full h-48 object-cover" />
+                            <img
+                                src={item.filePath}
+                                alt="preview"
+                                className="w-full h-[200px] object-cover"
+                            />
                         )}
                     </div>
                 ))}
             </div>
 
-            {/* 전체보기 모달 */}
-            {selectedItem && (
-                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50">
-                    <div className="relative">
-                        <button
-                            onClick={() => setSelectedItem(null)}
-                            className="absolute top-[-30px] right-0 text-white text-3xl"
-                        >
-                            ×
-                        </button>
+            {/* 전체 보기 모달 */}
+            {selectedFile && (
+                <div className="fixed inset-0 bg-black bg-opacity-70 z-50 flex items-center justify-center p-6">
+                    <button
+                        className="absolute top-8 right-8 text-white"
+                        onClick={() => setSelectedFile(null)}
+                    >
+                        <X size={36} />
+                    </button>
 
-                        {selectedItem.fileType === "video" ? (
+                    <div className="max-w-[1000px] w-full max-h-[90vh]">
+                        {selectedFile.fileType === "video" ? (
                             <video
-                                src={selectedItem.filePath}
-                                controls
+                                src={selectedFile.filePath}
+                                className="w-full max-h-[90vh]"
                                 autoPlay
-                                className="max-w-[90vw] max-h-[90vh] object-contain rounded"
+                                controls
                             />
-                        ) : selectedItem.originalName.toLowerCase().endsWith(".pdf") ? (
+                        ) : selectedFile.fileType === "documents" ? (
                             <iframe
-                                src={`${selectedItem.filePath}#toolbar=0`}
-                                title={selectedItem.originalName}
-                                className="w-[80vw] h-[90vh] rounded bg-white"
+                                src={`${selectedFile.filePath}#toolbar=0`}
+                                className="w-full h-[90vh] rounded bg-white"
                             />
                         ) : (
                             <img
-                                src={selectedItem.filePath}
-                                alt={selectedItem.originalName}
-                                className="max-w-[90vw] max-h-[90vh] object-contain rounded"
+                                src={selectedFile.filePath}
+                                alt="full-view"
+                                className="w-full h-auto max-h-[90vh] object-contain"
                             />
                         )}
                     </div>

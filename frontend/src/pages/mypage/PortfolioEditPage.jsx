@@ -1,10 +1,11 @@
+// ✅ 포포포 스타일 반영 + 스피너/알림 메시지 자동처리 개선
 import { useState, useEffect, useCallback } from "react";
 import { CheckCircle, Circle, FileText } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import MypageHeader from "../../components/MypageHeader";
 import { nodeApi } from "../../services/api";
 import * as pdfjsLib from "pdfjs-dist";
 import { GlobalWorkerOptions } from "pdfjs-dist";
+import "./PortfolioEditPage.css";
 
 GlobalWorkerOptions.workerSrc = `/pdf.worker.mjs`;
 
@@ -29,9 +30,7 @@ const PdfThumbnail = ({ fileUrl, originalName }) => {
                 setError(true);
             }
         };
-        if (fileUrl) {
-            generateThumb();
-        }
+        if (fileUrl) generateThumb();
     }, [fileUrl]);
 
     if (error || !thumbUrl) {
@@ -43,7 +42,7 @@ const PdfThumbnail = ({ fileUrl, originalName }) => {
         );
     }
 
-    return <img src={thumbUrl} alt={`${originalName} preview`} className="w-full h-full object-cover bg-white" />;
+    return <img src={thumbUrl} alt={originalName} className="w-full h-full object-cover bg-white" />;
 };
 
 const sanitizeFileName = (filename) => {
@@ -51,11 +50,19 @@ const sanitizeFileName = (filename) => {
     return `${Date.now()}-${sanitized}`;
 };
 
+const validExtensions = {
+    Design: ['.png', '.jpg', '.jpeg'],
+    Photo: ['.png', '.jpg', '.jpeg'],
+    Video: ['.mp4', '.mov'],
+    Document: ['.pdf']
+};
+
 export default function PortfolioEditPage() {
     const [category, setCategory] = useState("Design");
     const [items, setItems] = useState({ Design: [], Video: [], Document: [], Photo: [] });
     const [selected, setSelected] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [showMessage, setShowMessage] = useState("");
     const navigate = useNavigate();
 
     const fetchAllPortfolioItems = useCallback(async () => {
@@ -77,6 +84,7 @@ export default function PortfolioEditPage() {
             });
         } catch (error) {
             console.error("포트폴리오 데이터를 불러오는 중 오류 발생:", error);
+            setShowMessage("데이터 로딩 중 오류가 발생했습니다.");
         } finally {
             setIsLoading(false);
         }
@@ -86,11 +94,28 @@ export default function PortfolioEditPage() {
         fetchAllPortfolioItems();
     }, [fetchAllPortfolioItems]);
 
+    useEffect(() => {
+        if (showMessage) {
+            const timer = setTimeout(() => setShowMessage(""), 2500);
+            return () => clearTimeout(timer);
+        }
+    }, [showMessage]);
+
     const addAndUploadFiles = async (newFiles) => {
-        if (newFiles.length === 0) return;
+        const allowedExts = validExtensions[category];
+        const filteredFiles = newFiles.filter((file) =>
+            allowedExts.some((ext) => file.name.toLowerCase().endsWith(ext))
+        );
+
+        if (filteredFiles.length !== newFiles.length) {
+            setShowMessage(`❌ ${category} 카테고리는 ${allowedExts.join(", ")} 형식만 허용됩니다.`);
+            return;
+        }
+
+        if (filteredFiles.length === 0) return;
         setIsLoading(true);
         try {
-            const uploadPromises = newFiles.map(file => {
+            const uploadPromises = filteredFiles.map(file => {
                 const formData = new FormData();
                 const safeFileName = sanitizeFileName(file.name);
                 formData.append('file', new File([file], safeFileName, { type: file.type }));
@@ -98,11 +123,11 @@ export default function PortfolioEditPage() {
                 return nodeApi.post(`/upload/${fileType}`, formData);
             });
             await Promise.all(uploadPromises);
-            alert(`${newFiles.length}개의 파일이 성공적으로 추가되었습니다.`);
+            setShowMessage(`${filteredFiles.length}개의 파일이 성공적으로 추가되었습니다.`);
             fetchAllPortfolioItems();
         } catch (error) {
             console.error("파일 추가 중 오류 발생:", error);
-            alert("파일 추가에 실패했습니다.");
+            setShowMessage("파일 추가에 실패했습니다.");
         } finally {
             setIsLoading(false);
         }
@@ -131,17 +156,17 @@ export default function PortfolioEditPage() {
     };
 
     const handleDelete = async () => {
-        if (selected.length === 0) return alert("삭제할 파일을 먼저 선택해주세요.");
+        if (selected.length === 0) return setShowMessage("삭제할 파일을 먼저 선택해주세요.");
         if (!window.confirm(`선택한 ${selected.length}개의 파일을 정말로 삭제하시겠습니까?`)) return;
         setIsLoading(true);
         try {
             const deletePromises = selected.map(item => nodeApi.delete(`/user-upload/delete/${item._id}`));
             await Promise.all(deletePromises);
-            alert("선택한 파일이 성공적으로 삭제되었습니다.");
+            setShowMessage("선택한 파일이 성공적으로 삭제되었습니다.");
             fetchAllPortfolioItems();
         } catch (error) {
             console.error("파일 삭제 중 오류 발생:", error);
-            alert("파일 삭제에 실패했습니다.");
+            setShowMessage("파일 삭제에 실패했습니다.");
         } finally {
             setSelected([]);
             setIsLoading(false);
@@ -149,13 +174,11 @@ export default function PortfolioEditPage() {
     };
 
     const handleEdit = () => {
-        alert("모든 변경사항이 저장되었습니다.");
-        navigate('/mypage');
+        setShowMessage("모든 변경사항이 저장되었습니다.");
     };
 
     const renderThumbnail = (item) => {
         if (!item || !item.fileType || !item.originalName) return null;
-
         if (item.fileType === 'video') {
             return <video src={item.presignedUrl} controls className="w-full h-full object-contain bg-black" />;
         }
@@ -178,41 +201,71 @@ export default function PortfolioEditPage() {
     };
 
     return (
-        <div className="min-h-screen bg-pink-100 flex flex-col">
-            <MypageHeader />
-            <div className="flex flex-1">
-                <div className="flex flex-col gap-4 p-6">
+        <div className="portfolio-edit-container">
+            <img
+                src="/Fopofo-Logo-v2.png"
+                alt="FoPoFo Logo"
+                className="intro-logo"
+                onClick={() => navigate("/")}
+            />
+            <div className="intro-buttons">
+                <button className="outline-btn" onClick={() => navigate("/mypage")}>←</button>
+                <button className="outline-btn" onClick={() => navigate("/")}>logout</button>
+                <button className="outline-btn" onClick={() => navigate("/home")}>home</button>
+            </div>
+
+            {showMessage && (
+                <div className="global-alert">{showMessage}</div>
+            )}
+
+            <h1 className="intro-title">My Page</h1>
+
+            <div className="portfolio-edit-box">
+                <aside className="portfolio-sidebar">
                     {["Design", "Video", "Document", "Photo"].map((type) => (
-                        <button key={type} onClick={() => handleCategoryClick(type)} className={`border px-4 py-2 font-serif ${category === type ? "bg-white" : "bg-pink-50"}`}>
+                        <button
+                            key={type}
+                            onClick={() => handleCategoryClick(type)}
+                            className={`portfolio-tab-btn ${category === type ? "active" : ""}`}
+                        >
                             {type}
                         </button>
                     ))}
-                    <label className="bg-pink-300 text-white text-center py-2 rounded-full cursor-pointer">
-                        <input type="file" multiple hidden onChange={handleFileInput} />
+                    <label className="portfolio-add-btn">
+                        <input
+                            type="file"
+                            multiple
+                            hidden
+                            onChange={handleFileInput}
+                            accept={validExtensions[category].join(",")}
+                        />
                         Add
                     </label>
-                    <button onClick={handleDelete} className="bg-pink-300 text-white text-center py-2 rounded-full">
+                    <button onClick={handleDelete} className="portfolio-del-btn">
                         Delete
                     </button>
-                    <button onClick={handleEdit} className="bg-pink-200 text-brown-700 text-center py-2 rounded-full shadow hover:shadow-md transition">
+                    <button onClick={handleEdit} className="edit-btn">
                         Edit
                     </button>
-                </div>
-                <div
+                </aside>
+
+                <section
                     onDrop={handleDrop}
                     onDragOver={(e) => e.preventDefault()}
-                    className="flex-1 p-8 grid grid-cols-3 gap-4 bg-blue-100 rounded-lg"
+                    className="portfolio-grid"
                 >
                     {isLoading ? (
-                        <p className="col-span-3 text-center">포트폴리오를 불러오는 중입니다...</p>
+                        <div className="loading-box">
+                            <div className="spinner" />
+                        </div>
                     ) : (
                         items[category].map((item) => (
                             <div
                                 key={item._id}
-                                className="relative rounded overflow-hidden shadow-md cursor-pointer aspect-square"
+                                className="portfolio-card"
                                 onClick={() => handleSelect(item)}
                             >
-                                <div className="absolute top-2 left-2 text-white z-10">
+                                <div className="portfolio-check">
                                     {selected.some(s => s._id === item._id) ? (
                                         <CheckCircle size={20} className="text-white bg-black rounded-full" />
                                     ) : (
@@ -223,7 +276,7 @@ export default function PortfolioEditPage() {
                             </div>
                         ))
                     )}
-                </div>
+                </section>
             </div>
         </div>
     );

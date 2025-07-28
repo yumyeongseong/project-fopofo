@@ -1,164 +1,118 @@
-// src/pages/ChatbotFileUpload/ChatbotFileUpload.jsx
-import React, { useState, useCallback } from 'react';
+// ✅ ChatbotFileUpload.jsx (IntroUpload 스타일 동일하게 구조/함수명 리팩토링)
+
+import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './ChatbotFileUpload.css';
-import { pythonApi } from '../../services/api';
+import axios from 'axios';
 
-const ChatbotFileUpload = () => {
+function ChatbotFileUpload() {
+  const [chatbotFiles, setChatbotFiles] = useState([]);
+  const fileInputRef = useRef(null);
   const navigate = useNavigate();
-  const [selectedFiles, setSelectedFiles] = useState([]);
-  const [isDragging, setIsDragging] = useState(false);
 
-  const addFiles = useCallback((newFiles) => {
-    const filesArray = Array.from(newFiles);
-    setSelectedFiles(prevFiles => {
-      const uniqueFiles = filesArray.filter(
-        (newFile) => !prevFiles.some((prevFile) => prevFile.name === newFile.name && prevFile.size === newFile.size)
-      );
-      return [...prevFiles, ...uniqueFiles];
-    });
-  }, []);
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter') {
+        handleChatbotNext();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [chatbotFiles]);
 
-  const handleFileChange = (e) => {
-    addFiles(e.target.files);
+  const handleChatbotFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files);
+    const nonPdf = selectedFiles.find(file => !file.name.endsWith('.pdf'));
+    if (nonPdf) return alert('PDF 파일만 업로드 가능합니다.');
+    setChatbotFiles((prev) => [...prev, ...selectedFiles]);
   };
 
-  const handleDragOver = useCallback((e) => {
+  const handleChatbotDrop = (e) => {
     e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(true);
-  }, []);
-
-  const handleDragLeave = useCallback((e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-  }, []);
-
-  const handleDrop = useCallback((e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsDragging(false);
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      addFiles(e.dataTransfer.files);
-      e.dataTransfer.clearData();
-    }
-  }, [addFiles]);
-
-  const handleRemoveFile = (fileName) => {
-    setSelectedFiles(prevFiles => prevFiles.filter(file => file.name !== fileName));
+    const droppedFiles = Array.from(e.dataTransfer.files);
+    const nonPdf = droppedFiles.find(file => !file.name.endsWith('.pdf'));
+    if (nonPdf) return alert('PDF 파일만 업로드 가능합니다.');
+    setChatbotFiles((prev) => [...prev, ...droppedFiles]);
   };
 
-  const handleUploadFiles = async () => {
-    if (selectedFiles.length === 0) {
-      alert('자기소개서 및 이력서 파일을 업로드해주세요.');
+  const handleChatbotDelete = (index) => {
+    setChatbotFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleChatbotNext = async () => {
+    if (chatbotFiles.length === 0) {
+      alert('파일을 하나 이상 업로드해주세요.');
       return;
     }
 
     const formData = new FormData();
-    selectedFiles.forEach(file => {
-      formData.append('file', file);
-    });
+    chatbotFiles.forEach(file => formData.append('chatbotDocs', file));
 
     try {
-      const response = await pythonApi.post('/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        }
+      await axios.post('/api/upload/chatbot', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
-
-      console.log('파일 업로드 및 벡터 저장 완료:', response.data);
-      alert('파일 업로드 및 챗봇 학습 준비 완료!');
-      setSelectedFiles([]);
+      alert('업로드 완료!');
       navigate('/prompt/chatbot');
-    } catch (error) {
-      if (error.response?.status === 401) {
-        alert('인증 정보가 유효하지 않습니다. 다시 로그인해주세요.');
-        navigate('/login');
-      } else {
-        console.error('파일 업로드 실패:', error.response?.data || error.message);
-        alert('파일 업로드에 실패했습니다. 다시 시도해주세요.');
-      }
+    } catch (err) {
+      console.error(err);
+      alert('업로드 중 오류가 발생했습니다.');
     }
   };
 
-  const goHome = () => {
-    navigate('/');
-  };
-
-  const goToMyPage = () => {
-    navigate('/mypage');
-  };
-
   return (
-    <div className="upload-container">
-      <header className="upload-header">
-        <img
-          src="/images/fopofo-logo.png"
-          alt="포포포 로고"
-          className="upload-logo"
-          onClick={goHome}
-        />
-        <button className="mypage-button" onClick={goToMyPage}>
-          my page
-        </button>
-      </header>
+    <div className="homepage-container" onDragOver={(e) => e.preventDefault()} onDrop={handleChatbotDrop}>
+      <img
+        src="/images/fopofo-logo.png"
+        alt="logo"
+        className="nav-logo"
+        onClick={() => navigate('/')}
+      />
 
-      <h2 className="title">Upload files for Chatbot</h2>
+      <div className="noportfolio-top-buttons">
+        <button className="outline-btn" onClick={() => navigate('/')}>logout</button>
+        <button className="outline-btn" onClick={() => navigate('/home')}>Exit</button>
+      </div>
 
-      <div
-        className={`upload-box ${isDragging ? 'dragging' : ''}`}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-      >
-        <p className="instruction">
-          자기소개서 및 이력서를 업로드해주세요.
-          <br />
-          <span className="subtext">
-            (특이사항 및 강조하고 싶은 내용을 업로드 시<br />
-            특이경험에 대하여 자세하게 답변 받을 수 있습니다.)
-          </span>
+      <div className="intro-upload-container ">
+        <h1 className="intro-upload-title animate-3d">
+          Upload documents for your chatbot
+        </h1>
+
+        <p className="intro-upload-subtitle animate-3d">
+          챗봇이 대답에 참고할 자기소개서 및 이력서를 업로드해주세요.
         </p>
 
-        <label htmlFor="file-upload" className="file-upload-label">
-          파일 선택
-        </label>
-        <input
-          id="file-upload"
-          type="file"
-          className="file-input"
-          onChange={handleFileChange}
-          multiple
-          hidden
-        />
-        <span className="selected-files-text">
-          {selectedFiles.length > 0 ? `${selectedFiles.length}개 파일 선택됨` : '선택된 파일 없음'}
-        </span>
+        <div className="intro-upload-box animate-3d">
+          <label htmlFor="chatbot-file-upload" className="intro-upload-label">
+            파일 선택 (PDF만 가능)
+          </label>
+          <input
+            type="file"
+            id="chatbot-file-upload"
+            accept="application/pdf"
+            multiple
+            onChange={handleChatbotFileChange}
+            ref={fileInputRef}
+            style={{ display: 'none' }}
+          />
 
-        {selectedFiles.length > 0 && (
-          <ul className="file-list">
-            {selectedFiles.map((file, index) => (
-              <li key={index} className="file-item">
+          <div className="intro-file-list">
+            {chatbotFiles.map((file, index) => (
+              <div key={index} className="intro-file-item animate-fade-in">
                 {file.name}
-                <button
-                  type="button"
-                  onClick={() => handleRemoveFile(file.name)}
-                  className="remove-file-button"
-                >
-                  X
-                </button>
-              </li>
+                <button className="intro-delete-btn" onClick={() => handleChatbotDelete(index)}>×</button>
+              </div>
             ))}
-          </ul>
-        )}
+          </div>
 
-        <button className="next-button" onClick={handleUploadFiles}>
-          Next
-        </button>
+          <button className="intro-next-btn" onClick={handleChatbotNext}>
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );
-};
+}
 
 export default ChatbotFileUpload;

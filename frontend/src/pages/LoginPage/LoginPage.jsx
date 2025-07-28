@@ -43,7 +43,7 @@ function LoginPage() {
   };
 
   const handleLogoClick = () => {
-    navigate('/mainpage');
+    navigate('/');
   };
 
   const handleGoogleLogin = () => {
@@ -54,7 +54,6 @@ function LoginPage() {
     navigate('/signup');
   };
 
-  // ✅ UI 구조는 지현 코드 기준
   return (
     <div className="login-container">
       <img
@@ -79,6 +78,12 @@ function LoginPage() {
             placeholder="PW: 비밀번호를 입력하세요"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                handleLogin(); // Enter 시 로그인 실행
+              }
+            }}
           />
         </div>
 

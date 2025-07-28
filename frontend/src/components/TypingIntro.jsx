@@ -8,13 +8,13 @@ export default function TypingIntro({ fullText }) {
 
         const timeout = setTimeout(() => {
             setTypedText(fullText.slice(0, typedText.length + 1));
-        }, 35); // 타이핑 속도
+        }, 35);
 
         return () => clearTimeout(timeout);
     }, [fullText, typedText]);
 
     return (
-        <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line min-h-[45px]">
+        <p className="text-center text-gray-700 text-[15px] whitespace-pre-line leading-relaxed min-h-[45px]">
             {typedText}
         </p>
     );

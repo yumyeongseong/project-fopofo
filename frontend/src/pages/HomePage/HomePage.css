@@ -1,121 +1,203 @@
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap');
-
-/* ---------------------------------- */
-/* 1. CSS 초기화 (Reset) 코드         */
-/* ---------------------------------- */
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-/* ---------------------------------- */
-/* 2. Home Container 기본 레이아웃    */
-/* ---------------------------------- */
-.home-container {
-    background-color: #fff;
+/* 전체 배경 설정 */
+.homepage-container {
+    background-color: #FFEDF3;
+    background-image: url('/Users/lifeiscabaret/project-fopofo/frontend/public/Grid.png');
+    background-repeat: repeat;
+    background-size: contain;
+    background-position: center;
+    background-attachment: fixed;
     min-height: 100vh;
-    font-family: 'Arial', sans-serif;
-    position: relative;
+    font-family: 'Playfair Display', serif;
+    color: #222;
+    padding-bottom: 5rem;
 }
 
-/* ---------------------------------- */
-/* 3. Header 영역                     */
-/* ---------------------------------- */
-.home-header {
+/* 상단 네비게이션 바 */
+.navbar {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     align-items: center;
-    padding: 30px 50px;
+    padding: 1.3rem 3rem;
+    position: relative;
+    z-index: 10;
 }
 
-.home-logo {
-    position: fixed !important;
-    top: -30px !important;
-    left: -20px !important;
-    width: 230px !important;
-    padding: 24px 40px !important;
-    z-index: 999 !important;
+/* 왼쪽 (로고 + 링크들) */
+.left-section {
+    display: flex;
+    align-items: center;
+    gap: 2.5rem;
+}
+
+/* 로고 이미지 */
+.nav-logo {
+    position: absolute !important;
+    top: -0.5rem !important;
+    left: 0.5rem !important;
+    width: 140px !important;
+    padding: 0 !important;
+    z-index: 10 !important;
+    cursor: pointer;
     transition: transform 0.3s ease;
 }
 
-.home-logo:hover {
+.nav-logo:hover {
     transform: scale(1.05);
 }
 
-/* ---------------------------------- */
-/* 4. 마이페이지 버튼                 */
-/* ---------------------------------- */
-.mypage-button-home {
-    font-family: 'Courier New', serif;
-    font-size: 22px;
-    background-color: transparent;
-    color: #2b1e28;
-    border: 2px solid #f48ca2;
-    padding: 10px 20px;
-    border-radius: 6px;
-    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.15);
-    transition: all 0.3s ease;
-    text-shadow: 1px 1px 1px #ccc;
-    cursor: pointer;
-    margin-top: 30px;
-    margin-right: 15px;
-}
-
-.mypage-button-home:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.25);
-}
-
-/* ---------------------------------- */
-/* 5. 메인 콘텐츠 박스                */
-/* ---------------------------------- */
-.home-main {
+/* 네비게이션 버튼 */
+.nav-links {
     display: flex;
-    justify-content: center;
-    margin-top: 80px;
+    gap: 5rem;
+    margin-left: 160px;
+    align-items: flex-end;
+    margin-top: -1.5rem;
 }
 
-.main-title-box {
-    background-color: #f48ca2;
-    padding: 20px 40px;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-}
-
-.main-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 28px;
-    color: #333;
-    margin: 0;
-}
-
-/* ---------------------------------- */
-/* 6. Create 버튼 스타일              */
-/* ---------------------------------- */
-.create-button {
-    text-decoration: none;
-    position: relative;
-    color: #2d2d2d;
-    font-size: 28px;
-    font-weight: bold;
-    font-family: 'Georgia', serif;
+.nav-button {
+    background: none;
+    border: none;
+    font-size: 1.6rem;
     cursor: pointer;
-    transition: all 0.3s ease;
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+    color: #222;
 }
 
-.create-button::after {
-    content: "";
-    position: absolute;
-    bottom: -6px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background-color: #2d2d2d;
-    transition: width 0.3s ease;
+.nav-button:hover {
+    color: #f48ca2;
 }
 
-.create-button:hover::after {
+/* Create 버튼 */
+.create-btn {
+    width: 100px;
+    height: 100px;
+    border-radius: 50px;
+    background-color: #f48ca2;
+    color: white;
+    font-size: 1.3rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    padding: 0;
+    transition: background-color 0.3s ease;
+}
+
+.create-btn:hover {
+    background-color: #e93d78;
+}
+
+/* 메인 배너 타이틀 */
+.homepage-title {
+    font-size: 3.8rem;
+    font-weight: 700;
+    text-align: center;
+    margin: 3rem 2rem 2rem;
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
+    padding: 1.8rem 0;
+    background-color: #ffedf3;
+}
+
+/* 설명 카드 영역 */
+.card-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2.2rem;
+    padding: 0 2rem 4rem;
+}
+
+.card {
+    width: 80%;
+    font-family: 'SUIT', sans-serif;
+    max-width: 1000px;
+    background-color: white;
+    padding: 2rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    opacity: 0;
+    animation: fadeInFloat 1s forwards;
+}
+
+.card:nth-child(2) {
+    animation-delay: 0.3s;
+}
+
+.card:nth-child(3) {
+    animation-delay: 0.6s;
+}
+
+/* 애니메이션 */
+@keyframes fadeInFloat {
+    0% {
+        transform: translateY(40px) scale(0.95);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+/* 4분할 이미지 섹션 */
+.preview-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3rem;
+    margin: 5rem auto 2rem;
+    max-width: 1200px;
+    padding: 0 2rem;
+}
+
+.preview-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    opacity: 0;
+    transform: translateY(50px);
+    animation: fadeInFloat 0.8s forwards;
+    font-family: 'SUIT', sans-serif;
+}
+
+
+.preview-item:nth-child(1) {
+    animation-delay: 0.3s;
+}
+
+.preview-item:nth-child(2) {
+    animation-delay: 0.5s;
+}
+
+.preview-item:nth-child(3) {
+    animation-delay: 0.7s;
+}
+
+.preview-item:nth-child(4) {
+    animation-delay: 0.9s;
+}
+
+.grid-img {
     width: 100%;
+    border-radius: 15px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease;
+}
+
+.grid-img:hover {
+    transform: scale(1.02);
+}
+
+.preview-label {
+    margin-top: 0.8rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #444;
 }

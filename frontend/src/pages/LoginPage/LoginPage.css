@@ -1,7 +1,7 @@
 /* 배경 전체 */
 .login-container {
     min-height: 80vh;
-    /* ✅ 기존 100vh → 80vh */
+    /* 기존 100vh → 80vh */
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -17,7 +17,7 @@
     position: relative;
     /* 📌 상대 위치 지정 */
     top: 55px;
-    /* ✅ 아래로 40px만 이동 */
+    /* 아래로 40px만 이동 */
     width: 240px;
     margin: 0 auto 1.5rem;
     /* 중앙 정렬 + 아래 여백 */

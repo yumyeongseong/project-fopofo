@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import QRCode from 'react-qr-code';
 import './PortfolioCreatedPage.css';
 
@@ -8,40 +8,10 @@ function PortfolioCreatedPage() {
   const [progress, setProgress] = useState(0);
   const [showQR, setShowQR] = useState(false);
   const [isCreated, setIsCreated] = useState(false);
-  const [portfolioUrl, setPortfolioUrl] = useState('');
+  const [urlVisible, setUrlVisible] = useState(false);
+  const [portfolioUrl, setPortfolioUrl] = useState(''); // ✅ 백엔드 연동 시 대체될 동적 값
 
-  const location = useLocation();
   const navigate = useNavigate();
-
-  // ✅ 팀장 코드 기준: URL을 useLocation으로 안전하게 전달받고 예외 처리
-  useEffect(() => {
-    if (location.state && location.state.portfolioUrl) {
-      setPortfolioUrl(location.state.portfolioUrl);
-    } else {
-      console.error("포트폴리오 URL이 전달되지 않았습니다.");
-      alert("잘못된 접근입니다. 메인 페이지로 이동합니다.");
-      navigate('/mainpage');
-    }
-  }, [location.state, navigate]);
-
-  // ✅ 지현 코드 기준: URL 있는 경우에만 Progress 애니메이션 시작
-  useEffect(() => {
-    if (!portfolioUrl) return;
-
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setShowQR(true);
-          setIsCreated(true);
-          return 100;
-        }
-        return prev + 1;
-      });
-    }, 50);
-
-    return () => clearInterval(interval);
-  }, [portfolioUrl]);
 
   const handleCopy = async () => {
     try {
@@ -53,53 +23,101 @@ function PortfolioCreatedPage() {
     }
   };
 
+  useEffect(() => {
+    // ✅ 추후 팀장님 연동 시 여기에 API 연결만 하면 됩니다.
+    // 예:
+    // fetch('/api/create-portfolio')
+    //   .then(res => res.json())
+    //   .then(data => {
+    //     setPortfolioUrl(data.url);
+    //     setUrlVisible(true);
+    //     setIsCreated(true);
+    //     setShowQR(true);
+    //   });
+
+    // 임시 로딩 시뮬레이션용
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          // 실제로는 위 fetch 내에서 받아올 URL로 대체됨
+          setPortfolioUrl('https://forportfolioforpeople.com/your-id');
+          setUrlVisible(true);
+          setIsCreated(true);
+          setShowQR(true);
+          return 100;
+        }
+        return prev + 1;
+      });
+    }, 50);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="url-page-wrapper">
-      {/* ✅ 지현 기준 로고 경로 및 마이페이지 버튼 */}
+      {/* 로고 */}
       <img
         src="/images/fopofo-logo.png"
         alt="fopofo-logo"
-        className="logo"
-        onClick={() => navigate('/mainpage')}
+        className="nav-logo"
+        onClick={() => navigate('/')}
       />
-      <button
-        className="mypage-button-created"
-        onClick={() => navigate('/mypage')}
-      >
-        my page
-      </button>
 
-      {/* ✅ 배너 클릭 시 웹사이트 오픈 (팀장 로직 유지) */}
+      {/* 로그아웃 & Exit 버튼 */}
+      <div className="noportfolio-top-buttons">
+        <button className="outline-btn" onClick={() => navigate('/')}>logout</button>
+        <button className="outline-btn" onClick={() => navigate('/home')}>Exit</button>
+      </div>
+
+      {/* 포트폴리오 생성 타이틀 */}
       <div
         className={`final-banner ${isCreated ? 'hoverable' : ''}`}
         onClick={() => {
-          if (isCreated && portfolioUrl) {
+          if (isCreated) {
             window.open(portfolioUrl, '_blank');
           }
         }}
       >
-        <div className="url-title-box">
+        <div className="url-title-box animate-3d">
           <h1>PORTFOLIO<br />IS CREATED</h1>
         </div>
       </div>
 
-      {/* ✅ URL 출력 및 복사 버튼 (지현 스타일 유지) */}
-      <div className="url-box-custom">
+      {/* URL 박스 */}
+      <div className="url-box-custom animate-3d">
         <div className="url-label">URL</div>
-        <div className="url-display">{portfolioUrl}</div>
-        <button className="copy-button-custom" onClick={handleCopy}>복사</button>
+        <div className="url-display">
+          {urlVisible ? (
+            <span>{portfolioUrl}</span>
+          ) : (
+            <span className="loading-placeholder">URL 생성 중...</span>
+          )}
+        </div>
+        <button
+          className="copy-button-custom"
+          onClick={handleCopy}
+          disabled={!urlVisible}
+        >
+          복사
+        </button>
       </div>
 
       {copied && <span className="copy-feedback">링크가 복사되었습니다!</span>}
 
-      {/* ✅ QR 코드 생성 */}
-      {!showQR ? (
-        <div className="progress-container">
-          <div className="progress-bar" style={{ width: `${progress}%` }} />
-        </div>
-      ) : (
+      {/* 로딩 바 & 생성중 텍스트 */}
+      {!showQR && (
+        <>
+          <div className="progress-container animate-3d">
+            <div className="progress-bar" style={{ width: `${progress}%` }} />
+          </div>
+          <p className="loading-text">생성중...</p>
+        </>
+      )}
+
+      {/* QR 코드 */}
+      {showQR && (
         <div className="qr-wrapper">
-          {portfolioUrl && <QRCode value={portfolioUrl} size={100} />}
+          <QRCode value={portfolioUrl} size={100} />
           <p className="qr-label">QR 코드로 접속해보세요</p>
         </div>
       )}

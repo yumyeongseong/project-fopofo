@@ -4,9 +4,19 @@
 /* ✅ Google Fonts: Noto + Fira Mono */
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR&family=Noto+Serif+KR&family=Fira+Mono&display=swap');
 
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ✅ 스크롤바 항상 고정해서 튐 방지 */
+html,
+body {
+  overflow-y: scroll;
+  height: 100%;
+  scroll-behavior: smooth;
+}
 
 /* ✨ 커스텀 애니메이션 추가 */
 @keyframes fadeIn {

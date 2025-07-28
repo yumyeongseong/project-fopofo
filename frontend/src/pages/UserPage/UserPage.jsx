@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 // import UserMainPage from "@/src/components/UserMainPage";
 
 // ✅ 수정 후:
-import UserMainPage from "../../components/UserMainPage";
+import UserMainPage from "../../components/UserMainPage/UserMainPage";
 
 
 const UserPage = () => {

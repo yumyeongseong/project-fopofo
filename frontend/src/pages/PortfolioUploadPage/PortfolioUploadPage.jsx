@@ -1,120 +1,175 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './PortfolioUploadPage.css';
-import { nodeApi } from '../../services/api';
+import React, { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Paintbrush,
+  Video,
+  FileText,
+  Image as ImageIcon,
+  X,
+} from "lucide-react";
+import "./PortfolioUploadPage.css";
 
-function PortfolioUploadPage() {
+const categoryConfig = {
+  Design: {
+    icon: <Paintbrush className="icon" />,
+    extensions: [".jpg", ".jpeg", ".png"],
+    accept: "image/jpeg, image/png",
+  },
+  Video: {
+    icon: <Video className="icon" />,
+    extensions: [".mp4", ".mov", ".avi", ".mkv"],
+    accept: "video/*",
+  },
+  Document: {
+    icon: <FileText className="icon" />,
+    extensions: [".pdf"],
+    accept: "application/pdf",
+  },
+  Photo: {
+    icon: <ImageIcon className="icon" />,
+    extensions: [".jpg", ".jpeg", ".png"],
+    accept: "image/jpeg, image/png",
+  },
+};
+
+export default function PortfolioUploadPage() {
   const navigate = useNavigate();
-
-  const [uploadedFiles, setUploadedFiles] = useState({
+  const [filesByCategory, setFilesByCategory] = useState({
     Design: [],
     Video: [],
     Document: [],
     Photo: [],
   });
-  const [isUploading, setIsUploading] = useState(false);
 
-  const handleFileChange = (e, category) => {
-    const newFiles = Array.from(e.target.files);
-    if (newFiles.length === 0) return;
-
-    setUploadedFiles((prev) => {
-      const existingFiles = prev[category];
-      const uniqueNewFiles = newFiles.filter(
-        (newFile) => !existingFiles.some((existingFile) => existingFile.name === newFile.name)
-      );
-      return {
-        ...prev,
-        [category]: [...existingFiles, ...uniqueNewFiles],
-      };
-    });
-
-    e.target.value = '';
+  const fileInputRefs = {
+    Design: useRef(null),
+    Video: useRef(null),
+    Document: useRef(null),
+    Photo: useRef(null),
   };
 
-  const handleFileDelete = (category, index) => {
-    setUploadedFiles((prev) => ({
+  const handleFileChange = (e, category) => {
+    const selectedFiles = Array.from(e.target.files);
+    const isValid = (file) => {
+      const name = file.name.toLowerCase();
+      return categoryConfig[category].extensions.some((ext) =>
+        name.endsWith(ext)
+      );
+    };
+    const invalidFile = selectedFiles.find((file) => !isValid(file));
+    if (invalidFile) {
+      alert(`❌ ${category} 카테고리에 올바르지 않은 파일 형식입니다.`);
+      return;
+    }
+    setFilesByCategory((prev) => ({
+      ...prev,
+      [category]: [...prev[category], ...selectedFiles],
+    }));
+  };
+
+  const handleDelete = (category, index) => {
+    setFilesByCategory((prev) => ({
       ...prev,
       [category]: prev[category].filter((_, i) => i !== index),
     }));
   };
 
-  const handleNextClick = async () => {
-    setIsUploading(true);
-
-    const allFiles = Object.entries(uploadedFiles).flatMap(([category, files]) =>
-      files.map(file => ({ file, category }))
-    );
-
-    if (allFiles.length === 0) {
-      alert("업로드할 파일이 없습니다. 다음 단계로 진행합니다.");
-      navigate('/upload/chatbot');
+  const handleSubmit = () => {
+    const totalFiles = Object.values(filesByCategory).flat().length;
+    if (totalFiles === 0) {
+      alert("파일을 하나 이상 업로드해주세요.");
       return;
     }
 
-    const uploadPromises = allFiles.map(({ file, category }) => {
-      const formData = new FormData();
-      formData.append('file', file);
-      return nodeApi.post(`/upload/${category.toLowerCase()}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-    });
-
-    try {
-      await Promise.all(uploadPromises);
-      alert("모든 파일이 성공적으로 업로드되었습니다!");
-      navigate('/upload/chatbot');
-    } catch (error) {
-      console.error("파일 업로드 중 오류 발생:", error);
-      alert("파일 업로드에 실패했습니다. 파일을 다시 확인해주세요.");
-    } finally {
-      setIsUploading(false);
-    }
+    console.log("업로드 파일 목록:", filesByCategory);
+    navigate("/upload/chatbot");
   };
 
-  const handleLogoClick = () => navigate('/');
-  const handleMyPageClick = () => navigate('/mypage');
-
   return (
-    <div className="upload-container">
-      <header className="upload-header">
-        <img src="/images/fopofo-logo.png" alt="logo" className="upload-logo" onClick={handleLogoClick} />
-        <button className="mypage-button-upload" onClick={handleMyPageClick}>my page</button>
-      </header>
-      <main className="upload-main">
-        <h1 className="upload-title">Upload files for Portfolio</h1>
-        <div className="upload-grid">
-          {['Design', 'Video', 'Document', 'Photo'].map((category) => (
-            <div className="upload-card" key={category}>
-              <div className="upload-label">{category}</div>
+    <div
+      className="homepage-container"
+      style={{
+        backgroundImage: `url("/Grid.png")`,
+        backgroundRepeat: "repeat",
+        backgroundSize: "contain",
+        backgroundAttachment: "fixed",
+        backgroundColor: "#fff0f5",
+        minHeight: "100vh",
+        position: "relative",
+      }}
+    >
+      {/* 좌측 상단 로고 */}
+      <img
+        src="/images/fopofo-logo.png"
+        alt="fopofo logo"
+        className="nav-logo"
+        onClick={() => navigate("/")}
+      />
+
+      {/* 우측 상단 버튼 */}
+      <div className="noportfolio-top-buttons">
+        <button className="outline-btn" onClick={() => navigate("/")}>
+          logout
+        </button>
+        <button className="outline-btn" onClick={() => navigate("/home")}>
+          Exit
+        </button>
+      </div>
+
+      {/* 본문 */}
+      <div className="portfolio-upload-container">
+        <h1 className="portfolio-upload-title animate-3d">
+          Upload your Portfolio
+        </h1>
+
+        <p className="portfolio-upload-subtitle animate-3d">
+          당신의 개성과 창의성이 담긴 포트폴리오를 자유롭게 업로드해주세요!
+        </p>
+
+        <div className="category-grid">
+          {Object.entries(categoryConfig).map(([category, config]) => (
+            <div className="category-box animate-3d" key={category}>
+              <div className="category-title">
+                <span className="icon">{config.icon}</span>
+                {category}
+              </div>
+
+              <label
+                className="file-label"
+                onClick={() => fileInputRefs[category].current.click()}
+              >
+                파일 선택
+              </label>
               <input
                 type="file"
-                className="file-input"
+                accept={config.accept}
                 multiple
+                ref={fileInputRefs[category]}
+                style={{ display: "none" }}
                 onChange={(e) => handleFileChange(e, category)}
               />
-              <ul className="file-list">
-                {uploadedFiles[category].map((file, index) => (
-                  <li key={index}>
+
+              <div className="file-list-scroll">
+                {filesByCategory[category].map((file, index) => (
+                  <div className="file-item" key={index}>
                     {file.name}
-                    <button className="delete-button" onClick={() => handleFileDelete(category, index)}>
-                      &minus;
+                    <button
+                      className="delete-btn"
+                      onClick={() => handleDelete(category, index)}
+                    >
+                      ×
                     </button>
-                  </li>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
           ))}
         </div>
-        <p className="file-tip">*파일명은 각 작품에 해당하는 작품명에 반영됩니다.</p>
-      </main>
-      <footer className="upload-footer">
-        <button className="next-button" onClick={handleNextClick} disabled={isUploading}>
-          {isUploading ? '업로드 중...' : 'Next'}
+
+        <button className="portfolio-next-btn animate-3d" onClick={handleSubmit}>
+          Next
         </button>
-      </footer>
+      </div>
     </div>
   );
 }
-
-export default PortfolioUploadPage;
