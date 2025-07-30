@@ -2,15 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
 import { nodeApi } from '../../services/api';
-import { useAuth } from '../../contexts/AuthContext'; // ✅ [기능] 전역 인증 상태 사용
+import { useAuth } from '../../contexts/AuthContext';
+// ✅ 1. 별도의 GoogleLoginButton 컴포넌트를 가져옵니다.
+// (실제 파일 위치에 따라 경로를 수정해야 할 수 있습니다.)
+import GoogleLoginButton from '../../components/GoogleLoginButton/GoogleLoginButton';
 
 function LoginPage() {
   const navigate = useNavigate();
-  const { login, setUser } = useAuth(); // ✅ [기능] useAuth에서 login, setUser 함수 가져오기
+  const { login, setUser } = useAuth();
   const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
 
-  // ✅ [기능] 구글 로그인 후 리다이렉트 처리 로직 (가장 안정적인 버전)
+  // 구글 로그인 후 리다이렉트 처리 로직
   useEffect(() => {
     const handleGoogleRedirect = async () => {
       const urlParams = new URLSearchParams(window.location.search);
@@ -20,15 +23,13 @@ function LoginPage() {
         localStorage.setItem('token', token);
         try {
           const response = await nodeApi.get('/users/me');
-          const userData = response.data.user; // user 객체 추출
+          const userData = response.data.user;
 
-          setUser(userData); // 전역 상태 업데이트
+          setUser(userData);
           alert('구글 로그인 성공!');
 
-          // URL에서 토큰 파라미터 제거
           window.history.replaceState({}, document.title, window.location.pathname);
 
-          // 닉네임 유무에 따라 페이지 이동
           if (userData && userData.nickname) {
             navigate('/home');
           } else {
@@ -44,13 +45,13 @@ function LoginPage() {
     handleGoogleRedirect();
   }, [navigate, setUser]);
 
-  // ✅ [기능] 일반 로그인 처리 로직 (가장 안정적인 버전)
+  // 일반 로그인 처리 로직
   const handleLogin = async () => {
     try {
       const response = await nodeApi.post('/users/login', { userId, password });
       const { user } = response.data;
 
-      login(response.data); // 전역 상태에 토큰과 user 정보 저장
+      login(response.data);
       alert('로그인 성공!');
 
       if (user && user.nickname) {
@@ -68,16 +69,12 @@ function LoginPage() {
     navigate('/');
   };
 
-  // ✅ [기능] 구글 로그인 URL을 환경변수에서 가져오는 안정적인 방식
-  const handleGoogleLogin = () => {
-    window.location.href = `${process.env.REACT_APP_NODE_URL}/api/auth/google`;
-  };
-
   const handleSignupClick = () => {
     navigate('/signup');
   };
 
-  // ✅ [디자인] 디자이너의 JSX 구조 채택
+  // ✅ 2. LoginPage 내부에 있던 중복된 handleGoogleLogin 함수는 삭제되었습니다.
+
   return (
     <div className="login-container">
       <img
@@ -111,10 +108,8 @@ function LoginPage() {
           />
         </div>
 
-        <button className="google-login-button" onClick={handleGoogleLogin}>
-          <img src="/google-icon.svg" alt="Google" className="google-icon" />
-          <span>Sign in with Google</span>
-        </button>
+        {/* ✅ 3. 기존 버튼 대신 import한 컴포넌트를 사용합니다. */}
+        <GoogleLoginButton />
 
         <p className="link-text" onClick={handleSignupClick}>
           회원 가입
