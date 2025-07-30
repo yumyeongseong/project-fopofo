@@ -3,7 +3,8 @@
 .chatbot-edit-page {
     min-height: 100vh;
     background-color: #ffeef3;
-    background-image: url("C:\Users\dbaud\OneDrive\바탕 화면\fopofo 7_25\frontend\public\Grid.png");
+    /* ✅ [수정] 다른 파일들과 동일하게 상대 경로로 변경했습니다. */
+    background-image: url("./Grid.png");
     display: flex;
     flex-direction: row;
     position: relative;
