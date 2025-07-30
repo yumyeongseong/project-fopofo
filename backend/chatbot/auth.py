@@ -1,3 +1,5 @@
+# auth.py
+
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
@@ -10,6 +12,7 @@ load_dotenv()
 SECRET_KEY = os.getenv("JWT_SECRET")
 ALGORITHM = "HS256"
 
+# auto_error=False로 설정하여 토큰이 없을 때 자동으로 에러를 발생시키지 않도록 합니다.
 security = HTTPBearer(auto_error=False)
 
 async def get_current_user(credentials: Optional[HTTPAuthorizationCredentials] = Depends(security)):

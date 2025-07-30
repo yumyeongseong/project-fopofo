@@ -1,3 +1,5 @@
+// passport.js
+
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('../models/User');
@@ -13,11 +15,12 @@ passport.use(new GoogleStrategy({
     try {
       let user = await User.findOne({ googleId: profile.id });
       if (!user) {
+        // profile.emails가 없는 경우를 대비한 방어 코드
         const userEmail = (profile.emails && profile.emails.length > 0) ? profile.emails[0].value : `google_${profile.id}@example.com`;
         user = await User.create({
           googleId: profile.id,
           userId: userEmail,
-          password: 'google-oauth-placeholder',
+          password: 'google-oauth-placeholder', // 소셜 로그인 사용자는 별도의 비밀번호 불필요
         });
       }
       return done(null, user);
@@ -28,21 +31,17 @@ passport.use(new GoogleStrategy({
   }
 ));
 
-// ✔️ 세션에 사용자 정보 저장 (직렬화) - JWT만 쓴다면 이 부분은 불필요하므로 주석 처리하거나 제거하는 것을 고려
+// ✅ JWT 방식을 사용하므로 세션 관련 코드는 불필요하여 주석 처리합니다.
 // passport.serializeUser((user, done) => {
-//   // console.log('Serialize User:', user.id); // ✅ 제거된 부분
 //   done(null, user.id);
 // });
 
-// // ✔️ 세션에서 사용자 정보 복원 (역직렬화) - JWT만 쓴다면 이 부분은 불필요하므로 주석 처리하거나 제거하는 것을 고려
+// ✅ JWT 방식을 사용하므로 세션 관련 코드는 불필요하여 주석 처리합니다.
 // passport.deserializeUser(async (id, done) => {
-//   // console.log('Deserialize User ID:', id); // ✅ 제거된 부분
 //   try {
 //     const user = await User.findById(id);
 //     done(null, user);
 //   } catch (err) {
-//     // 운영 환경에서는 에러를 로깅 시스템에 보내거나, 적절히 처리해야 함
-//     console.error('Error in Deserialize User:', err);
 //     done(err, null);
 //   }
 // });

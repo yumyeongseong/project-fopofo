@@ -1,25 +1,37 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
-export default function TypingAnswer({ fullText }) {
-    const [typedText, setTypedText] = useState("");
+export default function TypingAnswer({ fullText, onFinish }) {
+  const [typedText, setTypedText] = useState("");
+  const containerRef = useRef(null); // 스크롤을 위한 ref
 
-    useEffect(() => {
-        // fullText가 유효하지 않거나, 이미 타이핑이 완료된 상태면 아무것도 하지 않음
-        if (!fullText || typedText === fullText) return;
+  useEffect(() => {
+    // 텍스트가 없거나 이미 타이핑이 완료되면 종료
+    if (!fullText || typedText === fullText) {
+      if (typedText === fullText) {
+        onFinish?.(); // 완료 시 onFinish 콜백 호출
+      }
+      return;
+    }
 
-        // 한 글자씩 타이핑을 시작합니다.
-        const timeout = setTimeout(() => {
-            setTypedText(fullText.slice(0, typedText.length + 1));
-        }, 30); // 타이핑 속도 (밀리초 단위)
+    const timeout = setTimeout(() => {
+      const nextText = fullText.slice(0, typedText.length + 1);
+      setTypedText(nextText);
 
-        // 컴포넌트가 언마운트되거나 fullText가 바뀔 때 timeout을 정리합니다.
-        return () => clearTimeout(timeout);
-    }, [fullText, typedText]); // typedText가 변경될 때마다 useEffect가 다시 실행됩니다.
+      // 타이핑 중에 자동으로 스크롤
+      containerRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
 
-    return (
-        <div className="bg-blue-100 text-left text-gray-800 text-sm p-4 rounded-lg shadow mb-6 whitespace-pre-line">
-            <strong>챗봇의 답변:</strong>
-            <p className="mt-2">{typedText}</p>
-        </div>
-    );
+    }, 25); // 타이핑 속도
+
+    return () => clearTimeout(timeout);
+  }, [fullText, typedText, onFinish]);
+
+  return (
+    <div
+      ref={containerRef}
+      // ✅ [디자인] 새로운 테마의 스타일 적용
+      className="bg-[#fff3f7] text-gray-800 text-sm px-4 py-3 rounded-xl shadow-sm whitespace-pre-line leading-relaxed"
+    >
+      {typedText}
+    </div>
+  );
 }
