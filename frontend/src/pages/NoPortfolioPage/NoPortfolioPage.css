@@ -1,7 +1,7 @@
 /* ✅ 전체 페이지 배경 + 위치 기준 */
 .homepage-container {
     background-color: #FFEDF3;
-    background-image: url('C:\Users\dbaud\OneDrive\바탕 화면\fopofo 7_25\frontend\public\Grid.png');
+    background-image: url('./Grid.png');
     background-repeat: repeat;
     background-size: contain;
     background-position: center;
