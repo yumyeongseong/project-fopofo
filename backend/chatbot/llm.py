@@ -10,6 +10,8 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 load_dotenv()
 
+pinecone_api_key = os.getenv("PINECONE_API_KEY")
+
 embedding = OpenAIEmbeddings(
     model="text-embedding-3-large",
     openai_api_key=os.getenv("OPENAI_API_KEY")
