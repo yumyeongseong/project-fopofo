@@ -66,48 +66,49 @@
 ## **📄 웹 페이지 기능**
 
 ### **로그인**
-- ![로그인](images/login.png)
+![로그인](images/login.png)
 
 ### **회원가입**
-- ![회원가입](images/sign.png)
+![회원가입](images/sign.png)
 
 ### **fopofo 홈**
-- ![홈1](images/home1.png)
-- ![홈2](images/home2.png)
+![홈1](images/home1.png)
+![홈2](images/home2.png)
 
 ### **닉네임 생성**
-- ![닉네임](images/nickname.png)
+![닉네임](images/nickname.png)
 
 ### **자기소개 및 이력서 업로드**
-- ![자소서업로드](images/introup.png)
+![자소서업로드](images/introup.png)
 
 ### **다양한 파일 업로드**
-- ![파일업로드](images/uploads.png)
+![파일업로드](images/uploads.png)
 
 ### **챗봇용 자기소개 및 이력서 업로드**
-- ![챗봇자소서](images/chatbotintro.png)
+![챗봇자소서](images/chatbotintro.png)
 
 ### **챗봇 질문 답변 업로드**
-- ![챗봇질문1](images/chatprompt1.png)
-- ![챗봇질문2](images/chatbotprompt2.png)
+![챗봇질문1](images/chatprompt1.png)
+![챗봇질문2](images/chatbotprompt2.png)
 
 ### **공유용 URL 및 QR 코드 생성**
-- ![url큐알](images/urlqr.png)
+![url큐알](images/urlqr.png)
 
 ### **공유용 포트폴리오 웹: 홈**
-- ![포폴홈](images/pofohome.png)
+![포폴홈](images/pofohome.png)
 
 ### **공유용 포트폴리오 웹: 테마변경**
+![포폴테마](images/pofotema.png)
 
 ### **공유용 포트폴리오 웹: 자기소개서 및 이력서**
-- ![포폴자소1](images/pofointro1.png)
-- ![포폴자소2](images/pofointro2.png)
+![포폴자소1](images/pofointro1.png)
+![포폴자소2](images/pofointro2.png)
 
 ### **공유용 포트폴리오 웹: 포트폴리오**
-- ![포폴포트](images/pofoport.png)
+![포폴포트](images/pofoport.png)
 
 ### **공유용 포트폴리오 웹: 나만의 챗봇**
-- ![포폴챗봇](images/pofochat.png)
+![포폴챗봇](images/pofochat.png)
 - 챗봇용 자기소개 및 이력서 업로드 문서 기반으로 답변합니다.
 - 챗봇의 질문버튼은, 챗봇 질문 답변 업로드 기반으로 답변합니다.
 
