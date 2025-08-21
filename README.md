@@ -66,7 +66,11 @@
 ## **📄 웹 페이지 기능**
 
 ### **시작화면**
+<<<<<<< HEAD
 ![시작화면](images/startpage.jpg)
+=======
+![시작화면] 
+>>>>>>> 1f88177da8528bbd459be23b6d6f68cf875353b3
 > 배경 이미지 + 텍스트 애니메이션 (Framer Motion 미사용)
 ### **로그인**
 ![로그인](images/login.png)
@@ -77,10 +81,13 @@
 ### **fopofo 홈**
 ![홈1](images/home1.jpg)
 ![홈2](images/home2.png)
+<<<<<<< HEAD
 ![홈3](images/home3.png)
 ![홈4](images/home4.png)
 ![홈5](images/home5.png)
 ![홈6](images/home6.png)
+=======
+>>>>>>> 1f88177da8528bbd459be23b6d6f68cf875353b3
 > 홈페이지 메인, Framer Motion 적용 (스크롤/전환 애니메이션)
 > 첫 fold는 HeroFourStrips 컴포넌트로 구성
 ### **닉네임 생성**
