@@ -14,7 +14,8 @@
   - `docs/`, `images/`, `videos/`
 
 ## Frontend
-- `src/pages/`: 페이지별 구성 (UploadPage, TemplatePage 등)
-- `src/components/`: 공통 UI 구성 요소
-- `src/routes/`: React Router 경로 설정
-- `src/services/`: API 호출 함수 (예: `uploadService.js`)
+- src/pages/: 페이지별 구성 (UploadPage, TemplatePage 등)
+- src/components/: 공통 UI 구성 요소
+- src/contexts/: 전역 상태 관리 (예: AuthContext 등)
+- src/services/: API 호출 함수 (예: uploadService.js)
+- App.js: React Router 경로 설정 
