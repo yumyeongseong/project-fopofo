@@ -25,7 +25,7 @@ export default function PortfolioItem({ fileType, filePath, onClick }) {
             )}
 
             {/* 문서 */}
-            {fileType === "document" && (
+            {fileType === "documents" && (
                 <iframe
                     src={`${filePath}#toolbar=0`}
                     className="w-full h-full"

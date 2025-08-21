@@ -1,89 +1,85 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import QRCode from 'react-qr-code';
+// PortfolioSection.jsx
 
-function PortfolioCreatedPage() {
-  const [copied, setCopied] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [showContent, setShowContent] = useState(false);
-  const [isCreated, setIsCreated] = useState(false);
-  const [portfolioUrl, setPortfolioUrl] = useState('');
-  const location = useLocation();
-  const navigate = useNavigate();
+import { useEffect, useState } from "react";
+import { LayoutGrid, ImageIcon, VideoIcon, FileText as DocumentIcon, X } from "lucide-react";
+// ✅ 우리가 만든 표준 썸네일 컴포넌트를 import 합니다.
+import PdfThumbnail from "./PdfThumbnail"; // 경로는 실제 파일 위치에 맞게 수정해주세요.
 
-  // ✅ [기능] 이전 페이지에서 생성된 실제 포트폴리오 URL을 받아오는 핵심 로직
-  useEffect(() => {
-    if (location.state && location.state.portfolioUrl) {
-      const fullUrl = new URL(location.state.portfolioUrl, window.location.origin).href;
-      setPortfolioUrl(fullUrl);
-    } else {
-      alert("잘못된 접근입니다. 메인 페이지로 이동합니다.");
-      navigate('/home');
-    }
+export default function PortfolioSection({ publicPortfolioData }) {
+    const categories = [
+        { key: "design", label: "Design", icon: <LayoutGrid className="w-4 h-4 mr-1" /> },
+        { key: "video", label: "Video", icon: <VideoIcon className="w-4 h-4 mr-1" /> },
+        { key: "document", label: "Document", icon: <DocumentIcon className="w-4 h-4 mr-1" /> },
+        { key: "photo", label: "Photo", icon: <ImageIcon className="w-4 h-4 mr-1" /> },
+    ];
 
-    const interval = setInterval(() => {
-      setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setShowContent(true);
-          setIsCreated(true);
-          return 100;
+    const [portfolioItems, setPortfolioItems] = useState({ design: [], video: [], document: [], photo: [] });
+    const [selectedCategory, setSelectedCategory] = useState(categories[0].key);
+    const [selectedItem, setSelectedItem] = useState(null);
+
+    useEffect(() => {
+        if (publicPortfolioData) {
+            const fullData = { design: [], video: [], document: [], photo: [], ...publicPortfolioData };
+            setPortfolioItems(fullData);
+            const firstCategoryWithData = categories.find(cat => fullData[cat.key] && fullData[cat.key].length > 0);
+            if (firstCategoryWithData) setSelectedCategory(firstCategoryWithData.key);
         }
-        return prev + 1;
-      });
-    }, 30);
-    return () => clearInterval(interval);
-  }, [location.state, navigate]);
+    }, [publicPortfolioData]);
 
-  const handleCopy = async () => {
-    if (!portfolioUrl) return;
-    try {
-      await navigator.clipboard.writeText(portfolioUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      alert('복사에 실패했어요 😢');
-    }
-  };
+    const filteredItems = portfolioItems[selectedCategory] || [];
 
-  // ✅ [디자인] 디자이너의 JSX 구조 채택 및 위 기능 로직과 연결
-  return (
-    <div className="url-page-wrapper">
-      <img src="/images/fopofo-logo.png" alt="logo" className="nav-logo" onClick={() => navigate('/home')} />
-      <div className="noportfolio-top-buttons">
-        <button className="outline-btn" onClick={() => navigate('/mypage')}>my page</button>
-      </div>
+    return (
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-12 animate-fade-in">
+            <div className="flex justify-center gap-3 sm:gap-4 mb-10 flex-wrap">
+                {categories.map((cat) => (
+                    <button key={cat.key} onClick={() => setSelectedCategory(cat.key)}
+                        className={`flex items-center px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all border
+                            ${selectedCategory === cat.key
+                                ? "bg-pink-500 text-white border-pink-500 shadow-md"
+                                : "bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100"
+                            }`}>
+                        {cat.icon}
+                        {cat.label}
+                    </button>
+                ))}
+            </div>
 
-      <div className={`final-banner ${isCreated ? 'hoverable' : ''}`} onClick={() => { if (isCreated) window.open(portfolioUrl, '_blank'); }}>
-        <div className="url-title-box animate-3d">
-          <h1>PORTFOLIO<br />IS CREATED</h1>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+                {filteredItems.length === 0 ? (
+                    <p className="col-span-full text-center text-gray-500 mt-8">업로드된 파일이 없습니다.</p>
+                ) : (
+                    filteredItems.map((item) => (
+                        <div key={item._id} onClick={() => setSelectedItem(item)} 
+                             className="cursor-pointer rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 aspect-square group">
+                            {item.fileType === "video" ? (
+                                <video src={item.presignedUrl} className="w-full h-full object-cover" muted loop autoPlay playsInline />
+                            ) : item.originalName.toLowerCase().endsWith('.pdf') ? (
+                                // ✅ 표준 썸네일 컴포넌트를 사용합니다.
+                                <PdfThumbnail file={item.presignedUrl} />
+                            ) : (
+                                <img src={item.presignedUrl} alt={item.originalName} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                            )}
+                        </div>
+                    ))
+                )}
+            </div>
+
+            {selectedItem && (
+                <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in" onClick={() => setSelectedItem(null)}>
+                    <button className="absolute top-4 right-4 text-white bg-black/30 rounded-full p-2 hover:bg-black/50 transition z-50">
+                        <X size={28} />
+                    </button>
+                    <div className="relative w-auto h-auto max-w-[90vw] max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
+                        {selectedItem.fileType === "video" ? (
+                            <video src={selectedItem.presignedUrl} className="w-auto h-[50vh] max-w-full max-h-full rounded" autoPlay controls />
+                        ) : selectedItem.originalName.toLowerCase().endsWith('.pdf') ? (
+                            <iframe src={`${selectedItem.presignedUrl}#toolbar=0`} className="w-[80vw] max-w-[1000px] h-[90vh] rounded" />
+                        ) : (
+                            <img src={selectedItem.presignedUrl} alt={selectedItem.originalName} className="w-auto h-[50vh] max-w-full max-h-full rounded" />
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
-      </div>
-
-      {copied && <span className="copy-feedback">링크가 복사되었습니다!</span>}
-
-      {!showContent ? (
-        <>
-          <div className="progress-container animate-3d">
-            <div className="progress-bar" style={{ width: `${progress}%` }} />
-          </div>
-          <p className="loading-text">생성중...</p>
-        </>
-      ) : (
-        <div className="content-reveal">
-          <div className="url-box-custom">
-            <div className="url-label">URL</div>
-            <div className="url-display"><span>{portfolioUrl}</span></div>
-            <button className="copy-button-custom" onClick={handleCopy}>복사</button>
-          </div>
-          <div className="qr-wrapper">
-            <QRCode value={portfolioUrl} size={100} />
-            <p className="qr-label">QR 코드로 접속해보세요</p>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+    );
 }
-
-export default PortfolioCreatedPage;

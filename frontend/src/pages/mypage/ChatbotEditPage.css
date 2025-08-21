@@ -1,43 +1,41 @@
-/* ChatbotEditPage.css */
-
 .chatbot-edit-page {
     min-height: 100vh;
     background-color: #ffeef3;
-    /* ✅ [수정] 다른 파일들과 동일하게 상대 경로로 변경했습니다. */
-    background-image: url("./Grid.png");
+    background-image: url('../../Grid.png');
     display: flex;
-    flex-direction: row;
     position: relative;
     padding: 2rem;
-    font-family: 'Pretendard', 'serif';
+    font-family: 'Pretendard', serif;
     padding-top: 5rem;
 }
 
 .message-popup {
     position: fixed;
-    bottom: 80px;
+    top: 5rem;
     left: 50%;
     transform: translateX(-50%);
-    background: white;
-    color: black;
+    background: #fff;
+    color: #000;
     padding: 0.75rem 1.5rem;
     border-radius: 9999px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    z-index: 50;
+    z-index: 1000;
     transition: opacity 0.3s;
 }
 
 .mpage-title {
-    position: absolute;
+    position: fixed;
     top: 2.5rem;
     left: 50%;
     transform: translateX(-50%);
     font-size: 2.5rem;
     font-weight: 800;
-    color: black;
+    color: #000;
     font-family: 'Playfair Display', serif;
-    z-index: 10;
+    z-index: 99;
     pointer-events: none;
+    text-align: center;
+    width: 100%;
 }
 
 .tab-sidebar {
@@ -49,27 +47,23 @@
 }
 
 .tab-sidebar button {
-    width: 100%;
-    font-family: "SUIT", sans-serif;
-    font-size: 1rem;
-    padding: 0.6rem 1rem;
-    background-color: white;
-    border: 1.5px solid #ddd;
-    border-radius: 6px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.06);
-    cursor: pointer;
-    transition: transform 0.2s ease;
+    border: 2px solid transparent;
+    padding: 0.5rem 1.5rem;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    background-color: #ffe4ec;
+    transition: all 0.3s;
 }
 
 .tab-sidebar button.active {
-    background-color: #f48ca2;
-    color: white;
-    font-weight: bold;
-    border: none;
+    background-color: #fff;
+    border-color: #f48ca2;
+    color: #f48ca2;
 }
 
 .tab-sidebar button:hover {
-    transform: translateY(-2px);
+    background-color: #fff;
+    cursor: pointer;
 }
 
 .qa-section {
@@ -80,7 +74,7 @@
 }
 
 .qa-box {
-    background-color: white;
+    background-color: #fff;
     border: 2px solid #f48ca2;
     border-radius: 1rem;
     padding: 2.5rem;
@@ -113,14 +107,13 @@
 .qa-item textarea:focus {
     outline: none;
     border-color: #f48ca2;
-    box-shadow: 0 0 0 2px #fbd0db44;
+    box-shadow: 0 0 0 2px rgba(251, 208, 219, 0.27);
 }
 
 .save-button {
     margin-top: 2rem;
     background-color: #f48ca2;
-    font-family: 'Playfair Display', serif;
-    color: white;
+    color: #fff;
     padding: 0.75rem 2rem;
     border: none;
     border-radius: 9999px;
@@ -144,11 +137,16 @@
     padding: 2rem;
     display: flex;
     gap: 2rem;
+    width: 80%; 
+    margin: 0 auto; 
+    justify-content: center;
 }
 
 .file-upload-box {
-    width: 50%;
-    background-color: white;
+    /* 기존 width: 50% 에서 비율을 조정합니다. */
+    width: 40%;
+    height: 50%;
+    background-color: #fff;
     padding: 2rem;
     border-radius: 1rem;
     border: 2px solid #f48ca2;
@@ -166,7 +164,7 @@
 
 .upload-button {
     background-color: #f48ca2;
-    color: white;
+    color: #fff;
     padding: 0.5rem 1.25rem;
     border-radius: 0.375rem;
     font-weight: 500;
@@ -184,7 +182,7 @@
     border-radius: 10px;
     padding: 1rem;
     width: 100%;
-    min-height: 150px;
+    min-height: 50px;
     max-height: 200px;
     overflow-y: auto;
     margin-bottom: 2rem;
@@ -198,15 +196,6 @@
     border-radius: 0.5rem;
     background-color: #fff0f5;
     font-size: 14px;
-}
-
-.file-item:hover {
-    background-color: #ffeeef;
-}
-
-.file-item.active {
-    font-weight: 700;
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
 }
 
 .file-name {
@@ -231,8 +220,8 @@
 .edit-button {
     background-color: #f48ca2;
     font-family: 'Playfair Display', serif;
-    color: white;
-    font-weight: bold;
+    color: #fff;
+    font-weight: 700;
     padding: 0.6rem 1.8rem;
     border: none;
     border-radius: 999px;
@@ -252,12 +241,16 @@
 }
 
 .file-preview-box {
-    width: 50%;
+    /* 기존 width: 50% 에서 비율을 조정합니다. */
+    width: 40%;
+    height: 100%;
     background-color: white;
-    padding: 2rem;
+    padding: 1rem;
     border-radius: 1rem;
     border: 2px solid #f48ca2;
     box-shadow: 0 0 10px #f6c4cc;
+    display: flex;
+    flex-direction: column;
 }
 
 .preview-title {
@@ -265,11 +258,13 @@
     font-weight: 700;
     margin-bottom: 1rem;
     font-size: 1.125rem;
+    flex-shrink: 0;
 }
 
 .preview-image {
     width: 100%;
-    max-height: 600px;
+    height: auto;
+    max-height: 75vh;
     object-fit: contain;
     border-radius: 0.5rem;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
@@ -282,24 +277,8 @@
     padding: 2rem;
     border-radius: 0.75rem;
     font-size: 14px;
+    flex-grow: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 300px;
-}
-
-.fade-in {
-    animation: fadeIn 0.8s ease-out forwards;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
