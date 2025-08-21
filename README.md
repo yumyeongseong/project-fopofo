@@ -4,7 +4,7 @@
 
 # 🤖 FOPOFO: AI 기반 자동 포트폴리오 및 챗봇 생성 서비스
 
-[![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/) [![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/) [![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/) [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/) [![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/) [![Express.js](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/) [![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/) [![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/) [![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/) [![LangChain](https://img.shields.io/badge/LangChain-0086D1?style=for-the-badge)](https://www.langchain.com/) [![Pinecone](https://img.shields.io/badge/Pinecone-0C59E8?style=for-the-badge&logo=pinecone&logoColor=white)](https://www.pinecone.io/) [![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white)](https://openai.com/) [![AWS S3](https://img.shields.io/badge/AWS_S3-569A31?style=for-the-badge&logo=amazons3&logoColor=white)](https://aws.amazon.com/s3/) [![AWS Amplify](https://img.shields.io/badge/AWS_Amplify-FF9900?style=for-the-badge&logo=aws-amplify&logoColor=white)](https://aws.amazon.com/amplify/) [![AWS Elastic Beanstalk](https://img.shields.io/badge/Elastic_Beanstalk-FF9900?style=for-the-badge&logo=aws-elastic-beanstalk&logoColor=white)](https://aws.amazon.com/elasticbeanstalk/)
 
 > 본 서비스는 사용자가 자신의 다양한 파일(문서, 이미지, 동영상 등)을 업로드하면, AI가 이 중 자기소개서 및 이력서와 같은 문서들을 분석하여 개인화된 웹 포트폴리오와 대화형 챗봇을 자동 생성하는 플랫폼입니다. 생성된 포트폴리오와 챗봇은 고유 URL 및 QR 코드로 공유 가능합니다
 
@@ -26,8 +26,8 @@
 ## **🛠️ 기술 스택**
 
 ### **Frontend**
--   **`React.js`**, **`Tailwind CSS`**, **`Axios`**
--   **배포:** `AWS Amplify`
+- **`React.js`**, **`React Router DOM`**, **`Tailwind CSS`**, **`Axios`**, **`Framer Motion`**, **`React-QR-Code`**, **`Lucide-react`**
+- **배포:** `AWS Amplify`
 
 ### **Backend (Node.js - API & User Service)**
 -   **`Node.js`**, **`Express.js`**, **`MongoDB`**,**`AWS S3`**, **`JWT`**
@@ -37,7 +37,7 @@
 ### **Backend (Python - AI Service)**
 -   **`Python`**, **`FastAPI`**, **`LangChain`**, **`Pinecone`**, **`OpenAI`**
 -   **역할:** RAG(검색 증강 생성) 기반 AI 챗봇 기능, 문서 임베딩 및 벡터 검색
--   **배포:** `Render`
+-   **배포:** `AWS Elastic Beanstalk`
 
 ## **🏛️ 시스템 아키텍처**
 1.  **사용자 요청:** React 기반의 프론트엔드가 모든 사용자 요청을 받습니다.
@@ -48,23 +48,26 @@
 
 ## **👥 팀원 역할 및 담당 업무**
 
-| 유명성(PM) | 이유진 (Backend) | 이지현 (Frontend) |
+| 유명성 (PM) | 이유진 (Backend) | 이지현 (Frontend) |
 | :----- | :--------------- | :---------------- |
-| - 프론트엔드와 백엔드 전체 병합 및 디렉토리 구조 통합 | - 회원 인증 및 로그인 | - 시작페이지 및 온보딩 흐름 구현 |
-| - 챗봇 기능 연계: 자기소개서 업로드 페이지/프롬프트 작성 페이지 UI 구성 | - 구글 API 로그인 연동 | - 로그인/회원 가입 페이지 구성 |
-| - API 연동 및 테스트 | - 파일 업로드 및 사용자 파일 처리 | - 자기소개서 파일 업로드 페이지 |
-| - .env 파일 연결, API 매핑 등 환경 설정 및 연결성 유지 | - 유저 정보 처리 및 응답 컨트롤러 구성 | - 포트폴리오 파일 업로드 페이지 |
-| - 팀 일정 관리 및 중간 점검, 역할 분배 등 프로젝트 매니지먼트 전반 수행 | - 챗봇 연동 및 RAG 시스템 구현 | - Created(이용자 웹 생성 페이지) |
-| | - DB 설정 및 모델 정의 | - URL/QR 생성 페이지 |
-| | - API 라우팅 설정 | - 사용자 개인 웹페이지 전체 구성 (자기소개서, 포트폴리오, 챗봇 UI) |
-| | - 백엔드 구조 설계 및 전체 API 구성 | - 마이페이지 섹션 및 포트폴리오 수정 페이지 |
-| | - 프론트엔드와 백엔드 병합 및 디렉토리 구조 통합 | |
-| | - 프론트엔드, 백엔드 배포 | |
+| - 프론트엔드와 백엔드 전체 병합 및 디렉토리 구조 통합 | - 회원 인증 및 로그인 | - 시작페이지 텍스트/배경 애니메이션 개선 (Framer Motion 미사용) |
+| - 챗봇 기능 연계: 자기소개서 업로드 페이지/프롬프트 작성 페이지 UI 구성 | - 구글 API 로그인 연동 | - 홈페이지 Framer Motion 적용 |
+| - API 연동 및 테스트 | - 파일 업로드 및 사용자 파일 처리 | - HeroFourStrips 컴포넌트 제작 (첫 fold 히어로) |
+| - .env 파일 연결, API 매핑 등 환경 설정 및 연결성 유지 | - 유저 정보 처리 및 응답 컨트롤러 구성 | - 로그인/회원 가입 페이지 구성 |
+| - 팀 일정 관리 및 중간 점검, 역할 분배 등 프로젝트 매니지먼트 전반 수행 | - 챗봇 연동 및 RAG 시스템 구현 | - 자기소개서 파일 업로드 페이지 |
+| | - DB 설정 및 모델 정의 | - 포트폴리오 파일 업로드 페이지 |
+| | - API 라우팅 설정 | - Created(이용자 웹 생성 페이지) |
+| | - 백엔드 구조 설계 및 전체 API 구성 | - URL/QR 생성 페이지 |
+| | - 프론트엔드와 백엔드 병합 및 디렉토리 구조 통합 | - 사용자 개인 웹페이지 전체 구성 (자기소개서, 포트폴리오, 챗봇 UI) |
+| | - 프론트엔드, 백엔드 배포 | - 마이페이지 섹션 및 포트폴리오 수정 페이지 |
 
 <br>
 
 ## **📄 웹 페이지 기능**
 
+### **시작화면**
+![시작화면](images/startpage.jpg)
+> 배경 이미지 + 텍스트 애니메이션 (Framer Motion 미사용)
 ### **로그인**
 ![로그인](images/login.png)
 
@@ -72,9 +75,14 @@
 ![회원가입](images/sign.png)
 
 ### **fopofo 홈**
-![홈1](images/home1.png)
+![홈1](images/home1.jpg)
 ![홈2](images/home2.png)
-
+![홈3](images/home3.png)
+![홈4](images/home4.png)
+![홈5](images/home5.png)
+![홈6](images/home6.png)
+> 홈페이지 메인, Framer Motion 적용 (스크롤/전환 애니메이션)
+> 첫 fold는 HeroFourStrips 컴포넌트로 구성
 ### **닉네임 생성**
 ![닉네임](images/nickname.png)
 
