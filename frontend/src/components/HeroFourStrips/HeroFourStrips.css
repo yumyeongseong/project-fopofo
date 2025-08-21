@@ -1,0 +1,134 @@
+/* 전역 리셋(필요 최소만) */
+html,
+body,
+#root {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+/* Hero 섹션 */
+.hf {
+    margin: 0;
+    padding: 0;
+    display: block;
+}
+
+/* 페이지 진입 페이드인 */
+.hf.hf-full {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    opacity: 0;
+    animation: heroFade .8s ease forwards;
+}
+
+@keyframes heroFade {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+/* 카드 래퍼 */
+.hf.hf-full .hero-card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+/* 4개 스트립 */
+.hf.hf-full .hero-strips {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: 1fr;
+}
+
+.hf.hf-full .strip {
+    background-position: center;
+    background-size: cover;
+    filter: saturate(95%) contrast(105%);
+    transition: transform .6s ease;
+}
+
+.hf.hf-full .hero-card:hover .strip {
+    transform: scale(1.02);
+}
+
+/* 어둡게 스크림 */
+.hf.hf-full .hero-scrim.strong {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, .42);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* 중앙 텍스트 */
+.hf.hf-full .hero-center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: #fff;
+    z-index: 2;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, .45);
+}
+
+/* 헤드라인: 3줄, 순차 페이드업 */
+.hf.hf-full .hero-headline {
+    font-family: "Playfair Display", Georgia, serif;
+    font-weight: 800;
+    line-height: 1.08;
+    font-size: clamp(40px, 7vw, 96px);
+    margin: 0 0 1rem;
+    /* h1 상단 여백 제거 */
+    letter-spacing: .2px;
+}
+
+.hf.hf-full .hero-headline span {
+    display: block;
+    opacity: 0;
+    transform: translateY(14px);
+    animation: fadeUp .7s ease forwards;
+}
+
+.hf.hf-full .hero-headline span:nth-child(1) {
+    animation-delay: .1s;
+}
+
+.hf.hf-full .hero-headline span:nth-child(2) {
+    animation-delay: .25s;
+}
+
+.hf.hf-full .hero-headline span:nth-child(3) {
+    animation-delay: .4s;
+}
+
+@keyframes fadeUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 태그라인 */
+.hf.hf-full .hero-tagline {
+    font-family: "SUIT", system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+    font-size: clamp(14px, 2vw, 22px);
+    opacity: .92;
+    margin: 0;
+}

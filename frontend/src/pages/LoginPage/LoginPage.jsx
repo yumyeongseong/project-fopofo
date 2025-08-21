@@ -1,31 +1,82 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LoginPage.css';
+import { nodeApi } from '../../services/api';
+import { useAuth } from '../../contexts/AuthContext';
+import GoogleLoginButton from '../../components/GoogleLoginButton/GoogleLoginButton';
 
 function LoginPage() {
     const navigate = useNavigate();
+    const { login, setUser } = useAuth();
+    const [userId, setUserId] = useState('');
+    const [password, setPassword] = useState('');
 
-    const handleLogin = () => {
-        // 로그인 성공 로직 실행 후
-        navigate('/home'); // ✅ 홈으로 이동
-    };
+    useEffect(() => {
+        const handleGoogleRedirect = async () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+
+            if (token) {
+                localStorage.setItem('token', token);
+                try {
+                    const response = await nodeApi.get('/api/users/me');
+                    const userData = response.data;
+                    setUser(userData);
+                    alert('구글 로그인 성공!');
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                    if (userData && userData.nickname) {
+                        navigate('/home');
+                    } else {
+                        navigate('/home');
+                    }
+                } catch (error) {
+                    console.error("사용자 정보 가져오기 실패:", error);
+                    alert("로그인 처리 중 오류가 발생했습니다.");
+                    navigate('/login');
+                }
+            }
+        };
+        handleGoogleRedirect();
+    }, [navigate, setUser]);
+
+    const handleLogin = async () => {
+    try {
+        const response = await nodeApi.post('/api/auth/login', { userId, password });
+        
+        // 👇 1. 응답 데이터에서 user와 token을 모두 추출합니다.
+        const { user, token } = response.data;
+
+        // 👇 2. 토큰이 있다면 localStorage에 저장합니다.
+        if (token) {
+            localStorage.setItem('token', token);
+        }
+
+        // 3. 나머지 로직을 실행합니다.
+        login(response.data);
+        alert('로그인 성공!');
+        if (user && user.nickname) {
+            navigate('/home');
+        } else {
+            navigate('/home');
+        }
+    } catch (err) {
+        console.error('로그인 실패:', err.response?.data || err.message);
+        alert(err.response?.data?.message || '아이디 또는 비밀번호를 확인해주세요.');
+    }
+};
+
     const handleLogoClick = () => {
-        navigate('/mainpage'); // 👉 시작화면으로 이동
-    };
-    const handleGoogleLogin = () => {
-        navigate('/home');
-        console.log('구글 로그인 시도'); // 실제 로그인 로직으로 교체 가능
+        navigate('/mainpage');
     };
 
     const handleSignupClick = () => {
-        navigate('/signup'); // 🔥 회원가입 페이지로 이동
+        navigate('/signup');
     };
 
     return (
         <div className="login-container">
-            {/* 로고 이미지 클릭 시 시작화면으로 이동 */}
             <img
-                src="/fopofo-logo.png"
+                src="/Fopofo-Logo-v2.png"
                 alt="fopofo-logo"
                 className="login-logo-img"
                 onClick={handleLogoClick}
@@ -36,52 +87,25 @@ function LoginPage() {
                     type="text"
                     className="login-input id-input"
                     placeholder="ID: 아이디를 입력하세요"
+                    value={userId}
+                    onChange={(e) => setUserId(e.target.value)}
                 />
                 <input
                     type="password"
                     className="login-input"
                     placeholder="PW: 비밀번호를 입력하세요"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleLogin();
+                        }
+                    }}
                 />
 
-                {/* 구글 로그인 버튼 */}
-                <div
-                    className="gsi-material-button"
-                    onClick={handleGoogleLogin}
-                >
-                    <div className="gsi-material-button-state"></div>
-                    <div className="gsi-material-button-content-wrapper">
-                        <div className="gsi-material-button-icon">
-                            <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 48 48"
-                                width="20"
-                                height="20"
-                                style={{ display: 'block' }}
-                            >
-                                <path
-                                    fill="#EA4335"
-                                    d="M24 9.5c3.5 0 6.1 1.2 8.2 2.9l6.1-6.1C34.5 2.9 29.7 1 24 1 14.7 1 6.7 6.6 3.3 14.1l7 5.4C12.3 13.2 17.7 9.5 24 9.5z"
-                                />
-                                <path
-                                    fill="#4285F4"
-                                    d="M46.5 24c0-1.3-.1-2.6-.4-3.8H24v7.2h12.7c-.6 3.1-2.4 5.7-5.2 7.5l8 6.2c4.6-4.2 7.3-10.3 7.3-17.1z"
-                                />
-                                <path
-                                    fill="#FBBC05"
-                                    d="M10.3 28.4c-.5-1.4-.7-2.9-.7-4.4s.3-3 .7-4.4l-7-5.4C2.1 17.4 1 20.6 1 24s1.1 6.6 3.3 9.4l7-5.4z"
-                                />
-                                <path
-                                    fill="#34A853"
-                                    d="M24 47c5.7 0 10.5-1.9 14-5.1l-8-6.2c-2.2 1.5-5 2.4-8 2.4-6.3 0-11.7-4.2-13.7-9.9l-7 5.4c3.4 7.5 11.4 13 20.7 13z"
-                                />
-                                <path fill="none" d="M0 0h48v48H0z" />
-                            </svg>
-                        </div>
-                        <span className="gsi-material-button-contents">Sign in with Google</span>
-                    </div>
-                </div>
+                <GoogleLoginButton />
 
-                {/* 회원가입 텍스트 → 버튼 아래로 이동 */}
                 <p className="link-text" onClick={handleSignupClick} style={{ cursor: 'pointer' }}>
                     회원 가입
                 </p>

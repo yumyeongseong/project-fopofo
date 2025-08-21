@@ -1,157 +1,108 @@
+/* 배경 전체 */
 .login-container {
+    min-height: 80vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 100vh;
-    background-color: #fff;
-    font-family: 'Pretendard', sans-serif;
+    background-color: #ffedf3;
+    font-family: 'Noto Sans KR', sans-serif;
 }
 
-.logo-img {
-    width: 160px;
-    /* 로고 크게 */
-    margin-bottom: 36px;
+/* 로고 */
+.login-logo-img {
+    position: relative;
+    top: 55px;
+    width: 240px;
+    margin: 0 auto 1.5rem;
+    display: block;
+    cursor: pointer;
 }
 
+/* 로그인 전체 박스 */
 .login-box {
-    background-color: #ffeef3;
-    padding: 80px 30px 60px;
-    /* 위 padding을 80px로 늘림 */
-    border-radius: 50px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-    width: 360px;
+    width: 400px;
+    padding: 70px 40px;
+    background-color: #f48ca2;
+    border-radius: 40px;
+    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 20px;
 }
 
+/* 입력창 묶음 */
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+    margin-bottom: 2.5rem;
+    width: 96%;
+}
+
+/* 각 input */
 .login-input {
+    padding: 1rem;
+    font-size: 0.9rem;
+    border: none;
+    border-radius: 1rem;
+    background-color: #fff;
+    color: #333;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     width: 100%;
-    padding: 18px;
-    border: none;
-    border-radius: 16px;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-    font-size: 16px;
 }
 
-/* ID 입력창에만 적용할 여백 */
-.login-input.id-input {
-    margin-bottom: 14px;
-}
-
-.link-text {
-    margin: 0;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 8px;
-    transition: color 0.3s;
-    font-size: 20px;
-}
-
-.link-text:hover {
-    color: #d45575;
-}
-
-.login-button {
-    margin-top: 32px;
-    background-color: #f48ca2;
-    color: white;
-    font-weight: bold;
-    padding: 16px 48px;
-    font-size: 16px;
-    border-radius: 50px;
-    border: none;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.login-button:hover {
-    background-color: #e76b85;
-    transform: scale(1.05);
-}
-
-.login-logo-img {
-    width: 250px;
-    /* ✅ 크기 조금 키움 */
-    margin-top: 20px;
-    /* ✅ 위 여백 줄임 */
-    margin-bottom: -10px;
-    /* ✅ 박스랑 더 가깝게 */
-    height: auto;
-    transition: transform 0.3s ease;
-    cursor: pointer;
-}
-
-.login-logo-img:hover {
-    transform: scale(1.1);
-    /* 커서 올리면 커지기 */
-}
-
+/* 구글 로그인 버튼 */
 .google-login-button {
+    width: 190px;
+    height: 44px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    padding: 10px 20px;
-    border: 1px solid #dadce0;
-    border-radius: 20px;
+    gap: 8px;
     background-color: white;
-    cursor: pointer;
-    font-size: 14px;
-    font-family: 'Roboto', sans-serif;
+    color: #000;
     font-weight: 500;
-    box-shadow: 0 1px 3px rgba(60, 64, 67, 0.3);
-    transition: box-shadow 0.2s ease;
-}
-
-.google-login-button:hover {
-    box-shadow: 0 2px 4px rgba(60, 64, 67, 0.3);
+    font-size: 14px;
+    border-radius: 24px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    margin-bottom: 16px;
 }
 
 .google-icon {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
 }
 
-.google-login-text {
-    font-family: 'Arial', sans-serif;
-}
-
-.gsi-material-button {
-    background-color: white;
-    border: 1px solid #dadce0;
-    border-radius: 20px;
+/* 회원가입 텍스트 */
+.link-text {
+    font-size: 1rem;
+    color: white;
+    text-align: center;
     cursor: pointer;
-    font-family: 'Roboto', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    box-shadow: 0 1px 3px rgba(60, 64, 67, 0.3);
-    padding: 10px 16px;
-    width: 180px;
-    margin: 40px auto 10;
-    transition: box-shadow 0.2s ease;
+    font-weight: 600;
 }
 
-/* 핵심: 이 wrapper가 아이콘 + 텍스트를 가로 정렬해줌! */
-.gsi-material-button-content-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
+/* 로그인 버튼 */
+.login-button {
+    margin-top: 2.5rem;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #f48ca2;
+    color: white;
+    font-weight: 700;
+    font-size: 1.2rem;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease;
 }
 
-/* 아이콘 크기 */
-.gsi-material-button-icon svg {
-    width: 20px;
-    height: 20px;
-    display: block;
-}
-
-/* 텍스트 정렬 */
-.gsi-material-button-contents {
-    white-space: nowrap;
-    color: #000;
+.login-button:hover {
+    transform: scale(1.05);
 }

@@ -1,0 +1,112 @@
+/* homepage-container 등의 공용 스타일은 다른 CSS 파일에 이미 정의되어 있다고 가정합니다. */
+
+.intro-upload-container {
+    text-align: center;
+    margin-top: 8rem;
+}
+
+.intro-upload-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.9rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    color: #222;
+    letter-spacing: 0.9px;
+    line-height: 1.4;
+}
+
+.intro-upload-subtitle {
+    font-size: 1.2rem;
+    font-family: 'SUIT', sans-serif;
+    margin-bottom: 3rem;
+    color: #333;
+}
+
+.intro-upload-box {
+    margin: 0 auto;
+    width: 680px;
+    max-width: 90%;
+    min-height: 320px;
+    padding: 4rem 2.5rem;
+    border: 2px solid #f48ca2;
+    border-radius: 30px;
+    background-color: #fff0f5;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.intro-upload-box:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1);
+}
+
+.intro-upload-label {
+    display: inline-block;
+    font-size: 0.95rem;
+    padding: 0.6rem 1.2rem;
+    background-color: #f4c1d9;
+    color: #5a1f32;
+    border-radius: 999px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-bottom: 2rem;
+}
+
+.intro-file-list {
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: #fff7fa;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    min-height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.intro-file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1rem;
+    padding: 0.4rem 1rem;
+    width: 100%;
+}
+
+.intro-delete-btn {
+    background: none;
+    border: none;
+    color: #d33;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+.intro-next-btn {
+    font-size: 1.2rem;
+    font-weight: bold;
+    background-color: #f48ca2;
+    color: white;
+    padding: 0.9rem 2.5rem;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.intro-next-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.intro-next-btn:hover:not(:disabled) {
+    background-color: #e93d78;
+    transform: scale(1.05);
+}
+
+/* 애니메이션 및 공용 스타일 */
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.animate-fade-in { animation: fadeInUp 0.8s ease-out; }
+
+@keyframes intro3dEnter { 0% { opacity: 0; transform: perspective(800px) rotateX(8deg) scale(0.9); } 100% { opacity: 1; transform: perspective(800px) rotateX(0deg) scale(1); } }
+.animate-3d { animation: intro3dEnter 0.8s ease-out both; }

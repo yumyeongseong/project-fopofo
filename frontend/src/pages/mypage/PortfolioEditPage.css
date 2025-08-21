@@ -1,0 +1,230 @@
+.portfolio-edit-container {
+    background-color: #fff0f5;
+    background-image: url('../../Grid.png');
+    background-repeat: repeat;
+    background-size: contain;
+    background-attachment: fixed;
+    min-height: 100vh;
+    position: relative;
+    padding-top: 5rem;
+    padding-bottom: 3rem;
+}
+.intro-logo {
+    position: absolute;
+    top: -0.5rem;
+    left: 0.5rem;
+    width: 140px;
+    height: auto;
+    cursor: pointer;
+    z-index: 10;
+    transition: transform 0.25s cubic-bezier(0.33, 1, 0.68, 1);
+}
+.intro-logo:hover {
+    transform: scale(1.08);
+}
+.intro-buttons {
+    position: absolute;
+    top: 2.5rem;
+    right: 2.5rem;
+    display: flex;
+    gap: 12px;
+}
+.outline-btn {
+    font-family: 'SUIT', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 0.45rem 1.2rem;
+    border-radius: 999px;
+    border: 1.5px solid #f48ca2;
+    background: #fff;
+    color: #f48ca2;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.outline-btn:hover {
+    background-color: #f48ca2;
+    color: #fff;
+}
+.intro-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.6rem;
+    font-weight: 700;
+    color: #222;
+    letter-spacing: 0.5px;
+    margin: 0 auto;
+    padding-top: 4rem;
+    padding-bottom: 1.5rem;
+    text-align: center;
+}
+.global-alert {
+    position: fixed;
+    top: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fff;
+    color: #111;
+    padding: 0.75rem 1.5rem;
+    font-weight: 500;
+    border-radius: 999px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-out;
+}
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    to { opacity: 1; }
+}
+.portfolio-edit-box {
+    max-width: 95%;
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    border: 2px solid #f48ca2;
+    border-radius: 30px;
+    background-color: #fff;
+    padding: 2rem;
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
+}
+.portfolio-sidebar {
+    width: 150px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    align-items: center;
+    margin-right: 1.5rem;
+    flex-shrink: 0;
+}
+.portfolio-tab-btn {
+    width: 100%;
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    padding: 0.6rem 1rem;
+    background-color: #fff;
+    border: 1.5px solid #ddd;
+    border-radius: 6px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.06);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.portfolio-tab-btn.active {
+    background-color: #f48ca2;
+    color: #fff;
+    font-weight: 700;
+    border-color: #f48ca2;
+    transform: translateY(-2px);
+}
+.portfolio-tab-btn:hover {
+    transform: translateY(-2px);
+}
+.portfolio-add-btn, .portfolio-del-btn, .edit-btn {
+    width: 100%;
+    font-family: 'SUIT', sans-serif;
+    padding: 0.6rem 1.4rem;
+    border-radius: 999px;
+    border: 1.5px solid #f48ca2;
+    background: #fff;
+    color: #f48ca2;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    text-align: center;
+}
+.portfolio-add-btn:hover, .portfolio-del-btn:hover {
+    transform: translateY(-2px);
+    background-color: #f48ca2;
+    color: #fff;
+}
+.edit-btn {
+    background-color: #f48ca2;
+    color: #fff;
+    margin-top: auto;
+}
+.edit-btn:hover {
+    background-color: #e93d78;
+    color: #fff;
+}
+.portfolio-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1.2rem;
+    width: 100%;
+    position: relative;
+    min-height: 400px;
+}
+.portfolio-card {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    cursor: pointer;
+    aspect-ratio: 1 / 1;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease;
+    background-color: #f0f0f0;
+}
+.portfolio-card:hover {
+    transform: translateY(-4px);
+}
+.portfolio-check {
+    position: absolute;
+    top: 0.6rem;
+    left: 0.6rem;
+    z-index: 10;
+}
+.check-icon {
+    color: #fff;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    padding: 2px;
+}
+.check-icon.selected {
+    color: #4ade80;
+    background-color: rgba(0, 0, 0, 0.75);
+}
+.spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid #f48ca2;
+    border-radius: 50%;
+    width: 48px;
+    height: 48px;
+    animation: spin 0.9s linear infinite;
+    z-index: 100;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+.thumbnail-image, .thumbnail-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background-color: #fff;
+}
+.thumbnail-video {
+    object-fit: contain;
+    background-color: #000;
+}
+.thumbnail-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #e5e7eb;
+    padding: 8px;
+}
+.thumbnail-icon {
+    color: #6b7280;
+}
+.thumbnail-text {
+    font-size: 12px;
+    text-align: center;
+    color: #4b5563;
+    margin-top: 8px;
+    word-break: break-all;
+}

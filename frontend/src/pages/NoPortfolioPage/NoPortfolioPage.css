@@ -1,0 +1,118 @@
+/* ✅ 전체 페이지 배경 + 위치 기준 */
+.homepage-container {
+    background-color: #FFEDF3;
+    background-image: url('../../Grid.png');
+    background-repeat: repeat;
+    background-size: contain;
+    background-position: center;
+    background-attachment: fixed;
+    min-height: 100vh;
+    font-family: 'Playfair Display', serif;
+    color: #222;
+    position: relative;
+    overflow: hidden;
+}
+
+/* ✅ 전체 wrapper - 수직 중앙 정렬 핵심 */
+.noportfolio-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    /* 핵심! */
+    min-height: 100vh;
+    position: relative;
+}
+
+/* ✅ 우측 상단 버튼 */
+.noportfolio-top-buttons {
+    position: absolute;
+    top: 2rem;
+    right: 3rem;
+    display: flex;
+    gap: 1rem;
+    z-index: 20;
+}
+
+.outline-btn {
+    padding: 0.4rem 1.2rem;
+    border-radius: 10px;
+    border: 1.5px solid #f48ca2;
+    background-color: transparent;
+    color: #f48ca2;
+    font-size: 1.1rem;
+    font-family: 'SUIT', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.outline-btn:hover {
+    background-color: #f48ca210;
+    transform: scale(1.05);
+}
+
+/* ✅ 중앙 콘텐츠 묶음 */
+.noportfolio-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    /* ✅ 핵심 수정! 화면 기준 중앙 정렬을 위한 높이 */
+}
+
+/* ✅ 텍스트 */
+.no-portfolio-message {
+    text-align: center;
+    font-size: 1.6rem;
+    font-family: 'SUIT', sans-serif;
+    line-height: 2.6rem;
+    color: #222;
+    margin-bottom: 3rem;
+    animation: fadeInFloat 0.8s ease forwards;
+}
+
+/* ✅ 버튼 */
+.back-to-create-btn {
+    font-family: 'Playfair Display', serif !important;
+    /* 💥 강제 적용 */
+    /* ✅ 트렌디한 영문 전용 글꼴 */
+    font-size: 2.2rem;
+    /* ✅ 눈에 확 띄는 크기 */
+    font-weight: 700;
+    color: #f48ca2;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 1rem 2rem;
+    border-bottom: 2px solid #f48ca2;
+    transition: all 0.3s ease;
+    display: block;
+    margin: 0 auto;
+    /* ✅ 중앙 정렬 */
+    letter-spacing: 0.5px;
+}
+
+.back-to-create-btn:hover {
+    color: #e93d78;
+    border-bottom: 2px solid #e93d78;
+    transform: scale(1.05);
+}
+
+@keyframes fadeUp {
+    0% {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeUp 1.2s ease-out forwards;
+    opacity: 0;
+}

@@ -1,17 +1,20 @@
-import { useState, useCallback } from "react";
-import * as pdfjsLib from "pdfjs-dist";
-import { GlobalWorkerOptions } from "pdfjs-dist/build/pdf";
-import { X, FileText } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import MypageHeader from "../../components/MypageHeader";
+// ChatbotEditPage.jsx (최종 수정된 전체 코드)
 
-GlobalWorkerOptions.workerSrc = `${process.env.PUBLIC_URL}/pdf.worker.js`;
+import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { X, FileText } from 'lucide-react';
+import { pythonApi } from '../../services/api';
+import { useAuth } from '../../contexts/AuthContext';
+import './ChatbotEditPage.css';
+import PdfThumbnail from "../../components/PdfThumbnail";
 
-export default function IntroEditPage() {
-    const [selectedFiles, setSelectedFiles] = useState([]);
-    const [previewFile, setPreviewFile] = useState(null);
-    const [previewImage, setPreviewImage] = useState(null);
-    const [activeTab, setActiveTab] = useState("resume");
+export default function ChatbotEditPage() {
+    const [selectedFile, setSelectedFile] = useState(null);
+    // ✅ 미리보기를 위한 임시 URL을 저장할 state를 추가합니다.
+    const [previewUrl, setPreviewUrl] = useState(null);
+    
+    // ... (나머지 state 변수들은 동일) ...
+    const [activeTab, setActiveTab] = useState("intro");
     const [qaList, setQaList] = useState([
         { question: "자신의 강점이 잘 드러난 경험 하나를 소개해주세요.", answer: "" },
         { question: "가장 자신 있는 프로젝트 또는 작업 경험은 무엇인가요?", answer: "" },
@@ -19,202 +22,186 @@ export default function IntroEditPage() {
         { question: "가장 힘들었지만 성장했다고 느낀 순간은 언제였나요?", answer: "" }
     ]);
     const [showMessage, setShowMessage] = useState("");
+    const [isProcessing, setIsProcessing] = useState(false);
+    const navigate = useNavigate();
+    const { user, logout } = useAuth();
+    const fileInputRef = useRef(null);
 
-    const renderPDFPreviewFirstPage = async (file) => {
-        const reader = new FileReader();
-        return new Promise((resolve) => {
-            reader.onload = async () => {
-                const typedarray = new Uint8Array(reader.result);
-                const pdf = await pdfjsLib.getDocument({ data: typedarray }).promise;
-                const page = await pdf.getPage(1);
-                const viewport = page.getViewport({ scale: 1.2 });
-
-                const canvas = document.createElement("canvas");
-                const context = canvas.getContext("2d");
-
-                canvas.width = viewport.width;
-                canvas.height = viewport.height;
-
-                await page.render({ canvasContext: context, viewport }).promise;
-                const imageData = canvas.toDataURL("image/png");
-                resolve(imageData);
-            };
-            reader.readAsArrayBuffer(file);
-        });
-    };
-
-    const handleFiles = async (incomingFiles) => {
-        const validFiles = Array.from(incomingFiles).filter(
-            (file) => file.type === "application/pdf"
-        );
-
-        if (validFiles.length !== incomingFiles.length) {
-            alert("PDF 형식의 파일만 업로드하실 수 있습니다.");
+    // ✅ 파일이 선택될 때, 원본 파일과 함께 미리보기용 URL을 생성합니다.
+    const handleFile = useCallback((file) => {
+        if (!file) return;
+        if (file.type !== "application/pdf") {
+            alert("PDF 형식의 파일만 업로드할 수 있습니다.");
+            return;
         }
+        setSelectedFile(file); // 원본 파일 저장
+        setPreviewUrl(URL.createObjectURL(file)); // 미리보기용 URL 생성 및 저장
+    }, []);
+    
+    // ✅ 컴포넌트가 언마운트될 때 생성된 URL을 메모리에서 해제하여 메모리 누수를 방지합니다.
+    useEffect(() => {
+        return () => {
+            if (previewUrl) {
+                URL.revokeObjectURL(previewUrl);
+            }
+        };
+    }, [previewUrl]);
 
-        const newList = [...selectedFiles, ...validFiles];
-        setSelectedFiles(newList);
+    const handleDelete = () => {
+        setSelectedFile(null);
+        setPreviewUrl(null); // ✅ 미리보기 URL도 함께 초기화합니다.
+    };
 
-        const latestFile = validFiles[validFiles.length - 1];
-        if (latestFile) {
-            const preview = await renderPDFPreviewFirstPage(latestFile);
-            setPreviewFile(latestFile);
-            setPreviewImage(preview);
+    const handleFileChange = (e) => { handleFile(e.target.files[0]); };
+    const handleDrop = useCallback((e) => { e.preventDefault(); handleFile(e.dataTransfer.files[0]); }, [handleFile]);
+
+    // handleEdit 함수는 이제 충돌 걱정 없이 selectedFile을 안전하게 사용할 수 있습니다.
+    const handleEdit = async () => {
+        if (!selectedFile) {
+            alert("업데이트할 파일을 선택해주세요.");
+            return;
         }
-    };
-
-    const handleDrop = useCallback(
-        (e) => {
-            e.preventDefault();
-            handleFiles(e.dataTransfer.files);
-        },
-        [selectedFiles]
-    );
-
-    const handleFileClick = async (file) => {
-        const preview = await renderPDFPreviewFirstPage(file);
-        setPreviewFile(file);
-        setPreviewImage(preview);
-    };
-
-    const handleDelete = async (fileToDelete) => {
-        const updatedFiles = selectedFiles.filter((file) => file !== fileToDelete);
-        setSelectedFiles(updatedFiles);
-
-        if (updatedFiles.length > 0) {
-            const newPreview = await renderPDFPreviewFirstPage(updatedFiles[0]);
-            setPreviewFile(updatedFiles[0]);
-            setPreviewImage(newPreview);
-        } else {
-            setPreviewFile(null);
-            setPreviewImage(null);
+        setIsProcessing(true);
+        setShowMessage("챗봇을 업데이트 중입니다...");
+        try {
+            await pythonApi.delete("/pinecone-vectors");
+            const formData = new FormData();
+            // new Blob()을 사용하는 것은 여전히 좋은 안전장치이므로 유지합니다.
+            formData.append("file", new Blob([selectedFile]), selectedFile.name);
+            await pythonApi.post("/upload", formData);
+            
+            setShowMessage("챗봇이 성공적으로 업데이트되었습니다!");
+            setTimeout(() => {
+                setShowMessage("");
+                navigate("/mypage/chatbot");
+            }, 2000);
+        } catch (error) {
+            console.error("챗봇 업데이트 실패:", error);
+            setShowMessage("업데이트에 실패했습니다.");
+            setTimeout(() => setShowMessage(""), 3000);
+        } finally {
+            setIsProcessing(false);
         }
     };
 
+    // ... (handleSaveQA, handleLogout, useEffect 등 나머지 함수와 return 문은 기존 코드와 거의 동일) ...
     const handleAnswerChange = (index, newAnswer) => {
         const updated = [...qaList];
         updated[index].answer = newAnswer;
         setQaList(updated);
     };
 
-    const handleSaveQA = () => {
-        console.log("저장된 Q/A:", qaList);
-        setShowMessage("저장되었습니다.");
-        setTimeout(() => setShowMessage(""), 2000);
+    const handleSaveQA = async () => {
+        const allAnswered = qaList.every((item) => item.answer.trim() !== "");
+        if (!allAnswered) {
+            alert("모든 질문에 답변을 입력해주세요.");
+            return;
+        }
+        setIsProcessing(true);
+        setShowMessage("Q&A 저장 중...");
+        try {
+            const answersToSave = {};
+            qaList.forEach((item, index) => {
+                answersToSave[`question_${index + 1}`] = item.question;
+                answersToSave[`answer_${index + 1}`] = item.answer;
+            });
+            await pythonApi.post("/save-answers", { answers: answersToSave });
+            setShowMessage("성공적으로 저장되었습니다!");
+        } catch (error) {
+            console.error("Q&A 저장 중 오류:", error);
+            setShowMessage("오류가 발생했습니다. 다시 시도해주세요.");
+        } finally {
+            setIsProcessing(false);
+            setTimeout(() => setShowMessage(""), 2000);
+        }
     };
-
-    const handleEdit = () => {
-        console.log("업로드할 파일들:", selectedFiles);
-        setShowMessage("업로드되었습니다.");
-        setTimeout(() => setShowMessage(""), 2000);
-    };
+    
+    const handleLogout = () => { logout(); navigate('/mainpage'); };
+    
+    useEffect(() => {
+        const fetchQA = async () => {
+            if (activeTab === 'qa' && user?.userId) {
+                try {
+                    const response = await pythonApi.get(`/get-answers/${user.userId}`);
+                    if (response.data && response.data.length > 0) {
+                        const newQaList = [...qaList];
+                        response.data.forEach(savedAnswer => {
+                            const questionIndex = newQaList.findIndex(q => q.question === savedAnswer.question);
+                            if (questionIndex > -1) {
+                                newQaList[questionIndex].answer = savedAnswer.answer;
+                            }
+                        });
+                        setQaList(newQaList);
+                    }
+                } catch (error) {
+                    console.error("저장된 답변을 불러오는데 실패했습니다:", error);
+                }
+            }
+        };
+        fetchQA();
+    }, [activeTab, user]);
 
     return (
-        <div className="min-h-screen bg-pink-100 flex flex-col relative">
-            <MypageHeader />
+        <div className="chatbot-edit-page">
+            {/* ... 헤더 부분 ... */}
+            <img src="/Fopofo-Logo-v2.png" alt="FoPoFo Logo" className="intro-logo" onClick={() => navigate("/mainpage")} />
+            <div className="intro-buttons">
+                <button className="outline-btn" onClick={() => navigate("/mypage")}>←</button>
+                <button className="outline-btn" onClick={handleLogout}>logout</button>
+                <button className="outline-btn" onClick={() => navigate("/home")}>home</button>
+            </div>
+            <h1 className="mpage-title">Edit Chatbot</h1>
+            {showMessage && <div className="message-popup">{showMessage}</div>}
 
-            {showMessage && (
-                <div className="absolute bottom-[80px] left-1/2 transform -translate-x-1/2 bg-white text-black px-6 py-2 rounded-full shadow-md z-50 transition-opacity duration-300">
-                    {showMessage}
-                </div>
-            )}
+            <div className="tab-sidebar">
+                <button onClick={() => setActiveTab("intro")} className={activeTab === "intro" ? "active" : ""}>챗봇 문서 편집</button>
+                <button onClick={() => setActiveTab("qa")} className={activeTab === "qa" ? "active" : ""}>Q/A 수정</button>
+            </div>
 
-            <div className="flex flex-1 mt-6">
-                <div className="flex flex-col gap-4 p-6">
-                    <button onClick={() => setActiveTab("intro")} className={`border px-4 py-2 font-serif ${activeTab === "intro" ? "bg-white" : "bg-pink-50"}`}>자기소개서 편집</button>
-                    <button onClick={() => setActiveTab("resume")} className={`border px-4 py-2 font-serif ${activeTab === "resume" ? "bg-white" : "bg-pink-50"}`}>이력서 편집</button>
-                    <button onClick={() => setActiveTab("qa")} className={`border px-4 py-2 font-serif ${activeTab === "qa" ? "bg-white" : "bg-pink-50"}`}>Q/A 수정</button>
-                </div>
-
-                {activeTab === "qa" ? (
-                    <div className="flex-1 p-8">
-                        <div className="bg-blue-100 rounded-lg p-8 w-full max-w-4xl mx-auto">
-                            {qaList.map((item, index) => (
-                                <div key={index} className="mb-6">
-                                    <p className="font-semibold mb-2">Q. {item.question}</p>
-                                    <textarea
-                                        value={item.answer}
-                                        onChange={(e) => handleAnswerChange(index, e.target.value)}
-                                        className="w-full border border-gray-300 rounded p-2 min-h-[80px]"
-                                        placeholder="A."
-                                    />
-                                </div>
-                            ))}
-                            <button
-                                onClick={handleSaveQA}
-                                className="bg-pink-300 text-white px-6 py-2 rounded-full mt-6 hover:bg-pink-400 transition"
-                            >
-                                save
-                            </button>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="flex-1 p-8 bg-blue-100 rounded-lg flex gap-6">
-                        <div className="w-1/2 bg-pink-50 p-6 rounded flex flex-col items-center">
-                            <label className="block mb-2 font-semibold">PDF 업로드</label>
-                            <label
-                                htmlFor="fileUpload"
-                                className="bg-pink-300 text-white px-4 py-2 rounded-md cursor-pointer hover:bg-pink-400 transition"
-                            >
-                                파일 선택
-                            </label>
-                            <input
-                                id="fileUpload"
-                                type="file"
-                                accept="application/pdf"
-                                multiple
-                                onChange={(e) => handleFiles(e.target.files)}
-                                className="hidden"
-                            />
-                            <div className="mt-4 w-full space-y-2">
-                                {selectedFiles.map((file, index) => (
-                                    <div
-                                        key={index}
-                                        className={`flex justify-between items-center px-4 py-2 rounded-md transition text-sm cursor-pointer ${previewFile?.name === file.name ? "bg-white font-semibold shadow" : "text-gray-700 hover:bg-white hover:shadow"}`}
-                                    >
-                                        <span onClick={() => handleFileClick(file)} className="flex items-center gap-2 flex-1">
-                                            <FileText size={16} className="text-gray-500" />
-                                            {file.name}
-                                        </span>
-                                        <button
-                                            onClick={() => handleDelete(file)}
-                                            className="ml-4 text-gray-500 hover:text-red-500"
-                                        >
-                                            <X size={16} />
-                                        </button>
-                                    </div>
-                                ))}
+            {activeTab === 'qa' ? (
+                // ... Q&A 탭 UI ...
+                <div className="qa-section">
+                    <div className="qa-box">
+                        {qaList.map((item, index) => (
+                            <div key={index} className="qa-item">
+                                <p>Q. {item.question}</p>
+                                <textarea value={item.answer} onChange={(e) => handleAnswerChange(index, e.target.value)} placeholder="A. 여기에 답변을 입력해주세요" />
                             </div>
-                            <button
-                                onClick={handleEdit}
-                                className="mt-6 bg-pink-200 text-brown-700 px-6 py-2 rounded-full shadow-sm hover:shadow-md transition"
-                            >
-                                Edit
-                            </button>
-                        </div>
-
-                        <div className="w-1/2 bg-white p-6 rounded shadow">
-                            <p className="text-center font-bold mb-2">PREVIEW</p>
-                            {previewImage ? (
-                                <img
-                                    src={previewImage}
-                                    alt={previewFile?.name}
-                                    className="w-full max-h-[600px] mx-auto rounded-md shadow"
-                                />
-                            ) : (
-                                <div className="text-center text-gray-500 border p-4 rounded">
-                                    여기에 선택한 PDF 미리보기가 표시됩니다.
+                        ))}
+                        <button onClick={handleSaveQA} disabled={isProcessing} className="save-button">{isProcessing ? "저장 중..." : "답변 저장하기"}</button>
+                    </div>
+                </div>
+            ) : (
+                <div className="file-section" onDrop={handleDrop} onDragOver={(e) => e.preventDefault()}>
+                    {/* ... 파일 업로드 UI ... */}
+                    <div className="file-upload-box">
+                        <p className="file-label">📄 파일 선택 (PDF만 가능)</p>
+                        <label htmlFor="fileUpload" className="upload-button" onClick={() => { if (fileInputRef.current) { fileInputRef.current.value = null; } }}>
+                            파일 선택
+                        </label>
+                        <input id="fileUpload" type="file" accept=".pdf" onChange={handleFileChange} ref={fileInputRef} style={{ display: 'none' }} />
+                        <div className="file-list">
+                            {selectedFile && (
+                                <div className="file-item">
+                                    <span className="file-name"><FileText size={16} /> {selectedFile.name}</span>
+                                    <button onClick={handleDelete} className="delete-button"><X size={16} /></button>
                                 </div>
                             )}
                         </div>
+                        <button onClick={handleEdit} disabled={isProcessing} className="edit-button">
+                            {isProcessing ? "업데이트 중..." : "Edit"}
+                        </button>
                     </div>
-                )}
-            </div>
+                    <div className="file-preview-box">
+                        <p className="preview-title">PREVIEW</p>
+                        {previewUrl ? ( // ✅ file 객체 대신 previewUrl을 사용합니다.
+                            <PdfThumbnail file={previewUrl} width={300} />
+                        ) : (
+                            <div className="preview-placeholder">선택한 파일의 첫 페이지 미리보기가 여기에 표시됩니다.</div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
-
-
-
-
-

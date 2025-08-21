@@ -1,26 +1,25 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
-export default function TypingAnswer({ fullText }) {
+export default function TypingAnswer({ fullText, onFinish }) {
     const [typedText, setTypedText] = useState("");
+    const containerRef = useRef();
 
     useEffect(() => {
-        if (!fullText) return;
-        let index = 0;
-        const interval = setInterval(() => {
-            setTypedText((prev) => prev + fullText.charAt(index));
-            index++;
-            if (index >= fullText.length) {
-                clearInterval(interval);
+        if (!fullText || typedText === fullText) return;
+        const timeout = setTimeout(() => {
+            const next = fullText.slice(0, typedText.length + 1);
+            setTypedText(next);
+            if (containerRef.current?.scrollIntoView) {
+                 containerRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
             }
-        }, 20);
-
-        return () => clearInterval(interval);
-    }, [fullText]);
+            if (next === fullText) onFinish?.();
+        }, 25);
+        return () => clearTimeout(timeout);
+    }, [fullText, typedText, onFinish]);
 
     return (
-        <div className="bg-blue-100 text-left text-gray-800 text-sm p-4 rounded-lg shadow mb-6 whitespace-pre-line">
-            <strong>홍길동 챗봇의 답변:</strong>
-            <p className="mt-2">{typedText}</p>
+        <div ref={containerRef} className="typing-answer-text">
+            {typedText}
         </div>
     );
 }
