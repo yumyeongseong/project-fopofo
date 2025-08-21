@@ -1,24 +1,25 @@
 import React from 'react';
 import './GoogleLoginButton.css';
+// 🚨 1. public 폴더의 파일을 import하는 이 라인을 삭제합니다.
+// import googleIcon from '../../public/google-icon.svg'; 
 
 function GoogleLoginButton() {
-  const handleGoogleLogin = () => {
-    // ✅ 1. 환경 변수에서 API 서버의 기본 URL을 가져옵니다.
-    const apiUrl = process.env.REACT_APP_API_URL;
-    // ✅ 2. 기본 URL에 API 경로를 조합하여 전체 주소를 만듭니다.
-    window.location.href = `${apiUrl}/api/auth/google`;
-  };
+    const handleGoogleLogin = () => {
+        window.location.href = 'https://www.my-fortpoilo-fopofo.com/api/auth/google';
+    };
 
-  return (
-    <button className="google-login-button" onClick={handleGoogleLogin}>
-      <img
-        src="/images/google-icon.png"
-        alt="google"
-        className="google-icon"
-      />
-      <span className="google-text">Sign in with Google</span>
-    </button>
-  );
+    return (
+        <button className="google-login-button" onClick={handleGoogleLogin}>
+            <img
+                // ✅ 2. public 폴더의 파일은 이렇게 절대 경로로 사용합니다.
+                // process.env.PUBLIC_URL이 public 폴더를 가리킵니다.
+                src={process.env.PUBLIC_URL + '/google-icon.svg'}
+                alt="google"
+                className="google-icon"
+            />
+            <span className="google-text">Sign in with Google</span>
+        </button>
+    );
 }
 
 export default GoogleLoginButton;

@@ -1,148 +1,202 @@
+/* =============== 무대/레이아웃 =============== */
 .start-page {
     position: relative;
     width: 100vw;
     height: 100vh;
     overflow: hidden;
-    background-color: rgba(244, 140, 162, 0.55);
-    /* 연핑크 */
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-    background-blend-mode: darken;
-    animation: bgFadeZoom 1.4s ease-out forwards;
-    z-index: 0;
+    background: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    perspective: 1200px; /* (텍스트 미세 3D용) */
 }
 
-/* ✅ 배경 진입 애니메이션 다시 추가 */
-@keyframes bgFadeZoom {
-    0% {
-        opacity: 0;
-        transform: scale(1.03);
-    }
-
-    100% {
-        opacity: 1;
-        transform: scale(1);
-    }
-}
-
-/* 배경 이미지 */
-.bg-img {
+/* 페이지 진입 시 흰색 오버레이 */
+.intro-overlay {
     position: absolute;
     inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: 55% center;
-    filter: brightness(1) contrast(0.8) saturate(0.2);
-    opacity: 0.18;
-    z-index: 0;
+    background: #fff;
+    z-index: 50;
     pointer-events: none;
 }
 
 /* 로고 */
 .logo {
     position: absolute !important;
-    top: -0.5rem !important;
+    top: 0.5rem !important;
     left: 0.5rem !important;
     width: 140px !important;
-    padding: 0 !important;
-    z-index: 10 !important;
+    z-index: 40 !important;
     cursor: pointer;
-    transition: transform 0.3s ease;
+    transition: transform .2s ease;
 }
 
 .logo:hover {
     transform: scale(1.05);
 }
 
-/* 중앙 텍스트 그룹 */
+/* 중앙 클릭 그룹 */
 .title-wrapper {
-    position: absolute;
-    top: 48%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    position: relative;
+    z-index: 30;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    width: max-content;
     cursor: pointer;
-    z-index: 20;
+    perspective: 1200px;
+    perspective-origin: 50% 48%;
 }
 
-/* 공통 텍스트 스타일 */
-.text-slide-up,
-.text-slide-down {
-    font-family: 'Playfair Display', serif;
-    font-size: 4rem;
-    font-weight: 600;
-    color: #572411;
-    opacity: 0;
-    animation-delay: 0.6s;
-    /* ✅ 통일된 시작 시간 */
-    text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.05);
+/* =============== 타이포그래피 =============== */
+.hero-text {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-weight: 700;
+    font-size: clamp(48px, 7vw, 96px); /* 화면 크기에 따라 폰트 크기 조절 */
+    line-height: 1.1;
+    letter-spacing: .3px;
+    color: #f48ca2;   /* 핑크 고정 */
+    text-align: center;
+    text-shadow:
+        0 0 4px rgba(244, 140, 162, 0.6),   /* 핑크빛 발광 효과 */
+        0 6px 18px rgba(0, 0, 0, 0.15);     /* 은은한 그림자 */
 }
 
-/* 위 → 아래 */
-.text-slide-down {
-    animation: slideDown 1.2s ease-out forwards;
+.hero-letter {
+    display: inline-block;
+    will-change: transform, filter, opacity;
+    backface-visibility: hidden; /* 3D 애니메이션 시 깜빡임 방지 */
 }
 
-@keyframes slideDown {
-    0% {
-        transform: translateY(-40px);
-        opacity: 0;
-    }
-
-    100% {
-        transform: translateY(0);
-        opacity: 1;
-    }
+/* 3D 깊이감 효과 */
+.hero-text.depth3d {
+    position: relative;
+    -webkit-text-stroke: 0.8px rgba(255, 255, 255, 0.65);
+    text-shadow:
+        0 1px 0 rgba(0, 0, 0, 0.06),
+        0 2px 0 rgba(0, 0, 0, 0.055),
+        0 3px 0 rgba(0, 0, 0, 0.05),
+        0 4px 0 rgba(0, 0, 0, 0.045),
+        0 5px 0 rgba(0, 0, 0, 0.04),
+        0 10px 18px rgba(0, 0, 0, 0.10);
+    transform: translateZ(0) rotateX(1deg);
+    will-change: transform;
+    backface-visibility: hidden;
 }
 
-/* 아래 → 위 */
-.text-slide-up {
-    animation: slideUp 1.2s ease-out forwards;
+/* 텍스트 위에 미세한 하이라이트 효과 추가 */
+.hero-text.depth3d::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom,
+            rgba(255, 255, 255, 0.55) 0%,
+            rgba(255, 255, 255, 0.15) 40%,
+            rgba(255, 255, 255, 0.00) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    pointer-events: none;
+    transform: translateZ(1px);
+    filter: blur(0.2px);
+    opacity: 0.45;
 }
 
-@keyframes slideUp {
-    0% {
-        transform: translateY(40px);
-        opacity: 0;
-    }
-
-    100% {
-        transform: translateY(0);
-        opacity: 1;
-    }
+.title-wrapper:hover .depth3d {
+    transform: translateZ(0) rotateX(0.6deg) translateY(-1px);
+    text-shadow:
+        0 1px 0 rgba(0, 0, 0, 0.06),
+        0 2px 0 rgba(0, 0, 0, 0.055),
+        0 3px 0 rgba(0, 0, 0, 0.05),
+        0 4px 0 rgba(0, 0, 0, 0.045),
+        0 5px 0 rgba(0, 0, 0, 0.04),
+        0 12px 20px rgba(0, 0, 0, 0.12);
+    transition: transform .25s ease, text-shadow .25s ease;
 }
 
 /* 구분선 */
 .divider-line {
     height: 2px;
-    background-color: #572411;
-    margin: 0.4rem auto;
-    width: 0;
-    opacity: 0;
-    animation: expandLine 1s ease-out forwards;
-    animation-delay: 0.6s;
-    /* ✅ 텍스트와 동기화 */
+    background: #f48ca2;
+    margin: 8px auto;
+    border-radius: 2px;
+    opacity: .55;
 }
 
-@keyframes expandLine {
-    0% {
-        width: 0;
-        opacity: 0;
+/* =============== 배경 콜라주 =============== */
+.collage-wrap {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    opacity: 0.28; /* 콜라주 전체 투명도. 0.24~0.36 사이에서 조절 가능 */
+    transition: opacity .3s ease;
+}
+
+/* 콜라주 위에 덮이는 효과 (가장자리 어둡게 + 전체적으로 하얗게) */
+.collage-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.15)),
+        rgba(255, 255, 255, 0.28);
+    mix-blend-mode: multiply; /* 색상 혼합 모드 */
+}
+
+/* 콜라주 그리드 레이아웃 */
+.collage-grid {
+    position: absolute;
+    inset: 0;
+    padding: 24px;
+    display: grid;
+    grid-auto-flow: dense; /* 빈 공간을 채우는 옵션 */
+    grid-template-columns: repeat(12, 1fr);
+    grid-auto-rows: 9vw; /* 뷰포트 너비에 비례하는 행 높이 */
+    gap: 12px;
+}
+
+/* 콜라주 셀 기본 스타일 */
+.collage-cell {
+    overflow: hidden;
+    border-radius: 16px;
+    grid-column: span 2;
+    grid-row: span 2;
+}
+
+/* 다양한 크기의 셀을 패턴으로 배치 */
+.collage-cell:nth-child(7n) { grid-column: span 3; grid-row: span 3; }
+.collage-cell:nth-child(5n) { grid-column: span 2; grid-row: span 3; }
+.collage-cell:nth-child(9n) { grid-column: span 3; grid-row: span 2; }
+.collage-cell:nth-child(11n) { grid-column: span 4; grid-row: span 2; }
+
+/* 콜라주 이미지 스타일 */
+.collage-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: grayscale(20%) contrast(108%) saturate(90%) blur(0.3px);
+}
+
+/* =============== 반응형 =============== */
+@media (max-width: 1200px) {
+    .collage-grid {
+        grid-template-columns: repeat(10, 1fr);
+        grid-auto-rows: 10vw;
     }
-
-    100% {
-        width: 500px;
-        opacity: 0.5;
+}
+@media (max-width: 860px) {
+    .collage-grid {
+        grid-template-columns: repeat(8, 1fr);
+        grid-auto-rows: 12vw;
+        padding: 16px;
+        gap: 10px;
     }
 }
-
-/* hover */
-.title-wrapper:hover h1 {
-    color: #f48ca2;
-}
-
-.title-wrapper:hover .divider-line {
-    background-color: #f48ca2;
+@media (max-width: 520px) {
+    .collage-grid {
+        grid-template-columns: repeat(6, 1fr);
+        grid-auto-rows: 15vw;
+    }
 }

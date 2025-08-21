@@ -1,204 +1,222 @@
-/* 전체 배경 설정 */
-.homepage-container {
-    background-color: #FFEDF3;
-    background-image: url('/public/Grid.png');
-    /* 경로 수정 */
-    background-repeat: repeat;
-    background-size: contain;
-    background-position: center;
-    background-attachment: fixed;
-    min-height: 100vh;
-    font-family: 'Playfair Display', serif;
-    color: #222;
-    padding-bottom: 5rem;
+/* ========================
+   FoPoFo Homepage (Bright)
+   ======================== */
+
+:root {
+    --pink: #f48ca2;
+    --ink: #111;
+    --muted: #555;
+    --panel-bg: rgba(255, 255, 255, .58);
+    --panel-border: rgba(255, 255, 255, .65);
+    --shadow: 0 18px 40px rgba(18, 18, 18, .12);
+    --gutter: clamp(16px, 6vw, 64px);
 }
 
-/* 상단 네비게이션 바 */
-.navbar {
+.hp-root-snap {
+    height: 100vh;
+    overflow: hidden;
+    font-family: "Pretendard", "SUIT", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+    color: var(--ink);
+    background: linear-gradient(135deg, #fff, #fdf7fb 40%, #ffeef4 100%);
+}
+
+.hp-nav {
+    position: fixed;
+    inset: 0 0 auto 0;
+    height: 64px;
+    z-index: 100;
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: center;
-    padding: 1.3rem 3rem;
-    position: relative;
-    z-index: 10;
+    padding: 0 24px;
+    backdrop-filter: saturate(120%) blur(10px);
+    -webkit-backdrop-filter: saturate(120%) blur(10px);
+    background: rgba(255, 255, 255, .55);
+    border-bottom: 1px solid rgba(255, 255, 255, .6);
+    box-shadow: 0 6px 24px rgba(0, 0, 0, .06);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .35s ease;
 }
 
-/* 왼쪽 (로고 + 링크들) */
-.left-section {
-    display: flex;
-    align-items: center;
-    gap: 2.5rem;
+.hp-nav.show {
+    opacity: 1;
+    pointer-events: auto;
 }
 
-/* 로고 이미지 */
-.nav-logo {
-    position: absolute !important;
-    top: -0.5rem !important;
-    left: 0.5rem !important;
-    width: 140px !important;
-    padding: 0 !important;
-    z-index: 10 !important;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-}
-
-.nav-logo:hover {
-    transform: scale(1.05);
-}
-
-/* 네비게이션 버튼 */
-.nav-links {
-    display: flex;
-    gap: 5rem;
-    margin-left: 160px;
-    align-items: flex-end;
-    margin-top: -1.5rem;
-}
-
-.nav-button {
-    background: none;
-    border: none;
-    font-size: 1.6rem;
-    cursor: pointer;
-    font-family: 'Playfair Display', serif;
-    font-weight: 600;
-    color: #222;
-}
-
-.nav-button:hover {
-    color: #f48ca2;
-}
-
-/* Create 버튼 */
-.create-btn {
-    width: 100px;
+.hp-logo {
     height: 100px;
-    border-radius: 50px;
-    background-color: #f48ca2;
-    color: white;
-    font-size: 1.3rem;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
     cursor: pointer;
-    padding: 0;
-    transition: background-color 0.3s ease;
 }
 
-.create-btn:hover {
-    background-color: #e93d78;
+.hp-links {
+    display: flex;
+    gap: 20px;
 }
 
-/* 메인 배너 타이틀 */
-.homepage-title {
-    font-size: 3.8rem;
+.hp-links button {
+    background: none;
+    border: 0;
     font-weight: 700;
-    text-align: center;
-    margin: 3rem 2rem 2rem;
-    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.15);
-    padding: 1.8rem 0;
-    background-color: #ffedf3;
+    cursor: pointer;
+    padding: 8px 14px;
+    border-radius: 999px;
+    transition: all .2s ease;
 }
 
-/* 설명 카드 영역 */
-.card-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2.2rem;
-    padding: 0 2rem 4rem;
+.hp-links button:hover {
+    color: var(--pink);
+    background: rgba(244, 140, 162, .1);
+    box-shadow: 0 8px 20px rgba(244, 140, 162, .18);
 }
 
-.card {
-    width: 80%;
-    font-family: 'SUIT', sans-serif;
-    max-width: 1000px;
-    background-color: white;
-    padding: 2rem;
-    border-radius: 1.5rem;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-    text-align: center;
-    font-size: 1.05rem;
-    line-height: 1.6;
-    opacity: 0;
-    animation: fadeInFloat 1s forwards;
+.snap-container {
+    height: 100vh;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
 }
 
-.card:nth-child(2) {
-    animation-delay: 0.3s;
-}
-
-.card:nth-child(3) {
-    animation-delay: 0.6s;
-}
-
-/* 애니메이션 */
-@keyframes fadeInFloat {
-    0% {
-        transform: translateY(40px) scale(0.95);
-        opacity: 0;
-    }
-
-    100% {
-        transform: translateY(0) scale(1);
-        opacity: 1;
-    }
-}
-
-/* 4분할 이미지 섹션 */
-.preview-grid {
+.snap-section {
+    min-height: 100vh;
+    padding-top: 64px;
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 3rem;
-    margin: 5rem auto 2rem;
-    max-width: 1200px;
-    padding: 0 2rem;
+    place-items: center;
+    scroll-snap-align: start;
+    position: relative;
 }
 
-.preview-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    opacity: 0;
-    transform: translateY(50px);
-    animation: fadeInFloat 0.8s forwards;
-    font-family: 'SUIT', sans-serif;
+.snap-section.center { align-content: center; }
+.snap-container .snap-section:first-child { padding-top: 0 !important; }
+
+.snap-section.cover {
+    position: relative;
+    background-size: cover;
+    background-position: center;
 }
 
-
-.preview-item:nth-child(1) {
-    animation-delay: 0.3s;
+.cover-scrim {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(120% 120% at 50% 40%, rgba(255, 255, 255, .15) 0%, rgba(0, 0, 0, .08) 60%, rgba(0, 0, 0, .06) 100%);
 }
 
-.preview-item:nth-child(2) {
-    animation-delay: 0.5s;
+.copy-only {
+    position: relative;
+    z-index: 1;
+    max-width: min(980px, 92vw);
+    text-align: left;
+    color: #1a1a1a;
+    padding: clamp(16px, 2vw, 22px) clamp(18px, 3vw, 28px);
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: var(--shadow);
 }
 
-.preview-item:nth-child(3) {
-    animation-delay: 0.7s;
+.copy-title {
+    margin: 0 0 .6rem 0;
+    font-family: "SUIT", "Pretendard", sans-serif !important;
+    font-weight: 800;
+    font-size: clamp(30px, 5.6vw, 64px);
 }
 
-.preview-item:nth-child(4) {
-    animation-delay: 0.9s;
+.copy-desc {
+    margin: 0;
+    font-family: "Pretendard", "SUIT", sans-serif !important;
+    font-weight: 500;
+    font-size: clamp(14px, 2vw, 20px);
 }
 
-.grid-img {
-    width: 100%;
-    border-radius: 15px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-    transition: transform 0.3s ease;
+.snap-section.cover.left .copy-only { margin-left: var(--gutter); margin-right: auto; }
+.snap-section.cover.center .copy-only { margin: 0 auto; text-align: center; }
+.snap-section.cover.right .copy-only { margin-right: var(--gutter); margin-left: auto; }
+
+.snap-section.final {
+    background: linear-gradient(180deg, #fff, #ffe6ee);
+    display: grid;
+    place-items: center;
 }
 
-.grid-img:hover {
-    transform: scale(1.02);
+.final-box {
+    text-align: center;
+    width: min(860px, 92vw);
+    padding: clamp(20px, 4vw, 36px);
+    background: #fff;
+    border-radius: 28px;
+    box-shadow: var(--shadow);
 }
 
-.preview-label {
-    margin-top: 0.8rem;
+.final-title {
+    font-size: clamp(28px, 4.6vw, 48px);
+    margin: 0 0 .6rem 0;
+    font-family: "SUIT", "Pretendard", sans-serif;
+    font-weight: 800;
+}
+
+.final-desc {
+    color: var(--muted);
+    margin: 0 0 1.2rem 0;
+    font-size: clamp(14px, 2vw, 18px);
+}
+
+.final-create {
+    background: var(--pink);
+    color: #fff;
+    border: 0;
+    cursor: pointer;
+    padding: 14px 26px;
+    border-radius: 999px;
+    font-weight: 800;
     font-size: 1.1rem;
-    font-weight: 600;
-    color: #444;
+    transition: transform .18s ease, filter .2s ease, box-shadow .2s ease;
+}
+
+.final-create:hover {
+    transform: translateY(-2px);
+    filter: brightness(.97);
+    box-shadow: 0 14px 30px rgba(244, 140, 162, .28);
+}
+
+.bridge-top::before, .bridge-bottom::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0;
+    height: 120px;
+    pointer-events: none;
+}
+.bridge-top::before {
+    top: -1px;
+    background: linear-gradient(180deg, #fff 0%, rgba(255, 255, 255, 0) 100%);
+}
+.bridge-bottom::after {
+    bottom: -1px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #fff 100%);
+}
+
+.copy-only.w-bleed {
+    width: calc(100vw - var(--gutter) * 2);
+    max-width: none;
+    border-radius: 20px;
+}
+.snap-section.cover.left .copy-only.w-bleed { margin-left: var(--gutter); margin-right: auto; }
+.snap-section.cover.right .copy-only.w-bleed { margin-right: var(--gutter); margin-left: auto; }
+.snap-section.cover.center .copy-only.w-bleed { margin-left: auto; margin-right: auto; }
+
+.copy-only.copy-dark {
+    background: rgba(28, 32, 38, 0.72) !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    box-shadow: 0 18px 40px rgba(0, 0, 0, .18) !important;
+    backdrop-filter: blur(14px) saturate(130%) !important;
+    color: #f5f7fa !important;
+}
+.copy-only.copy-dark .copy-title { color: #fff !important; }
+.copy-only.copy-dark .copy-desc { color: rgba(255, 255, 255, .92) !important; }
+
+@media (max-width:640px) {
+    .hp-nav { height: 56px; padding: 0 16px; }
+    .copy-only { border-radius: 16px; }
+    .final-box { border-radius: 22px; }
+    .copy-only.w-bleed { width: calc(100vw - var(--gutter)); }
 }

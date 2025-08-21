@@ -1,3 +1,5 @@
+/* homepage-container, nav-logo 등 공용 스타일은 다른 CSS에 있다고 가정합니다. */
+
 .chatbot-prompt-container {
   display: flex;
   flex-direction: column;
@@ -5,13 +7,6 @@
   padding-top: 7rem;
   padding-bottom: 5rem;
   min-height: 100vh;
-  background-color: #ffe6ee;
-  background-image: url('/public/Grid.png');
-  /* 경로 수정 */
-  background-repeat: repeat;
-  background-size: contain;
-  background-position: center;
-  background-attachment: fixed;
 }
 
 .chatbot-prompt-title {
@@ -30,8 +25,7 @@
   font-family: 'SUIT', sans-serif;
   color: #333;
   margin-bottom: 3rem;
-  animation: chatbot3dEnter 0.9s ease-out both;
-  animation-delay: 0.1s;
+  text-align: center;
 }
 
 .prompt-card {
@@ -51,9 +45,8 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
   transition: box-shadow 0.3s ease;
 }
-
 .prompt-box:last-of-type {
-  margin-bottom: 1rem;
+  margin-bottom: 0;
 }
 
 .prompt-box:hover {
@@ -92,7 +85,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
   display: block;
-  margin: 1.5rem auto 0;
+  margin: 2.5rem auto 0;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
@@ -102,32 +95,10 @@
 }
 
 @keyframes chatbot3dEnter {
-  0% {
-    opacity: 0;
-    transform: perspective(1000px) rotateX(6deg) scale(0.95);
-  }
-
-  100% {
-    opacity: 1;
-    transform: perspective(1000px) rotateX(0deg) scale(1);
-  }
+  0% { opacity: 0; transform: perspective(1000px) rotateX(6deg) scale(0.95); }
+  100% { opacity: 1; transform: perspective(1000px) rotateX(0deg) scale(1); }
 }
 
 .animate-3d {
   animation: chatbot3dEnter 0.9s ease-out both;
-}
-
-@media (max-width: 600px) {
-  .chatbot-prompt-title {
-    font-size: 1.8rem;
-  }
-
-  .prompt-card {
-    padding: 2rem 1.3rem;
-  }
-
-  .chatbot-next-btn {
-    font-size: 1rem;
-    padding: 0.75rem 2rem;
-  }
 }
